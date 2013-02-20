@@ -1,0 +1,370 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title> Pacman Pong</title>
+		<link rel="stylesheet" type="text/css" href="styleTest.css">
+	</head>
+	<body>
+		<!-- <div class="title">Hello</div> -->
+		<h1 id="colorTitle">Pacman Pong</h1>
+		<p id="textColor">Player 1 - left paddle, a to move up, d to move down</p>
+		<p id="textColor">Player 2 - right paddle, left arrow to move up, right arrow to move down</p>
+		<span>
+			<span id="gameState" style="color:white">Play</span>
+			<button type = "button" onclick = "buttonChange()">Start</button>
+		</span>
+		<br/>
+		<!--<form action="http://google.com">
+		    <input type="submit" value="Go to Google">
+		</form>
+		<br/>-->
+		
+		<script>
+			var isPlaying = false;
+
+			function buttonChange() {
+				document.getElementById("gameState").innerHTML = "Playing";
+				isPlaying = true;
+			}
+		</script>
+		
+		<div id="centerCanvas">
+			<script>
+				var width = window.innerWidth/2 - 400;
+				document.getElementById("centerCanvas").style.paddingLeft = width.toString() + "px";
+			</script>
+			<canvas id = "canvas" width = "800" height = "580" style = "border:10px solid #000000; background: gray;">
+				Your browser does not support the HTML5 canvas tag
+			</canvas>
+		</div>
+		
+		<div><iframe src = "https://www.facebook.com/plugins/like.php?href=http://www.kkpsi.org/"
+		scrolling = "no" frameborder = "0"
+		style = "border:none; width:450px; height:80px;
+		margin-top: 0; margin-left: 0; background-color: white;">
+		Sorry your browser doesn't support inline frames
+		</iframe></div>
+
+		<script>
+			var player1Down; 
+			var player1Up;
+			var player2Down;
+			var player2Up;
+			var player1Score = 0; //player1 score
+			var player2Score = 0; //player2 score 
+			
+			var yPos1 = canvas.height/2 - 50; //y position of paddle1
+			var yPos2 = canvas.height/2 - 50; //y position of paddle2
+			
+			var pongPosX = (canvas.width/2) - 30; //pong start position x
+			var pongPosY = (canvas.height/2) - 30; //pong start position y
+			var pongVelX = 5;
+			var pongVelY = 5;
+			
+			var c; //canvas
+			var ctx; //canvas context 
+			
+			var pongImage;
+			var offset = 0;
+			
+			var rotate;
+			var Win = 0; // fin condition 1=player1win 2=player2win
+
+			var Pongs = []; //list of pongs
+			Pongs.push({ PosX: pongPosX, PosY: pongPosY, VelX: pongVelX, VelY: pongVelY });
+
+			var MAX_PONG_X = canvas.width - 10; //max x position of pong
+			var MAX_PONG_Y = canvas.height - 10; //max y position of pong
+			var MAX_PLAYER_Y = canvas.height - 100; //max y value of the paddles
+
+			//animation frame
+			window.requestAnimFrame = (function(){
+				return  window.requestAnimationFrame       || 
+					window.webkitRequestAnimationFrame || 
+					window.mozRequestAnimationFrame    || 
+					window.oRequestAnimationFrame      || 
+					window.msRequestAnimationFrame     || 
+					function(/* function */ callback, /* DOMElement */ element){
+					  window.setTimeout(callback, 1000 / 60);
+					};
+			})();
+
+			function init() {
+				document.onkeydown = keyDown;
+				document.onkeyup = keyUp;
+				
+				c = document.getElementById("canvas");
+				ctx = c.getContext("2d");
+				
+				pongImage = new Image();
+				//pongImage.src = "pacman.png";
+				pongImage.src = "walkMan1.png";
+				
+				ctx.drawImage(pongImage, 0, 0, 450, 600, 0, 0, 60, 60);
+				
+				rotate = 0;
+
+				//setInterval(gameLoop,30);
+			}
+
+			init();
+			gameLoop();
+
+			function keyDown(e) {
+				if(!e) {
+					e = window.event;
+				}
+				if(e.keyCode == 37) {
+					player2Down = true;
+				}
+				else if(e.keyCode == 39) {
+					player2Up = true;
+				}
+				else if(e.keyCode == 65) {
+					player1Down = true;
+				}
+				else if(e.keyCode == 68) {
+					player1Up = true;
+				}
+				else if(e.keyCode == 107){
+					var xspeed = Math.random() * (5 + 5) - 5;
+					var yspeed = Math.random() * (5 + 5) - 5;
+					Pongs.push({ PosX: pongPosX, PosY: pongPosY, VelX: xspeed, VelY: yspeed });
+				}
+			}
+
+			function keyUp(e) {
+				if(!e) {
+					e = window.event;
+				}
+				if(e.keyCode == 37) {
+					player2Down = false;
+				}
+				else if(e.keyCode == 39) {
+					player2Up = false;
+				}
+				else if(e.keyCode == 65) {
+					player1Down = false;
+				}
+				else if(e.keyCode == 68) {
+					player1Up = false;
+				}
+				else if(e.keyCode == 107){
+
+				}
+			}
+
+			function gameLoop() {
+				requestAnimFrame(gameLoop);
+				handleInput();
+				if(isPlaying){
+					for(var i = 0; i < Pongs.length; i ++){
+						collision(i);
+					}
+				}
+
+				pongCollide();
+				draw();
+			}
+			
+			function draw() {
+				var Next1 = false; //is a paddle next to paddle1
+				var Next2 = false; //is a pong next to paddle2
+
+				if(offset == 60){
+					offset = 0;
+				}
+				//CLEAR CANVAS
+				ctx.clearRect(0,0,canvas.width, canvas.height);
+
+				//check win condition
+				if(player1Score >= 10 || player2Score >= 10){
+					if(player1Score == 10 && Win == 0){
+						ctx.fillStyle = "#FF0000";
+						Win = 1;
+					}
+					if(player2Score == 10 && Win == 0){
+						ctx.fillstyle = "#0000FF";
+						win = 2;
+					}
+					var textWidth2 = ctx.measureText("You Win");
+					ctx.font = "100px Arial";
+					ctx.fillText("You Win", ((canvas.width/2) - (textWidth2.width/2)), (canvas.height/2));
+				}
+				else{
+				var textWidth = ctx.measureText(player2Score.toString());
+				//alert(textWidth);
+				
+				ctx.beginPath();
+				
+				//check if pongs are by a paddle
+				for(var i = 0; i < Pongs.length; i++){
+					if(Pongs[i].PosX <= ((canvas.width/2) - (canvas.width/4)) && Pongs[i].PosY >= (yPos1 - 75) && Pongs[i].PosY <= (yPos1 + 175)){
+						Next1 = true;
+					}
+					if(Pongs[i].PosX >= ((canvas.width/2) + (canvas.width/4)) && Pongs[i].PosY >= (yPos2 - 75) && Pongs[i].PosY <= (yPos2 + 175)){
+						Next2 = true;
+					}
+				}
+
+				//player1
+				if(Next1){
+					ctx.fillStyle = "#000000";
+				}
+				else{
+					ctx.fillStyle = "#FF0000";//red
+				}
+				ctx.fillRect(20, yPos1, 15, 100);
+				
+				//draw player1 score
+				ctx.font = "100px Arial";
+				ctx.fillText(player1Score, 80, 100);
+
+				//player2
+				if(Next2){
+					ctx.fillStyle = "#000000";
+				}
+				else{
+					ctx.fillStyle = "#0000FF";//blue
+				}
+				ctx.fillRect(canvas.width - 35, yPos2, 15, 100);
+
+				//draw player2 score
+				ctx.font = "100px Arial";
+				ctx.fillText(player2Score, (canvas.width - textWidth.width - 80), 100);
+
+				//outline the paddles
+				ctx.strokeStyle = "#000000";
+				ctx.lineWidth = 2;
+				ctx.strokeRect(20, yPos1, 15, 100);
+				ctx.strokeRect(canvas.width - 35, yPos2, 15, 100);
+
+				//draw the center line
+				ctx.fillStyle = "#FFFFFF";
+				ctx.fillRect((canvas.width/2) - 4, 0, 8, canvas.height);
+				
+				//move the pongs
+				for(var x = 0; x<Pongs.length; x++){
+					ctx.save();
+					ctx.translate(Pongs[x].PosX, Pongs[x].PosY);
+					//ctx.rotate(rotate*Math.PI/180);
+					var test = Math.floor(offset/12);
+					ctx.drawImage(pongImage, 450*test, 0, 450, 600, 0, 0, 60, 60);
+					ctx.translate(-Pongs[x].PosX, -Pongs[x].PosY);
+					ctx.restore();
+				}
+				offset += 1;
+				}
+				
+				rotate = rotate + 3;
+			}
+
+			function handleInput() {
+				if(player1Down) {
+					yPos1 -= 10;
+					if(yPos1 < 0) {
+						yPos1 = 0;
+					}
+				}
+				if(player1Up) {
+					yPos1 += 10;
+					if(yPos1 >= MAX_PLAYER_Y) {
+						yPos1 = MAX_PLAYER_Y;
+					}
+				}
+				if(player2Down) {
+					yPos2 -= 10;
+					if(yPos2 < 0) {
+						yPos2 = 0;
+					}
+				}
+				if(player2Up) {
+					yPos2 += 10;
+					if(yPos2 >= MAX_PLAYER_Y) {
+						yPos2 = MAX_PLAYER_Y;
+					}
+				}
+			}
+			
+			function collision(i) {
+				Pongs[i].PosX += Pongs[i].VelX;
+				Pongs[i].PosY += Pongs[i].VelY;
+					//negative velocity going left
+					if(Pongs[i].VelX < 0) {
+						//hit left bumper
+						if(Pongs[i].PosX <= 30 && Pongs[i].PosY >= yPos1 && Pongs[i].PosY <= (yPos1 + 100)) {
+							Pongs[i].PosX = 30;
+							Pongs[i].VelX = -Pongs[i].VelX;
+						}
+						//hit left wall p2 scores
+						else if( Pongs[i].PosX <= 1 ) {
+							Pongs[i].PosX = 1;
+							Pongs[i].VelX = -Pongs[i].VelX;
+							if(Pongs.length > 1){
+								Pongs.splice(i, 1);
+							}
+							player2Score++;
+						}
+					}
+					//positive velocity going right
+					else if(Pongs[i].VelX > 0) {
+						//hit right bumper
+						if(Pongs[i].PosX >= (MAX_PONG_X - 70) && Pongs[i].PosY >= yPos2 && Pongs[i].PosY <= (yPos2 + 100)) {
+							Pongs[i].PosX = MAX_PONG_X - 70;
+							Pongs[i].VelX = -Pongs[i].VelX;
+						}
+						//hit right wall p1 scores
+						else if( Pongs[i].PosX >= MAX_PONG_X - 55) {
+							Pongs[i].PosX = MAX_PONG_X - 55;
+							Pongs[i].VelX = -Pongs[i].VelX;
+							if(Pongs.length > 1){
+								Pongs.splice(i, 1);
+							}
+							player1Score++;
+						}
+					}
+				//hit top	
+				if( Pongs[i].PosY <= 1 ) {
+					Pongs[i].PosY = 1;
+					Pongs[i].VelY = -Pongs[i].VelY;
+				}
+				//hit bottom
+				if( Pongs[i].PosY >= MAX_PONG_Y - 45) {
+					Pongs[i].PosY = MAX_PONG_Y - 45;
+					Pongs[i].VelY = -Pongs[i].VelY;
+				}
+			}
+
+			function pongCollide() {
+				for(i = 0; i < Pongs.length; i++) {
+					for(j = i+1; j < Pongs.length; j++) {
+						
+						var distance = Math.sqrt((Pongs[j].PosX - Pongs[i].PosX)*(Pongs[j].PosX - Pongs[i].PosX)
+							     + (Pongs[j].PosY - Pongs[i].PosY)*(Pongs[j].PosY - Pongs[i].PosY))
+						if(distance < 40) {
+							if(Pongs[i].VelX < 0 && Pongs[j].VelX > 0) {
+								Pongs[i].VelX = -Pongs[i].VelX;
+								Pongs[j].VelX = -Pongs[j].VelX;
+							}
+							else if (Pongs[i].VelX > 0 && Pongs[j].VelX < 0){
+								Pongs[i].VelX = -Pongs[i].VelX;
+								Pongs[j].VelX = -Pongs[j].VelX;
+							}
+							else if (Pongs[i].VelX < 0 && Pongs[j].VelX < 0){
+								Pongs[i].VelY = -Pongs[i].VelY;
+								Pongs[j].VelY = -Pongs[j].VelY;
+							}
+							else {
+								Pongs[i].VelY = -Pongs[i].VelY;
+								Pongs[j].VelY = -Pongs[j].VelY;
+							}
+						}
+					}
+				}
+			}
+		</script>
+			<a href="example.htm" id="button3" class="buttonText">Tic Tac Toe</a>
+			<a href="http://austin.thautech.com" id="button3" class="buttonText">Austin</a>
+			<a href="index.php" id="button3" class="buttonText">Main</a>
+	</body>
+</html>

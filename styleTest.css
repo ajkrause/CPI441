@@ -1,0 +1,95 @@
+#colorTitle {
+    color:yellow;
+    text-transform: uppercase;
+    text-align: center;
+}
+.title {
+    font-size: 64px;
+}
+body {
+    background-image: url('indexBack.jpg');
+}
+#textColor {
+    color:white;
+    text-align: center;
+}
+#centerCanvas {
+    width: 800;
+    height: 580;
+}
+.buttonText {
+    font: 18px/1.5 Helvetica, Arial, sans-serif;
+    color: #fff;
+}
+a {
+    color: #fff;
+    text-decoration: none;
+}
+#button1 {
+  background: #6292c2;
+  border: 2px solid #eee;
+  height: 28px;
+  width: 115px;
+  margin: 50px 0 0 50px;
+  padding: 0 0 0 7px;
+  overflow: hidden;
+  display: block;
+  
+  /*Transition*/
+  -webkit-transition: All 0.5s ease;
+  -moz-transition: All 0.5s ease;
+  -o-transition: All 0.5s ease;
+  -ms-transition: All 0.5s ease;
+  transition: All 0.5s ease;
+  
+  /*Rounded Corners*/
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  
+  /*Gradient*/
+  background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+  background-image: -o-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+  background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+  background-image: linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+}
+
+#button1:hover {
+  width: 200px;
+}
+#button3 {
+  background: #d11717 url('random_grey_variations_@2X.png');
+  background-position: 0 0;
+  color: white;
+  text-shadow: 0px 2px 0px rgba(0, 0, 0, 0.3);
+  font-size: 22px;
+  height: 58px;
+  width: 155px;
+  margin: 0px 0 0 0px;
+  overflow: hidden;
+  display: inline-block;
+  text-align: center;
+  line-height: 58px;
+  
+  /*Transition*/
+  -webkit-transition: All 0.8s ease;
+  -moz-transition: All 0.8s ease;
+  -o-transition: All 0.8s ease;
+  -ms-transition: All 0.8s ease;
+  transition: All 0.8s ease;
+  
+  /*Rounded Corners*/
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  
+  /*Shadow*/
+  -webkit-box-shadow: 0px 3px 1px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 3px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 3px 1px rgba(0, 0, 0, 0.2);
+}
+
+#button3:hover {
+  background-position: 0px 100px;
+}

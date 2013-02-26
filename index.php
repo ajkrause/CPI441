@@ -19,6 +19,12 @@ $userId = $facebook->getUser();
   <div id="fb-root"></div>
     <?php if ($userId) { 
       $userInfo = $facebook->api('/' . $userId);
+      $friends=$facebook->api('/me/friends');
+      $friends=$friends['data'];
+      $friendcount = count($friends);
+      $randomfriendnum = rand(0,$friendcount-1);
+      $randomfriend = $friends[$randomfriendnum];
+      echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'><br>";
 			// Create DB connection
 			$con=mysqli_connect("localhost","gameadm_gameadm","7IjJDGpB","gameadm_usertest");
 			

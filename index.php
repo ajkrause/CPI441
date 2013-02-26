@@ -18,6 +18,7 @@ $userId = $facebook->getUser();
 
   <div id="fb-root"></div>
     <?php if ($userId) { 
+      
       $userInfo = $facebook->api('/' . $userId);
       $friends=$facebook->api('/me/friends');
       $friends=$friends['data'];

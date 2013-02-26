@@ -25,7 +25,15 @@ $userId = $facebook->getUser();
       $friendcount = count($friends);
       $randomfriendnum = rand(0,$friendcount-1);
       $randomfriend = $friends[$randomfriendnum];
-      echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'><br>";
+      $randomfriend2 = $friends[$randomfriendnum+1];
+      $randomfriend3 = $friends[$randomfriendnum+2];
+      $randomfriend4 = $friends[$randomfriendnum+3];
+      $randomfriend5 = $friends[$randomfriendnum+4];
+      echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
+      echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
+      echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
+      echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
+      echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
 			// Create DB connection
 			$con=mysqli_connect("localhost","gameadm_gameadm","7IjJDGpB","gameadm_usertest");
 			

@@ -1,9 +1,7 @@
-<?php require_once("php-sdk/facebook.php");
+<?php require 'php-sdk/facebook.php';
 $facebook = new Facebook(array(
-  'appId'  => '	312229638880822',
+  'appId'  => '312229638880822',
   'secret' => '20b2eba7de6a54af3c2137d169c7a5f6',
-  'sharedSession' => true,
-  'trustForwarded' => true,
 ));
 
 $userId = $facebook->getUser();
@@ -19,44 +17,37 @@ $userId = $facebook->getUser();
 		<h1 id="colorTitle">Game</h1>
 
   <div id="fb-root"></div>
-	
-	<!-- Load and initialize the Javascript FB SDK using our App ID -->
-<script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '312229638880822', // App ID
-        status     : true, // check login status
-        cookie     : true, // enable cookies to allow the server to access the session
-        xfbml      : true  // parse XFBML
-      });
-			
-			FB.Event.subscribe('auth.login', function(response) {
-          window.location.reload();
-        });
-			
-		};
-
-    // Load the SDK Asynchronously
-    (function(d){
-      var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
-      js = d.createElement('script'); js.id = id; js.async = true;
-      js.src = "http://connect.facebook.net/en_US/all.js";
-      d.getElementsByTagName('head')[0].appendChild(js);
-    }(document));
-		
-		
-  </script>
-
-			 <div id="fb-root"></div>
-			 <?php if ($userId) { 
+    <?php if ($userId) { 
       $userInfo = $facebook->api('/' . $userId); ?>
-      Welcome <?= $userInfo['name'] ?>
+     <h2 id='colorTitle'> Welcome <?= $userInfo['name'] ?> </h2>
     <?php } else { ?>
     <fb:login-button></fb:login-button>
-    <?php } 
-               //<fb:login-button show-faces="true" width="300" max-rows="1" scope="publish_actions">
-               // </fb:login-button>
-?>
+    <?php } ?>
+
+
+        <div id="fb-root"></div>
+        <script>
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId      : '312229638880822', // App ID
+              status     : true, // check login status
+              cookie     : true, // enable cookies to allow the server to access the session
+              xfbml      : true  // parse XFBML
+            });
+        FB.Event.subscribe('auth.login', function(response) {
+          window.location.reload();
+        });
+          };
+          // Load the SDK Asynchronously
+          (function(d){
+             var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement('script'); js.id = id; js.async = true;
+             js.src = "//connect.facebook.net/en_US/all.js";
+             ref.parentNode.insertBefore(js, ref);
+           }(document));
+        </script>
+				
 		<p id="textColor">click to select player</p>
 		<p id="textColor">click again to move them</p>
 		<br/>

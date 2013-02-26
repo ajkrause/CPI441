@@ -18,7 +18,16 @@ $userId = $facebook->getUser();
 
   <div id="fb-root"></div>
     <?php if ($userId) { 
-      $userInfo = $facebook->api('/' . $userId); ?>
+      $userInfo = $facebook->api('/' . $userId);
+			// Create DB connection
+			$con=mysqli_connect("localhost","gameadm_gameadm","7IjJDGpB","gameadm_usertest");
+			
+			// Check connection
+			if (mysqli_connect_errno($con))
+			{
+			echo "Failed to connect to MySQL: " . mysqli_connect_error();
+			}
+		?>
      <h2 id='colorTitle'> Welcome <?= $userInfo['name'] ?> </h2>
     <?php } else { ?>
     <fb:login-button></fb:login-button>

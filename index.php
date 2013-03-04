@@ -5,29 +5,48 @@ $facebook = new Facebook(array(
 ));
 
 $userId = $facebook->getUser();
+
+?>
+<?php
+		$username = "gameadm";
+		$password = "7IjJDGpB";
+		$hostname = "localhost"; 
+		
+		//connection to the database
+		$dbhandle = mysql_connect($hostname, $username, $password) 
+		  or die("Unable to connect to MySQL");
+		echo "Connected to MySQL<br>";
+		
+		printf("MySQL server version: %s\n", mysql_get_server_info());
+		
+		
+		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
+		$result = mysql_query("SELECT * FROM test1");
+		mysql_close($dbhandle);
+		//fetch tha data from the database
+		while ($row = mysql_fetch_array($result)) {
+		   echo "ID:".$row{'ID'}." Name:".$row{'Name'}." ".$row{'Score'}."<br>";
+		}
 ?>
 <html xmlns:fb="https://www.facebook.com/2008/fbml">
 	<head>
 		<title>Project</title>
 		<link rel="stylesheet" type="text/css" href="styleTest.css">
-		//lol
+		
 	</head>
 	<body>
 		<!-- <div class="title">Hello</div> -->
 		<h1 id="colorTitle">Game</h1>
 
   <div id="fb-root"></div>
-	
-    <?php
-		echo $userId;
-		if ($userId) { 
-      
+    <?php if ($userId) { 
       $userInfo = $facebook->api('/' . $userId);
       $friends=$facebook->api('/me/friends');
       $friends=$friends['data'];
       $friendcount = count($friends);
       $randomfriendnum = rand(0,$friendcount-1);
       $randomfriend = $friends[$randomfriendnum];
+      
       $randomfriend2 = $friends[$randomfriendnum+1];
       $randomfriend3 = $friends[$randomfriendnum+2];
       $randomfriend4 = $friends[$randomfriendnum+3];
@@ -37,17 +56,43 @@ $userId = $facebook->getUser();
       echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
       echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
       echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
-			// Create DB connection
-			$con=mysqli_connect("localhost","gameadm_gameadm","7IjJDGpB","gameadm_usertest");
+
+     foreach($friends['data'] as $key=>$value)
+     {
+            echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
+     }
+
+
+	// Create DB connection
+	$con=mysqli_connect("localhost","gameadm_gameadm","7IjJDGpB","gameadm_usertest");
 			
-			// Check connection
+	// Check connection
 			if (mysqli_connect_errno($con))
 			{
 			echo "Failed to connect to MySQL: " . mysqli_connect_error();
 			}
+                $query="SELECT * FROM test1";
+                $result=mysql_query($query);
+                $num=mysql_numrows($result);
+                
+                mysql_close();
+
+                echo "<b><center>Database Test</center></b><br><br>";
+
+                $i=0;
+                while($i <$num) {
+
+                $name=mysql_result($result,$i,"Name");
+                $score=mysql_result($result,$i,"Score");
+                echo "<b>$name </b><br>Score: $score <br>";
+                
+                $i++;
+                }
 		?>
      <h2 id='colorTitle'> Welcome <?= $userInfo['name'] ?> </h2>
+
     <?php } else { ?>
+      <p>Not Logged into Facebook</p>
     <fb:login-button></fb:login-button>
     <?php } ?>
 

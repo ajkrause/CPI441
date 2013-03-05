@@ -151,7 +151,11 @@ $userId = $facebook->getUser();
 			var ctx; //canvas context
 			
 			var pongImage;
+			var wall;
 			var offset = 0;
+
+			//how many characters to draw
+			var numCharacters = 5;
 			
 			var activePlayer = -1;
 			var boardWidth = 30;
@@ -162,11 +166,15 @@ $userId = $facebook->getUser();
 			var board = new Array(boardWidth);
 
 			var Characters = []; //set of pongs
+			var neighbors = []; //neighbors
+			var startNode;
+			var endNode;
+			var openList = [];
 
-			var MAX_PONG_X = canvas.width - 10; //max x value for pongs
-			var MAX_PONG_Y = canvas.height - 10; //max y value for pongs
-			var MAX_PLAYER_Y = canvas.height - 50; //max y value for the player
-			var MAX_PLAYER_X = canvas.width - 60; //max x value for the player
+			var topMax = -1;
+			var bottomMax = -1;
+			var leftMax = -1;
+			var rightMax = -1;
 
 			//animation frame
 			window.requestAnimFrame = (function(){
@@ -189,12 +197,14 @@ $userId = $facebook->getUser();
 				ctx = c.getContext("2d");
 				
 				pongImage = new Image();
+				wall = new Image();
 				//pongImage.src = "pacman.png";
 				//pongImage.src = "walkMan1.png";
 				pongImage.src = "walkMan2.png";
+				wall.src = "tiles/log1.png";
 
 				//create board
-				//(1=outerfloor, 3=innerfloor, 2=character, 0=wall)
+				//(1=outerfloor, 3=innerfloor, 2=character, 0=wall, 4=enemy)
 				for(var i = 0; i < boardWidth; i++){
 					board[i] = new Array(boardHeight);
 				}
@@ -202,7 +212,7 @@ $userId = $facebook->getUser();
 				//set the board
 				for(var x = 0; x < boardWidth; x++){
 				for(var y = 0; y < boardHeight; y++){
-					board[x][y] = ({index: 1, health: -1});//, power : 0});
+					board[x][y] = ({index: 1, health: -1, opened: false, closed: false, g: 0, f: 0, h: 0, parent: []});
 				}
 				}
 
@@ -218,10 +228,10 @@ $userId = $facebook->getUser();
 				var Position = [];
 
 				for(var i = 0; i < 4; i++){
-				var Wmax = Math.floor(boardWidth/2) + 3;
-				var Wmin = Math.floor(boardWidth/2) - 3;
-				var Hmax = Math.floor(boardHeight/2) + 3;
-				var Hmin = Math.floor(boardHeight/2) - 3;
+				var Wmax = Math.floor(boardWidth/2) + 2;
+				var Wmin = Math.floor(boardWidth/2) - 2;
+				var Hmax = Math.floor(boardHeight/2) + 2;
+				var Hmin = Math.floor(boardHeight/2) - 2;
 	
 				Position.push({W: Math.floor((Math.random()*(Wmax-Wmin+1)))+Wmin, H: Math.floor((Math.random()*(Hmax-Hmin+1)))+Hmin});
 				}
@@ -262,11 +272,12 @@ $userId = $facebook->getUser();
 				}
 				
 				//place walls
-				for(var y = 1; y < (boardHeight-1); y++){
-				for(var x = 1; x < (boardWidth-1); x++){
+				for(var y = 2; y < (boardHeight-2); y++){
+				for(var x = 2; x < (boardWidth-2); x++){
 					if(board[x+1][y].index == 3 && (board[x-1][y].index == 1 || board[x-1][y].index == 0) && board[x][y].index == 1){
 						board[x][y].index = 0; //left wall
 						board[x][y].health = 0;
+						
 					}
 					if(board[x-1][y].index == 3 && (board[x+1][y].index == 1 || board[x+1][y].index == 0) && board[x][y].index == 1){
 						board[x][y].index = 0; //right wall
@@ -280,38 +291,116 @@ $userId = $facebook->getUser();
 						board[x][y].index = 0; //bottom wall
 						board[x][y].health = 0;
 					}
+					//check
 					if(board[x-1][y-1].index == 3 && (board[x+1][y+1].index == 1 || board[x+1][y+1].index == 0) && board[x][y].index == 1){
 						board[x][y].index = 0; //bottom right corner
 						board[x][y].health = 0;
+						//board[x-1][y-1].index = 2;
+						//Characters.push({boardX: x-1, boardY: y-1, PosX: (squareWidth*(x-1)) + (squareWidth/2), PosY: (squareHeight*(y-1)) + (squareHeight/2), Rotate: 0, power: 1});
 					}
+					//check
 					if(board[x+1][y-1].index == 3 && (board[x-1][y+1].index == 1 || board[x-1][y+1].index == 0) && board[x][y].index == 1){
 						board[x][y].index = 0; //bottom left corner
 						board[x][y].health = 0;
+						//board[x+1][y-1].index = 2;
+						//Characters.push({boardX: x+1, boardY: y-1, PosX: (squareWidth*(x+1)) + (squareWidth/2), PosY: (squareHeight*(y-1)) + (squareHeight/2), Rotate: 0, power: 1});
 					}
+					//check
 					if(board[x-1][y+1].index == 3 && (board[x+1][y-1].index == 1 || board[x+1][y-1].index == 0) && board[x][y].index == 1){
 						board[x][y].index = 0; //top right corner
 						board[x][y].health = 0;
-					}		
+						//board[x-1][y+1].index = 2;
+						//Characters.push({boardX: x-1, boardY: y+1, PosX: (squareWidth*(x-1)) + (squareWidth/2), PosY: (squareHeight*(y+1)) + (squareHeight/2), Rotate: 0, power: 1});
+					}
+					//check		
 					if(board[x+1][y+1].index == 3 && (board[x-1][y-1].index == 1 || board[x-1][y-1].index == 0) && board[x][y].index == 1){
 						board[x][y].index = 0; //top left corner
 						board[x][y].health = 0;
+						//board[x+1][y+1].index = 2;
+						//Characters.push({boardX: x+1, boardY: y+1, PosX: (squareWidth*(x+1)) + (squareWidth/2), PosY: (squareHeight*(y+1)) + (squareHeight/2), Rotate: 0, power: 1});
 					}
 					if((board[x][y].index == 0 || board[x][y].index == 1) && 
-					((board[x+1][y].index == 3 && board[x-1][y].index == 3) || (board[x][y+1].index == 3 && board[x][y-1].index == 3))){
+					(((board[x+1][y].index == 3 || board[x+2][y].index == 3) && board[x-1][y].index == 3) || 
+					((board[x][y+1].index == 3 || board[x][y+2].index == 3) && board[x][y-1].index == 3))){
 						board[x][y].index = 3;
 					}
 				}
 				}
+
+				for(var y = 2; y < (boardHeight-2); y++){
+				for(var x = 2; x < (boardWidth-2); x++){
+					//bottom right
+					if(board[x][y].index == 0 && board[x][y-1].index == 0 && board[x-1][y].index == 0 && board[x-1][y-1].index == 3){
+						if(numCharacters != 0){
+							board[x-1][y-1].index = 2;
+							//board[x-1][y-1].parent = [x,y];
+							Characters.push({boardX: x-1, boardY: y-1, PosX: (squareWidth*(x-1)) + (squareWidth/2), PosY: (squareHeight*(y-1)) + (squareHeight/2), Rotate: 0, power: 1});
+							numCharacters = numCharacters - 1;
+						}
+					}
+					//bottom left
+					if(board[x][y].index == 0 && board[x][y-1].index == 0 && board[x+1][y].index == 0 && board[x+1][y-1].index == 3){
+						if(numCharacters != 0){
+							board[x+1][y-1].index = 2;
+							//board[x+1][y-1].parent = [x,y];
+							Characters.push({boardX: x+1, boardY: y-1, PosX: (squareWidth*(x+1)) + (squareWidth/2), PosY: (squareHeight*(y-1)) + (squareHeight/2), Rotate: 0, power: 1});
+							numCharacters = numCharacters - 1;
+						}
+					}
+					//top right
+					if(board[x][y].index == 0 && board[x-1][y].index == 0 && board[x][y+1].index == 0 && board[x-1][y+1].index == 3){
+						if(numCharacters != 0){
+							board[x-1][y+1].index = 2;
+							//board[x-1][y+1].parent = [x,y];
+							Characters.push({boardX: x-1, boardY: y+1, PosX: (squareWidth*(x-1)) + (squareWidth/2), PosY: (squareHeight*(y+1)) + (squareHeight/2), Rotate: 0, power: 1});
+							numCharacters = numCharacters - 1;
+						}
+					}
+					//top left	
+					if(board[x][y].index == 0 && board[x+1][y].index == 0 && board[x][y+1].index == 0 && board[x+1][y+1].index == 3){
+						if(numCharacters != 0){
+							board[x+1][y+1].index = 2;
+							//board[x+1][y+1].parent = [x,y];
+							Characters.push({boardX: x+1, boardY: y+1, PosX: (squareWidth*(x+1)) + (squareWidth/2), PosY: (squareHeight*(y+1)) + (squareHeight/2), Rotate: 0, power: 1});
+							numCharacters = numCharacters - 1;
+						}
+					}
+				}
+				}
 				
-				board[15][15].index = 2;
-				Characters.push({boardX: 15, boardY: 15, PosX: (squareWidth*15) + (squareWidth/2), PosY: (squareHeight*15) + (squareHeight/2), Rotate: 0, power: 1});
+				//test bounds
+				for(var t=0; t<boardHeight; t++){
+				for(var p=0; p<boardWidth; p++){
+					if(board[p][t].index == 0 && topMax == -1){
+						topMax = t;
+					}
+					if(board[p][boardHeight-(t+1)].index == 0 && bottomMax == -1){
+						bottomMax = boardHeight-(t+1);
+					}
+				}
+				}
+
+				for(var p=0; p<boardWidth; p++){
+				for(var t=0; t<boardHeight; t++){
+					if(board[p][t].index == 0 && leftMax == -1){
+						leftMax = p;
+					}
+					if(board[boardWidth-(p+1)][t].index == 0 && rightMax == -1){
+						rightMax = boardWidth-(p+1);
+					}
+				}
+				}
+				
+				//board[15][15].index = 2;
+				//Characters.push({boardX: 15, boardY: 15, PosX: (squareWidth*15) + (squareWidth/2), PosY: (squareHeight*15) + (squareHeight/2), Rotate: 0, power: 1});
 				//image, xposition, yposition, , , xoffset, yoffset,height, width
-				ctx.drawImage(pongImage, 0, 0, 128, 128, 0, 0, squareHeight, squareWidth);
+				//ctx.drawImage(pongImage, 0, 0, 128, 128, 0, 0, squareHeight, squareWidth);
 				rotate = 0;
 			}
 
 			init();
 			gameLoop();
+			var myVar=setInterval(function(){MoveBear(0, 0, 0)},1000);
 
 			function keyDown(e) {
 				if(!e) {
@@ -341,6 +430,11 @@ $userId = $facebook->getUser();
 						buttonDown = true;
 					}
 				}
+				//h key for test
+				else if(e.keyCode == 72){
+					var path = findPath(Characters[0].boardX, Characters[0].boardY, 15, 16);
+					alert("hi");
+				}
 				else if(e.keyCode == 107){
 					board[13][10].index = 2;
 					Characters.push({boardX: 13, boardY: 10, PosX: (squareWidth*13) + (squareWidth/2), PosY: (squareHeight*10) + (squareHeight/2), Rotate: 0, power: 1});
@@ -366,8 +460,11 @@ $userId = $facebook->getUser();
 						}
 					}
 					
-					var x1 = (((squareWidth-(x%squareWidth))+x)/squareWidth)-1;
-					var y1 = (((squareHeight-(y%squareHeight))+y)/squareHeight)-1;
+					//look at, getting decimals 
+					var x2 = (((squareWidth-(x%squareWidth))+x)/squareWidth)-1;
+					var y2 = (((squareHeight-(y%squareHeight))+y)/squareHeight)-1;
+					var x1 = Math.round(x2);
+					var y1 = Math.round(y2);
 					//if clicked on wall
 					if(board[x1][y1].index == 0){
 						alert(board[x1][y1].health);
@@ -427,6 +524,7 @@ $userId = $facebook->getUser();
 					else if(board[x][y].index == 0){
 						switch(true){
 							case ((board[x][y].health>=0) && (board[x][y].health<119)):
+								//ctx.drawImage(wall, 0, 0);
 								ctx.fillStyle = "#000000";
 								break;
 							case ((board[x][y].health>=120) && (board[x][y].health<180)):
@@ -447,26 +545,6 @@ $userId = $facebook->getUser();
 					var Px = Characters[i].boardX;
 					var Py = Characters[i].boardY;
 
-					/*if(up){
-						Characters[i].boardY = Characters[i].boardY - 1;
-					}
-					if(down){
-						Characters[i].boardY = Characters[i].boardY + 1;
-					}
-					if(left){
-						Characters[i].boardX = Characters[i].boardX - 1;
-					}
-					if(right){
-						Characters[i].boardX = Characters[i].boardX + 1;
-					}*/
-					/*if(board[Characters[i].boardX][Characters[i].boardY].index == 0){
-						Characters[i].boardX = Px;
-						Characters[i].boardY = Py;
-					}
-					else{
-						board[Px][Py].index = 1;
-						board[Characters[i].boardX][Characters[i].boardY].index = 2;
-					}*/
 					//if next to a wall
 					//right
 					if(board[Characters[i].boardX+1][Characters[i].boardY].index == 0 && board[Characters[i].boardX+1][Characters[i].boardY].health < 180){
@@ -512,6 +590,253 @@ $userId = $facebook->getUser();
 				right = false;
 				up = false;
 				down = false;
+			}
+
+			function MoveBear(x, y, direction){
+				
+			}
+
+			//find the path from(startX, startY) to (endX, endY)
+			function findPath(startX, startY, endX, endY){
+				//var openList = [];
+				startNode = [startX, startY];
+				endNode = [endX, endY];
+
+				board[startX][startY].g = 0;
+				board[startX][startY].f = 0;
+
+				//push the start node onto the open list
+				openList.push([startX, startY]);
+				board[startX][startY].opened = true;
+
+				while(openList.cout != 0){
+					//pop the position of the node which has the minimum 'f' value
+					var node = openList.pop();
+					board[node[0]][node[1]].closed = true;
+
+					if(node[0] == endX && node[1] == endY){
+						var path = [[node[0], node[1]]];
+						var par = board[node[0]][node[1]].parent;
+			    			while (par.length != 0) {
+			    		    		node = board[node[0]][node[1]].parent;
+					        	path.push([node[0], node[1]]);
+							par = board[node[0]][node[1]].parent;
+					    	}
+					    	return path.reverse();
+					}
+
+					identifySuccessors(node[0], node[1]);
+				}
+				return [];
+			}
+
+			//find successors
+			function identifySuccessors(x, y){
+				var px = board[x][y].parent[0];
+				var py = board[x][y].parent[1];
+				var jx;
+				var jy; 
+				var jumpNode = new Object();
+
+				//find all neighbors of point[x,y] from direction[px,py]
+				findNeighbors(x, y);
+				for(i = 0; i<neighbors.length; i++){
+					var neighbor = neighbors[i];
+					//find a jumpPoint from each neighbor
+					var jumpPoint = jump(neighbor.xpos, neighbor.ypos, x, y);
+		
+					if(jumpPoint){
+						jx = jumpPoint[0];
+						jy = jumpPoint[1];
+						jumpNode.xpos = jx;
+						jumpNode.ypos = jy; 	
+						var index = openList.indexOf([jx, jy]);
+
+						if(jumpNode.closed){
+							return;
+						}
+			
+						//include distance, as parent may not be immediately adjacent
+						//var d = Heuristic.euclidean(Math.abs(jx-x), Math.abs(jy-y));
+						//distance between the two points 
+						var d = Math.sqrt(((jx-x)*(jx-x))+((jy-y)*(jy-y)));
+						var ng = board[x][y].g + d; //next g value
+					
+						if(!board[jx][jy].opened || ng < board[jx][jy].g){
+							board[jx][jy].g = ng;
+							board[jx][jy].h = board[jx][jy].h || Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])));
+							//cost of moving from[x,y] to the jump point
+							board[jx][jy].f = board[jx][jy].g + board[jx][jy].h;
+							board[jx][jy].parent = [x, y];
+						
+							if(!board[jx][jy].opened){
+								openList.push([jx, jy]);
+								//sort openList in reverse order on f value
+								openList.sort(function(a,b) {return board[b[0]][b[1]].f-board[a[0]][b[1]].f});
+								board[jx][jy].opened = true;
+							}
+							else{
+								//update openList
+								if(index != -1){
+									openList[index] = [jx, jy];
+									openList.sort(function(a,b) {return board[b[0]][b[1]].f-board[a[0]][b[1]].f});
+								}
+							}
+						}		
+					}
+				}
+			}
+
+			//find jump points
+			function jump(x, y, px, py){
+				var dx = x - px;
+				var dy = y - py;
+				var jx;
+				var jy;
+			
+				//if your in a wall
+				if(board[x][y].index == 0){
+					return null;
+				}
+				//if your at the end
+				else if(x == endNode[0] && y == endNode[1]){
+					return[x, y];
+				}
+
+				//check for forced neighbors
+				//along the diagonal
+				if(dx != 0 && dy != 0){
+					if((board[x-dx][y+dy].index != 0 && board[x-dx][y].index == 0) ||
+					(board[x+dx][y-dy].index != 0 && board[x][y-dy].index == 0)){
+						return[x, y];
+					}
+				}
+				//horizonally/vertically
+				else{
+					//vertical
+					if(dx != 0){
+						if((board[x+dx][y+1].index != 0 && board[x][y+1].index == 0) ||
+						(board[x+dx][y-1].index != 0 && board[x][y-1].index == 0)){
+							return[x, y];
+						}
+					}
+					else{
+						if((board[x+1][y+dy].index != 0 && board[x+1][y].index == 0) ||
+						(board[x-1][y+dy].index != 0 && board[x-1][y].index == 0)){
+							return[x, y];
+						}
+					}
+				}
+
+				//when moving diagonally, must check for vertical/horizontal jump points
+				if(dx != 0 && dy != 0){
+					jx = jump(x+dx, y, x, y);
+					jy = jump(x, y+dy, x, y);
+					if(jx || jy){
+						return[x, y]; 
+					}
+				}
+			
+				//moving diagonally, must make sure one of the vertical/horivontal
+				//neighbors is open to allow the path
+				if(board[x+dx][y].index != 0 || board[x][y+dy].index != 0){
+					return jump(x+dx, y+dy, x, y);
+				}
+				else{
+					return null;
+				}
+			}
+
+			//find the neighbors
+			function findNeighbors(x, y){
+				neighbors = [];
+				var parent = board[x][y].parent;
+				if(parent.count == 0){
+					var px = parent[0];
+					var py = parent[1];
+					var dx = (x-px)/Math.max(Math.abs(x-px),1);
+					var dy = (y-py)/Math.max(Math.abs(y-py),1);
+
+					//search diagonally 
+					if(dx != 0 && dy != 0){
+						//vertical
+						if(board[x][y+dy].index != 0){
+							neighbors.push({xpos: x, ypos: y+dy});
+						}	
+						//horizontal
+						if(board[x+dx][y].index != 0){
+							neighbors.push({xpos:x+dx, ypos: y});
+						}
+						//diagonal
+						if(board[x+dx][y+dy].index != 0){
+							neighbors.push({xpos:x+dx, ypos: y+dy});
+						}
+						//forced neightbor
+						if(board[x-dx][y].index == 0 && board[x][y+dy].index != 0){
+							neighbors.push({xpos:x-dx, ypos: y+dy});
+						}
+						//forced neightbor
+						if(board[x][y-dy].index == 0 && board[x+dx][y].index != 0){
+							neighbors.push({xpos: x+dx, ypos: y-dy});
+						}
+					}
+					//search horizontally/ vertically
+					else{
+						//vertical
+						if(dx == 0){
+							if(board[x][y+dy].index != 0){
+								if(board[x][y+dy].index != 0){
+									neighbors.push({xpos: x, ypos: y+dy});
+								}
+								if(board[x+1][y].index == 0){
+									neighbors.push({xpos: x+1, ypos: y+dy});
+								}
+								if(board[x-1][y].index == 0){
+									neighbors.push({xpos: x-1, ypos: y+dy});
+								}
+							}
+						}
+						else{
+							if(board[x+dx][y].index != 0){
+								if(board[x+dx][y].index != 0){
+									neighbors.push({xpos: x+dx, ypos: y});
+								}
+								if(board[x][y+1].index == 0){
+									neighbors.push({xpos: x+dx, ypos: y+1});
+								}
+								if(board[x][y-1].index == 0){
+									neighbors.push({xpos: x+dx, ypos: y-1});
+								}
+							}
+						}
+					}
+				}
+				else{
+					if(board[x][y-1].index != 0){
+						neighbors.push({xpos: x, ypos: y-1});
+					}	
+					if(board[x+1][y].index != 0){
+						neighbors.push({xpos: x+1, ypos: y});
+					}
+					if(board[x][y+1].index != 0){
+						neighbors.push({xpos: x, ypos: y+1});
+					}
+					if(board[x-1][y].index != 0){
+						neighbors.push({xpos: x-1, ypos: y});
+					}
+					if(board[x-1][y-1].index != 0){
+						neighbors.push({xpos: x-1, ypos: y-1});
+					}
+					if(board[x+1][y-1].index != 0){
+						neighbors.push({xpos: x+1, ypos: y-1});
+					}
+					if(board[x+1][y+1].index != 0){
+						neighbors.push({xpos: x+1, ypos: y+1});
+					}
+					if(board[x-1][y+1].index != 0){
+						neighbors.push({xpos: x-1, ypos: y+1});
+					}	
+				}
 			}
 
 			function pongCollide() {

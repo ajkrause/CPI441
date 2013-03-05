@@ -61,33 +61,26 @@ $userId = $facebook->getUser();
      {
             echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
      }
+		 
+
+		$dbhandle = mysql_connect($hostname, $username, $password) 
+		  or die("Unable to connect to MySQL");
+		echo "Connected to MySQL<br>";
+
+		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
+		$result = mysql_query("SELECT * FROM test1");
+		mysql_close($dbhandle);
+		 echo "<b><center>Database Test</center></b><br><br>";
+		//fetch tha data from the database
+		while ($row = mysql_fetch_array($result)) {
+			$name=$row["Name"];
+      $score=$row["Score"];
+      echo "<b>$name </b><br>Score: $score <br>";
+		  
+		}
 
 
-	// Create DB connection
-	$con=mysqli_connect("localhost","gameadm_gameadm","7IjJDGpB","gameadm_usertest");
-			
-	// Check connection
-			if (mysqli_connect_errno($con))
-			{
-			echo "Failed to connect to MySQL: " . mysqli_connect_error();
-			}
-                $query="SELECT * FROM test1";
-                $result=mysql_query($query);
-                $num=mysql_numrows($result);
-                
-                mysql_close();
-
-                echo "<b><center>Database Test</center></b><br><br>";
-
-                $i=0;
-                while($i <$num) {
-
-                $name=mysql_result($result,$i,"Name");
-                $score=mysql_result($result,$i,"Score");
-                echo "<b>$name </b><br>Score: $score <br>";
-                
-                $i++;
-                }
+	
 		?>
      <h2 id='colorTitle'> Welcome <?= $userInfo['name'] ?> </h2>
 

@@ -2,6 +2,8 @@
 $facebook = new Facebook(array(
   'appId'  => '312229638880822',
   'secret' => '20b2eba7de6a54af3c2137d169c7a5f6',
+	'sharedSession' => true,
+	'trustForwarded' => true,
 ));
 
 $userId = $facebook->getUser();
@@ -11,15 +13,15 @@ $userId = $facebook->getUser();
 		$username = "gameadm";
 		$password = "7IjJDGpB";
 		$hostname = "localhost"; 
-		
+
 		//connection to the database
 		$dbhandle = mysql_connect($hostname, $username, $password) 
 		  or die("Unable to connect to MySQL");
 		echo "Connected to MySQL<br>";
-		
+
 		printf("MySQL server version: %s\n", mysql_get_server_info());
-		
-		
+
+
 		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
 		$result = mysql_query("SELECT * FROM test1");
 		mysql_close($dbhandle);
@@ -39,29 +41,34 @@ $userId = $facebook->getUser();
 		<h1 id="colorTitle">Game</h1>
 
   <div id="fb-root"></div>
-    <?php if ($userId) { 
-      $userInfo = $facebook->api('/' . $userId);
-      $friends=$facebook->api('/me/friends');
-      $friends=$friends['data'];
-      $friendcount = count($friends);
-      $randomfriendnum = rand(0,$friendcount-1);
-      $randomfriend = $friends[$randomfriendnum];
-      
-      $randomfriend2 = $friends[$randomfriendnum+1];
-      $randomfriend3 = $friends[$randomfriendnum+2];
-      $randomfriend4 = $friends[$randomfriendnum+3];
-      $randomfriend5 = $friends[$randomfriendnum+4];
-      echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
-      echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
-      echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
-      echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
-      echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
+    <?php
+		try{
+			if ($userId) { 
+				$userInfo = $facebook->api('/' . $userId);
+				echo $userId;
+				$friends=$facebook->api('/me/friends');
+				echo $userId;
+				$friends=$friends['data'];
+				$friendcount = count($friends);
+				$randomfriendnum = rand(0,$friendcount-1);
+				$randomfriend = $friends[$randomfriendnum];
+				
+				$randomfriend2 = $friends[$randomfriendnum+1];
+				$randomfriend3 = $friends[$randomfriendnum+2];
+				$randomfriend4 = $friends[$randomfriendnum+3];
+				$randomfriend5 = $friends[$randomfriendnum+4];
+				echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
+				echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
+				echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
+				echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
+				echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
+	
+			 foreach($friends['data'] as $key=>$value)
+			 {
+							echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
+			 }
+			}
 
-     foreach($friends['data'] as $key=>$value)
-     {
-            echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
-     }
-		 
 
 		$dbhandle = mysql_connect($hostname, $username, $password) 
 		  or die("Unable to connect to MySQL");
@@ -76,14 +83,23 @@ $userId = $facebook->getUser();
 			$name=$row["Name"];
       $score=$row["Score"];
       echo "<b>$name </b><br>Score: $score <br>";
-		  
+
 		}
 
 
-	
+
 		?>
      <h2 id='colorTitle'> Welcome <?= $userInfo['name'] ?> </h2>
+     <script>
+function fbLogout() {
+        FB.logout(function (response) {
+            //Do what ever you want here when logged out like reloading the page
+            window.location.reload();
+        });
+    }
+</script>
 
+<span id="fbLogout" onclick="fbLogout()"><a class="fb_button fb_button_medium"><span class="fb_button_text">Logout</span></a></span>
     <?php } else { ?>
       <p>Not Logged into Facebook</p>
     <fb:login-button></fb:login-button>

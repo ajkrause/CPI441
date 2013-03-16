@@ -3,14 +3,13 @@
 	<head>
 	</head>
 	<body>
-		<audio id="MyAudio" loop="true">
+		<audio id="MyAudio" autoplay loop="true">
 			<source src="testHouseholds.mp3" type="audio/mpeg"/> //Rest of the browsers
 			<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported
 		</audio>
 		
 		<script>
 			function refresh(){
-				drawBackground();
 				drawFloor();
 			}
 			
@@ -18,19 +17,16 @@
 		</script>
 		
 		<div id="centerCanvas" style="height: 630px; padding-left: inherit;">
-			<canvas id = "menu" width = "1000" height = "600" style = "z-index: 5; position: absolute;">
+			<canvas id = "menu" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-			<canvas id = "canvas" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
+			<canvas id = "canvas" width = "1000" height = "600" style = "z-index: 3; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-			<canvas id = "canvasBackground" width = "1000" height = "600" style = "z-index: 1; position: absolute;">
+			<canvas id = "canvasFloor" width = "1000" height = "600" style = "z-index: 1; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-			<canvas id = "canvasFloor" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
-				Your browser does not support the HTML5 canvas tag
-			</canvas>
-			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 3; position: absolute;">
+			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
 		</div>
@@ -56,9 +52,6 @@
 			var c; //canvas
 			var ctx; //canvas context
 			
-			var canvasBackground;
-			var ctxBackground;
-			
 			var canvasFloor;
 			var ctxFloor;
 			
@@ -81,6 +74,7 @@
 			var brokenWall;
 			var grassLight;
 			var grassDark;
+			var grass;
 			var inside;
 			var insideLight;
 			var innerCorner;
@@ -118,6 +112,36 @@
 			
 			//Room mins and maxes for X and Y
 			var roomXmin, roomXmax, roomYmin, roomYmax;
+			
+			function object(index, health, type, opened, closed, g, f, h, parent, image, rotate){
+				this.index = index;
+				this.health = health;
+				this.type = type;
+				this.opened = opened;
+				this.closed = closed;
+				this.g = g;
+				this.f = f;
+				this.h = h;
+				this.parent = parent;
+				this.image = image;
+				this.rotate = rotate;
+			}
+			
+			function character(image, rotation, boardX, boardY, PosX, PosY, desiredPosX, desiredPosY, Path, power, mouseX, mouseY, moved){
+				this.image = image;
+				this.rotation = rotation;
+				this.boardX = boardX;
+				this.boardY = boardY;
+				this.PosX = PosX;
+				this.PosY = PosY;
+				this.desiredPosX = desiredPosX;
+				this.desiredPosY = desiredPosY;
+				this.Path = Path;
+				this.power = power;
+				this.mouseX = mouseX;
+				this.mouseY = mouseY;
+				this.moved = moved;
+			}
 			
 			//animation frame
 			window.requestAnimFrame = (function(){
@@ -209,9 +233,6 @@
 				c = document.getElementById("canvas");
 				ctx = c.getContext("2d");
 				
-				canvasBackground = document.getElementById("canvasBackground");
-				ctxBackground = canvasBackground.getContext("2d");
-				
 				canvasFloor = document.getElementById("canvasFloor");
 				ctxFloor = canvasFloor.getContext("2d");
 				
@@ -227,6 +248,7 @@
 				brokenWall = new Image();
 				grassLight = new Image();
 				grassDark = new Image();
+				grass = new Image();
 				inside = new Image();
 				insideLight = new Image();
 				innerCorner = new Image();
@@ -243,26 +265,13 @@
 				brokenWall.src = "tiles/brokenWall_Test.png";
 				grassLight.src = "tiles/Grass_Light_Test.png";
 				grassDark.src = "tiles/Grass_Dark_Test.png";
+				grass.src = "grass_continuous.png";
 				inside.src = "tiles/Floor_Dark_Test.png";
 				insideLight.src = "tiles/Floor_Light_Test.png";
 				innerCorner.src = "tiles/LOG_InteriorCorner_Test.png";
 				outerCorner.src = "tiles/Log_ExteriorCorner_Test.png";
 				logPoint1.src = "tiles/Log_Point1_Test.png";
 				logPoint2.src = "tiles/Log_Point2_Test.png";
-				
-				function object(index, health, type, opened, closed, g, f, h, parent, image, rotate){
-					this.index = index;
-					this.health = health;
-					this.type = type;
-					this.opened = opened;
-					this.closed = closed;
-					this.g = g;
-					this.f = f;
-					this.h = h;
-					this.parent = parent;
-					this.image = image;
-					this.rotate = rotate;
-				}
 
 				//Create 2D board
 				//(0 == wall, 1 == outerfloor, 2 == character, 3 == innerfloor, 4 == enemy, 5 == logPoint)
@@ -458,7 +467,8 @@
 						if(board[x][y].index == 0 && board[x][y-1].index == 0 && board[x-1][y].index == 0 && board[x-1][y-1].index == 3){
 							if(numCharacters != 0){
 								board[x-1][y-1].index = 2;
-								Characters.push({boardX: x-1, boardY: y-1, PosX: (squareWidth*(x-1)) + (squareWidth/2), PosY: (squareHeight*(y-1)) + (squareHeight/2), Rotate: 0, power: 1});
+								Characters.push(new character(characterImage, 0, x-1, y-1, (squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), 
+								(squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), [], 1, 0, 0, false));
 								numCharacters = numCharacters - 1;
 							}
 						}
@@ -466,7 +476,8 @@
 						if(board[x][y].index == 0 && board[x][y-1].index == 0 && board[x+1][y].index == 0 && board[x+1][y-1].index == 3){
 							if(numCharacters != 0){
 								board[x+1][y-1].index = 2;
-								Characters.push({boardX: x+1, boardY: y-1, PosX: (squareWidth*(x+1)) + (squareWidth/2), PosY: (squareHeight*(y-1)) + (squareHeight/2), Rotate: 0, power: 1});
+								Characters.push(new character(characterImage, 0, x+1, y-1, (squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), 
+								(squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), [], 1, 0, 0, false));
 								numCharacters = numCharacters - 1;
 							}
 						}
@@ -474,7 +485,8 @@
 						if(board[x][y].index == 0 && board[x-1][y].index == 0 && board[x][y+1].index == 0 && board[x-1][y+1].index == 3){
 							if(numCharacters != 0){
 								board[x-1][y+1].index = 2;
-								Characters.push({boardX: x-1, boardY: y+1, PosX: (squareWidth*(x-1)) + (squareWidth/2), PosY: (squareHeight*(y+1)) + (squareHeight/2), Rotate: 0, power: 1});
+								Characters.push(new character(characterImage, 0, x-1, y+1, (squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), 
+								(squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), [], 1, 0, 0, false));
 								numCharacters = numCharacters - 1;
 							}
 						}
@@ -482,7 +494,8 @@
 						if(board[x][y].index == 0 && board[x+1][y].index == 0 && board[x][y+1].index == 0 && board[x+1][y+1].index == 3){
 							if(numCharacters != 0){
 								board[x+1][y+1].index = 2;
-								Characters.push({boardX: x+1, boardY: y+1, PosX: (squareWidth*(x+1)) + (squareWidth/2), PosY: (squareHeight*(y+1)) + (squareHeight/2), Rotate: 0, power: 1});
+								Characters.push(new character(characterImage, 0, x+1, y+1, (squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), 
+								(squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), [], 1, 0, 0, false));
 								numCharacters = numCharacters - 1;
 							}
 						}
@@ -586,12 +599,13 @@
                 		document.documentElement.scrollLeft - c.offsetLeft;
     				y = e.clientY + document.body.scrollTop +
                 		document.documentElement.scrollTop - c.offsetTop;
-				
-				if(x <= 560 && x >= 440 && y <= 472 && y >= 400){
-					pulseOver = true;
-				}
-				else{
-					pulseOver = false;
+				if(!play){
+					if(x <= 560 && x >= 440 && y <= 472 && y >= 400){
+						pulseOver = true;
+					}
+					else{
+						pulseOver = false;
+					}
 				}
 			}
 			
@@ -613,20 +627,21 @@
 					var y2 = (((squareHeight-(mouseY%squareHeight))+mouseY)/squareHeight)-1;
 					var x1 = Math.round(x2);
 					var y1 = Math.round(y2);
-					//if clicked on wall
-					/*
-					if(board[x1][y1].index == 0){
-						alert(board[x1][y1].health);
-					}*/
+					
 					//move active player
 					if(board[x1][y1].index == 3 && activePlayer != -1){
 						board[Characters[activePlayer].boardX][Characters[activePlayer].boardY].index = 3;
-						Characters[activePlayer].boardX = x1;
-						Characters[activePlayer].boardY = y1;
-						Characters[activePlayer].PosX = ((squareWidth*x1) + (squareWidth/2));
-						Characters[activePlayer].PosY = ((squareHeight*y1) + (squareHeight/2));
-						board[Characters[activePlayer].boardX][Characters[activePlayer].boardY].index = 2;
-
+						Characters[activePlayer].mouseX = x1;
+						Characters[activePlayer].mouseY = y1;
+						Characters[activePlayer].moved = true;
+						var path = findPath(Characters[activePlayer].boardX, Characters[activePlayer].boardY, x1, y1);
+						alert(path);
+						Characters[activePlayer].Path = path;
+						alert(Characters[activePlayer].Path);
+						Characters[activePlayer].desiredPosX = ((squareWidth*Characters[activePlayer].Path[1][0]) + (squareWidth/2));
+						Characters[activePlayer].desiredPosY = ((squareHeight*Characters[activePlayer].Path[1][1]) + (squareHeight/2));
+						Characters[activePlayer].Path = Characters[activePlayer].Path.splice(2, Characters[activePlayer].Path.length-2);
+						board[x1][y1].index = 2;
 						activePlayer = -1;
 						characterSelected = false;
 					}
@@ -635,27 +650,31 @@
 
 			function gameLoop() {
 				draw();
+				moveCharacter();
 				requestAnimFrame(gameLoop);
 			}
 			
-			function drawBackground() {
-				ctxBackground.clearRect(0, 0, canvasBackground.width, canvasBackground.height);
-				ctxBackground.beginPath();
-				
-				//Drawing grass with alternating pattern
-				for(var i = 0; i < boardWidth; i++){
-					for(var j = 0; j < boardWidth; j++){
-						if(i%2 == 0 && j%2 == 0){
-							ctxBackground.drawImage(grassDark, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
-						}
-						else if(i%2 == 0 && j%2 == 1){
-							ctxBackground.drawImage(grassLight, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
-						}
-						else if(i%2 == 1 && j%2 == 0){
-							ctxBackground.drawImage(grassLight, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
+			function moveCharacter(){
+				for(var x = 0; x < Characters.length; x++){
+					if(Characters[x].PosX != Characters[x].desiredPosX || Characters[x].PosY != Characters[x].desiredPosY){
+						var set = animate(Characters[x].PosX, Characters[x].PosY, Characters[x].desiredPosX, Characters[x].desiredPosY, Characters[x].rotate);
+						Characters[x].PosX = set[0];
+						Characters[x].PosY = set[1];
+						Characters[x].rotate = set[2];
+					}
+					else{
+						if(Characters[x].Path.length > 0){
+							
+							Characters[x].desiredPosX = ((squareWidth*Characters[x].Path[0][0]) + (squareWidth/2));
+							Characters[x].desiredPosY = ((squareWidth*Characters[x].Path[0][1]) + (squareWidth/2));
+							Characters[x].Path = Characters[x].Path.splice(1, Characters[x].Path.length-1);
 						}
 						else{
-							ctxBackground.drawImage(grassDark, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
+							if(Characters[x].moved){
+								Characters[x].boardX = Characters[x].mouseX;
+								Characters[x].boardY = Characters[x].mouseY;
+								Characters[x].moved = false;
+							}
 						}
 					}
 				}
@@ -664,6 +683,8 @@
 			function drawFloor(){
 				ctxFloor.clearRect(0, 0, canvasFloor.width, canvasFloor.height);
 				ctxFloor.beginPath();
+				
+				ctxFloor.drawImage(grass, 0, 0, 1000, 600, 0, 0, 1000, 600);
 				
 				//Drawing floor with alternating pattern
 				for(var i = roomXmin; i < roomXmax; i++){
@@ -682,7 +703,7 @@
 						}
 					}
 				}
-				//Drawing log points
+				//Draw log points
 				for(var x = roomXmin-1; x < roomXmax+1; x++){
 					for(var y = roomYmin-1; y < roomYmax+1; y++){
 						
@@ -780,11 +801,16 @@
 						board[Characters[i].boardX][Characters[i].boardY-1].health = board[Characters[i].boardX][Characters[i].boardY-1].health + 1;
 					}
 					
-					Characters[i].PosX = ((squareWidth*Characters[i].boardX) + (squareWidth/2));
-					Characters[i].PosY = ((squareHeight*Characters[i].boardY) + (squareHeight/2));
 					ctx.save();
                                         ctx.translate(Characters[i].PosX, Characters[i].PosY);
-					ctx.drawImage(characterImage, 0, 0, 128, 128, -(squareHeight/2), -(squareWidth/2), squareHeight, squareWidth);
+					ctx.rotate((Characters[i].rotate)*Math.PI/180);
+					if(Characters[i].PosX != Characters[i].desiredPosX || Characters[i].PosY != Characters[i].desiredPosY){
+						var test = Math.floor(offset/8);
+						ctx.drawImage(Characters[i].image, 142.222*(test+1), 0, 142.22, 128, -(squareHeight/2), -(squareWidth/2), squareHeight, squareWidth);
+					}
+					else{
+						ctx.drawImage(Characters[i].image, 0, 0, 128, 128, -(squareHeight/2), -(squareWidth/2), squareHeight, squareWidth);
+					}
 					ctx.translate(Characters[i].PosX, Characters[i].PosY);
 					ctx.restore();
 				}
@@ -904,6 +930,30 @@
 				return null;
 			}
 			
+			function animate(PosX, PosY, PosXDesired, PosYDesired, rotate){
+				if(PosX != PosXDesired || PosY != PosYDesired){
+					var deltaY, deltaX;
+					deltaY = PosYDesired - PosY;
+					deltaX = PosXDesired - PosX;
+					rotate = (Math.atan2(deltaY, deltaX) * 180/Math.PI)+90;
+					
+					var temp1 = (Math.sin((rotate)*Math.PI/180))*2;
+					var temp2 = (Math.cos((rotate)*Math.PI/180))*2;
+					var dist = Math.sqrt(((PosXDesired-PosX)*(PosXDesired-PosX))
+							     + ((PosYDesired-PosY)*(PosYDesired-PosY)));
+					
+					if(dist < 2.0) {
+						PosX = PosXDesired;
+						PosY = PosYDesired;	
+					}
+					else {
+						PosX += temp1;
+						PosY -= temp2;
+					}
+				}
+				return [PosX, PosY, rotate];
+			}
+			
 			function playSound()
 			{
 				document.getElementById("MyAudio").play();
@@ -926,7 +976,7 @@
 				openList.push([startX, startY]);
 				board[startX][startY].opened = true;
 
-				while(openList.cout != 0){
+				while(openList.count != 0){
 					//pop the position of the node which has the minimum 'f' value
 					var node = openList.pop();
 					board[node[0]][node[1]].closed = true;

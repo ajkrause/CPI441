@@ -76,16 +76,28 @@ $userId = $facebook->getUser();
 		echo "Connected to MySQL<br>";
 
 		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
-		$result = mysql_query("SELECT * FROM test1");
-		mysql_close($dbhandle);
+		$result = mysql_query("SELECT * FROM userdata");
 		 echo "<b><center>Database Test</center></b><br><br>";
 		//fetch tha data from the database
+		$newuser =true;
 		while ($row = mysql_fetch_array($result)) {
-			$name=$row["Name"];
-      $score=$row["Score"];
-      echo "<b>$name </b><br>Score: $score <br>";
-
+			$id = $row["ID"];
+			if($userId == $id)
+			{
+					$newuser = false;
+					$name=$row["NAME"];
+					$hscore=$row["HSCORE"];
+			}
+      echo "<b>$name </b><br>Score: $hscore <br>";
 		}
+			if($newuser == 1)
+			{ 
+				$dbresult = mysql_query("INSERT INTO userdata (ID, NAME, HSCORE) VALUES (" . intval($userId) . ", '" . $userInfo["name"] . "', 0)") or die (mysql_error());
+			$name=$userInfo["name"];
+      $hscore=0;
+			}
+
+		mysql_close($dbhandle);
 			
 
 
@@ -158,7 +170,11 @@ function fbLogout() {
 		margin-top: 0; margin-left: 0; background-color: white;">
 		Sorry your browser doesn't support inline frames
 		</iframe></div>
-		
+		<div  style="padding-left: 500px;">
+		<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
+		<table><tr><th>High Score</th></tr><tr><td><?php echo $hscore ?></td></tr></table>
+		</div>
+			
 		<a href="example.htm" id="button3" class="buttonText">Tic Tac Toe</a>
 		<a href="http://austin.thautech.com" id="button3" class="buttonText">Austin</a>
 		<a href="collision.htm" id="button3" class="buttonText">collisions</a>

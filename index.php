@@ -8,8 +8,7 @@ $facebook = new Facebook(array(
 
 $userId = $facebook->getUser();
 
-?>
-<?php
+
 		$username = "gameadm";
 		$password = "7IjJDGpB";
 		$hostname = "localhost"; 

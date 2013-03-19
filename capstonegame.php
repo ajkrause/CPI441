@@ -12,7 +12,6 @@
 			function refresh(){
 				drawFloor();
 			}
-			
 			window.onload = refresh;
 		</script>
 		
@@ -42,7 +41,7 @@
 			var mouseY = 0;
 			var selectionX = 0;
 			var selectionY = 0;
-			
+			var score = 0;
 			var yPos1 = canvas.height/2 - 50; //paddle1 starting position
 			var yPos2 = canvas.height/2 - 50; //paddle2 starting position
 			
@@ -817,6 +816,14 @@
 				offset += 1;
 				
 				rotate = rotate + 3;
+				
+				//update score
+				ctx.save();
+				ctx.font="40px Georgia";
+				ctx.fillStyle ="#000000";
+				score++;
+				ctx.fillText("Score: " + Math.round(score / 6), 20, canvas.height-50);
+				ctx.restore();
 			}
 			
 			function initializeWalls(type){

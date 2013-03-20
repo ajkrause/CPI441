@@ -82,13 +82,15 @@ $userId = $facebook->getUser();
 		$newuser =true;
 		while ($row = mysql_fetch_array($result)) {
 			$id = $row["ID"];
+			$tname = $row["NAME"];
+			$thscore = $row["HSCORE"];
 			if($userId == $id)
 			{
 					$newuser = false;
 					$name=$row["NAME"];
 					$hscore=$row["HSCORE"];
 			}
-      echo "<b>$name </b><br>Score: $hscore <br>";
+      echo "<b> $tname </b><br>Score: $thscore <br>";
 		}
 			if($newuser == 1)
 			{ 

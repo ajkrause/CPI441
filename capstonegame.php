@@ -1,13 +1,39 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<script>
+function updateHighScore(score)
+{
+	var xmlhttp;    
+	
+	if (window.XMLHttpRequest)
+		{// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+		}
+	else
+		{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+	xmlhttp.onreadystatechange=function()
+		{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+				alert("request complete" + window.parent.getUserId());
+			//document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+			}
+		}
+	xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+window.parent.getUserId(),true);
+	xmlhttp.send();
+	}
+	var score = 0;
+</script>
 	</head>
 	<body>
 		<audio id="MyAudio" autoplay loop="true">
 			<source src="testHouseholds.mp3" type="audio/mpeg"/> //Rest of the browsers
 			<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported
 		</audio>
-		
+		<button type="button" onclick="updateHighScore(score)">Update Score</button>
 		<script>
 			function refresh(){
 				drawFloor();
@@ -41,7 +67,6 @@
 			var mouseY = 0;
 			var selectionX = 0;
 			var selectionY = 0;
-			var score = 0;
 			var yPos1 = canvas.height/2 - 50; //paddle1 starting position
 			var yPos2 = canvas.height/2 - 50; //paddle2 starting position
 			

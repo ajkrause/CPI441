@@ -150,6 +150,10 @@ function fbLogout() {
 		<br/>
 		
 		<script>
+			function getUserId()
+			{
+				return <?php $userId ?>;
+			}
 			function resize() {
 				var width = window.innerWidth/2 - 500;
 				document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";

@@ -1,3 +1,4 @@
+<!DOCTYPE HTML>
 <?php require 'php-sdk/facebook.php';
 $facebook = new Facebook(array(
   'appId'  => '312229638880822',
@@ -35,13 +36,38 @@ $userId = $facebook->getUser();
 		<link rel="stylesheet" type="text/css" href="styleTest.css">
 		
 	</head>
+	<script>
+	    function updateHighScore(score)
+	    {
+		    var xmlhttp;    
+		    
+		    if (window.XMLHttpRequest)
+			    {// code for IE7+, Firefox, Chrome, Opera, Safari
+			    xmlhttp=new XMLHttpRequest();
+			    }
+		    else
+			    {// code for IE6, IE5
+			    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			    }
+		    xmlhttp.onreadystatechange=function()
+			    {
+			    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				    {
+					    alert("request complete " + xmlhttp.responseText);
+				    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+				    }
+			    }
+		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+window.parent.getUserId(),true);
+		    xmlhttp.send();
+		    }
+		    var score = 0;
+	    </script>
 	<body>
 		<!-- <div class="title">Hello</div> -->
 		<h1 id="colorTitle">Game</h1>
 
   <div id="fb-root"></div>
     <?php
-		
 			if ($userId) {
 				try{
 					$userInfo = $facebook->api('/' . $userId);
@@ -49,7 +75,7 @@ $userId = $facebook->getUser();
 					$friends=$friends['data'];
 					$friendcount = count($friends);
 					$randomfriendnum = rand(0,$friendcount-1);
-					$randomfriend = $friends[$randomfriendnum];
+					$randomfriend= $friends[$randomfriendnum];
 					
 					$randomfriend2 = $friends[$randomfriendnum+1];
 					$randomfriend3 = $friends[$randomfriendnum+2];
@@ -60,6 +86,13 @@ $userId = $facebook->getUser();
 					echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
+					$connected = true;
+					
+					$randomfriendimage = "http://graph.facebook.com/" . $randomfriend['id']  ."/picture";
+					$randomfriendimage2 = "http://graph.facebook.com/" . $randomfriend2['id']  ."/picture";
+					$randomfriendimage3 = "http://graph.facebook.com/" . $randomfriend3['id']  ."/picture";
+					$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
+					$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
 		
 				 foreach($friends['data'] as $key=>$value)
 				 {
@@ -69,7 +102,6 @@ $userId = $facebook->getUser();
 					$result = $e->getResult();
 					echo $result;
 				}
-
 
 		$dbhandle = mysql_connect($hostname, $username, $password) 
 		  or die("Unable to connect to MySQL");
@@ -149,26 +181,63 @@ function fbLogout() {
 		<p id="textColor">click again to move them</p>
 		<br/>
 		
+		<audio id="MyAudio" loop="true">
+			<source src="testHouseholds.mp3" type="audio/mpeg"/> //Rest of the browsers
+			<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported
+		</audio>
+		<button type="button" onclick="updateHighScore(score)">Update Score</button>
+		
 		<script>
 			function getUserId()
 			{
-				return <?php $userId ?>;
+				return <?php echo $userId; ?>;
 			}
 			function resize() {
 				var width = window.innerWidth/2 - 500;
 				document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";
 			}
+			function refresh(){
+				drawFloor();
+			}
+			window.onload = refresh;
 			window.onresize = resize;
+			
+			var friendPics = new Array();
+			var connectedFacebook = false;
+			if("<?php echo $connected ?>"){
+			   friendPics.push("<?php echo $randomfriendimage ?>");
+			   friendPics.push("<?php echo $randomfriendimage2 ?>");
+			   friendPics.push("<?php echo $randomfriendimage3 ?>");
+			   friendPics.push("<?php echo $randomfriendimage4 ?>");
+			   friendPics.push("<?php echo $randomfriendimage5 ?>");
+			   connectedFacebook = true;
+			}			
 		</script>
 		
+		<div id="centerCanvas" style="height: 630px;">
 		<span id="centerCanvas" style="height: 630px;">
 			<script>
 				resize();
 			</script>
-			<iframe src="capstonegame.php" height="624" width="1024" scrolling="no" frameborder="no">
+			<!--<iframe src="capstonegame.php" height="624" width="1024" scrolling="no" frameborder="no">
 				<p>Your browser does not support iframes.</p>
-			</iframe>
+			</iframe>-->
+			<canvas id = "menu" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
+				Your browser does not support the HTML5 canvas tag
+			</canvas>
+			<canvas id = "canvas" width = "1000" height = "600" style = "z-index: 3; position: absolute;">
+				Your browser does not support the HTML5 canvas tag
+			</canvas>
+			<canvas id = "canvasFloor" width = "1000" height = "600" style = "z-index: 1; position: absolute;">
+				Your browser does not support the HTML5 canvas tag
+			</canvas>
+			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
+				Your browser does not support the HTML5 canvas tag
+			</canvas>
 		</span>
+		</div>
+
+		<script src="game.php"></script>
 		
 		<div><iframe src = "https://www.facebook.com/plugins/like.php?href=http://www.kkpsi.org/"
 		scrolling = "no" frameborder = "0"

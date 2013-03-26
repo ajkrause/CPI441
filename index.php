@@ -72,6 +72,24 @@ $userId = $facebook->getUser();
 			if ($userId) {
 				try{
 					$userInfo = $facebook->api('/' . $userId);
+					$attachment = array(
+                                                  'message' => 'this is my message',
+                                                  'name' => 'This is my demo Facebook application!',
+                                                   'caption' => "Caption of the Post",
+                                                   'link' => 'http://mylink.com',
+                                                   'description' => 'this is a description',
+                                                   'picture' => 'http://mysite.com/pic.gif',
+                                                   'actions' => array(
+                                                   array(
+                                                           'name' => 'Get Search',
+                                                           'link' => 'http://www.google.com'
+                                                                 )
+                                                              )
+                                                          );
+
+
+                                           $result=$facebook->api('/me/feed/', 'post', $attachment);
+					
 					$friends=$facebook->api('/me/friends');
 					$friends=$friends['data'];
 					$friendcount = count($friends);

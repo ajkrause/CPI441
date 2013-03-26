@@ -53,7 +53,8 @@ $userId = $facebook->getUser();
 			    {
 			    if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				    {
-					    alert("request complete " + xmlhttp.responseText);
+							document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
+					   // alert("request complete " + xmlhttp.responseText);
 				    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
 				    }
 			    }
@@ -247,7 +248,7 @@ function fbLogout() {
 		</iframe></div>
 		<div  style="padding-left: 500px;">
 		<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
-		<table><tr><th>High Score</th></tr><tr><td><?php echo $hscore ?></td></tr></table>
+		<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
 		</div>
 			
 		<a href="example.htm" id="button3" class="buttonText">Tic Tac Toe</a>

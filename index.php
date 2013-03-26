@@ -151,7 +151,7 @@ function fbLogout() {
 <span id="fbLogout" onclick="fbLogout()"><a class="fb_button fb_button_medium"><span class="fb_button_text">Logout</span></a></span>
     <?php } else { ?>
       <p>Not Logged into Facebook</p>
-    <fb:login-button scope ='publish stream'</fb:login-button>
+    <fb:login-button scope ='publish_stream'></fb:login-button>
     <?php } ?>
 
 

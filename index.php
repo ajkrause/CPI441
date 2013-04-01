@@ -54,7 +54,10 @@ $userId = $facebook->getUser();
 			    if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				    {
 							document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
-					   // alert("request complete " + xmlhttp.responseText);
+					   //send the new high score to facebook
+						 FB.api("/me/scores?score=" + xmlhttp.responseText, "post", function(response){});
+						 //FB.api("/" + appID +"/scores/", "get", function(response){alert(response);});
+						 // alert("request complete " + xmlhttp.responseText);
 				    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
 				    }
 			    }
@@ -175,9 +178,10 @@ function fbLogout() {
 
         <div id="fb-root"></div>
         <script>
+					var appID = '312229638880822';
           window.fbAsyncInit = function() {
             FB.init({
-              appId      : '312229638880822', // App ID
+              appId      : appID, // App ID
               status     : true, // check login status
               cookie     : true, // enable cookies to allow the server to access the session
               xfbml      : true  // parse XFBML

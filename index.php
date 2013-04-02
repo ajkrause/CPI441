@@ -133,24 +133,7 @@ $userId = $facebook->getUser();
 				 {
 								echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
 				 }
-				 $attachment = array(
-                                                  'message' => 'this is my message',
-                                                  'name' => 'This is my demo Facebook application!',
-                         
-                                                   'caption' => "Caption of the Post",
-                                                   'link' => 'http://game.courses.asu.edu',
-                                                   'description' => 'this is a description',
-                                                   'picture' => 'http://mysite.com/pic.gif',
-                                                   'actions' => array(
-                                                   array(
-                                                           'name' => 'Get Search',
-                                                           'link' => 'http://game.gourses.asu.edu'
-                                                                 )
-                                                              )
-                                                          );
-
-
-                                           $result=$facebook->api('/me/feed/', 'post', $attachment);
+				 
 				}catch(FacebookApiException $e) {
 					$result = $e->getResult();
 					echo $result;
@@ -239,6 +222,24 @@ function fbLogout() {
              js.src = "//connect.facebook.net/en_US/all.js";
              ref.parentNode.insertBefore(js, ref);
            }(document));
+           
+           function postToFeed(){
+           var obj = {
+           	method: 'feed',
+           	redirect_uri: 'http://game.courses.asu.edu',
+           	link: 'https://developers.facebook.com/docs/reference/dialogs',
+           	picture: 'http://fbrell.com/f8.jpg',
+           	caption: 'Reference Documentation',
+           	description: 'Someone beat your High Score in Cabin Crashers! Play again!'
+           	
+           };
+           
+           function callback(response) {
+           	document.getElementById('msg').innerHTML = "Post ID: " + response['post_id'];
+           	
+           }
+           FB.ui(obj, callback);
+           }
         </script>
 				
 		<p id="textColor">click to select player</p>
@@ -250,8 +251,11 @@ function fbLogout() {
 			<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported
 		</audio>
 		<button type="button" onclick="updateHighScore(score)">Update Score</button>
+		<button type="button" onclick="postToFeed()">Post to Feed</button>
 		
 		<script>
+		
+		
 			function getUserId()
 			{
 				return <?php echo $userId; ?>;

@@ -37,6 +37,16 @@ $userId = $facebook->getUser();
 		
 	</head>
 	<script>
+		function updateLeaderBoard(data)
+		{
+			var board = document.getElementById("leaderboard");
+			board.innerHTML = "<th>Rank</th><th>Name</th><th>Score</th>";
+			for(var i= 0; i < data.length && i < 10; i++)
+			{
+				board.innerHTML += "<tr><td>" + (i+1) + "</td><td>" + data[i].user.name + "</td><td>" + data[i].score + "</td></tr>";
+			}
+
+		}
 	    function updateHighScore(score)
 	    {
 		    var xmlhttp;    
@@ -56,7 +66,8 @@ $userId = $facebook->getUser();
 							document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
 					   //send the new high score to facebook
 						 FB.api("/me/scores?score=" + xmlhttp.responseText, "post", function(response){});
-						 //FB.api("/" + appID +"/scores/", "get", function(response){alert(response);});
+						 //read the scores for your friends and update the leaderboard
+						 FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
 						 // alert("request complete " + xmlhttp.responseText);
 				    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
 				    }
@@ -172,7 +183,7 @@ function fbLogout() {
 <span id="fbLogout" onclick="fbLogout()"><a class="fb_button fb_button_medium"><span class="fb_button_text">Logout</span></a></span>
     <?php } else { ?>
       <p>Not Logged into Facebook</p>
-    <fb:login-button scope ='publish_stream'></fb:login-button>
+    <fb:login-button scope ='publish_stream, friends_games_activity, user_games_activity'></fb:login-button>
     <?php } ?>
 
 
@@ -186,6 +197,16 @@ function fbLogout() {
               cookie     : true, // enable cookies to allow the server to access the session
               xfbml      : true  // parse XFBML
             });
+				FB.getLoginStatus(function(response) {
+					if (response.status === 'connected') {
+						// connected
+						FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
+					} else if (response.status === 'not_authorized') {
+						// not_authorized;
+					} else {
+						// not_logged_in
+					}
+				 });
         FB.Event.subscribe('auth.login', function(response) {
           window.location.reload();
         });
@@ -218,6 +239,7 @@ function fbLogout() {
 			function resize() {
 				var width = window.innerWidth/2 - 500;
 				document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";
+				document.getElementById("tables").style.paddingLeft = width.toString() - 12 + "px";
 			}
 			function refresh(){
 				drawFloor();
@@ -239,9 +261,7 @@ function fbLogout() {
 		
 		<div id="centerCanvas" style="height: 630px;">
 		<span id="centerCanvas" style="height: 630px;">
-			<script>
-				resize();
-			</script>
+			
 			<!--<iframe src="capstonegame.php" height="624" width="1024" scrolling="no" frameborder="no">
 				<p>Your browser does not support iframes.</p>
 			</iframe>-->
@@ -262,17 +282,25 @@ function fbLogout() {
 
 		<script src="game.php"></script>
 		
-		<div><iframe src = "https://www.facebook.com/plugins/like.php?href=http://www.kkpsi.org/"
-		scrolling = "no" frameborder = "0"
-		style = "border:none; width:450px; height:80px;
-		margin-top: 0; margin-left: 0; background-color: white;">
-		Sorry your browser doesn't support inline frames
-		</iframe></div>
-		<div  style="padding-left: 500px;">
-		<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
-		<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
+		
+		<div id="tables">
+			<?php if($userId){ ?>
+				
+				<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
+				<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
+				<h2 style="color: #ffff00;">Friends Leaderboard</h2>
+				<table id="leaderboard"></table>
+				<?php } ?>
+				<br>
+				<div><iframe src = "https://www.facebook.com/plugins/like.php?href=http://game.courses.asu.edu/"
+					scrolling = "no" frameborder = "0">
+					Sorry your browser doesn't support inline frames
+					</iframe>
+				</div>
 		</div>
-			
+			<script>
+				resize();
+			</script>
 		<a href="example.htm" id="button3" class="buttonText">Tic Tac Toe</a>
 		<a href="http://austin.thautech.com" id="button3" class="buttonText">Austin</a>
 		<a href="collision.htm" id="button3" class="buttonText">collisions</a>

@@ -99,16 +99,16 @@ $userId = $facebook->getUser();
 					$randomnumarray[$i] = rand(0,$friendcount-5);
 						for($j=0; $j<$i; $j++){
 							while ($randomnumarray[$j] == $randomnumarray[$i]){
-								$randomnumarray[$i] = rand(0, $friendcount-5)
+								$randomnumarray[$i] = rand(0, $friendcount-5);
 								$j = 0;
 							}
 						}
 					}
-					$randomfriendnum = $randomnumarray[0]
-					$randomfriendnum1 = $randomnumarray[1]
-					$randomfriendnum2 = $randomnumarray[2]
-					$randomfriendnum3 = $randomnumarray[3]
-					$randomfriendnum4 = $randomnumarray[4]
+					$randomfriendnum = $randomnumarray[0];
+					$randomfriendnum1 = $randomnumarray[1];
+					$randomfriendnum2 = $randomnumarray[2];
+					$randomfriendnum3 = $randomnumarray[3];
+					$randomfriendnum4 = $randomnumarray[4];
 			
 					$randomfriend= $friends[$randomfriendnum];
 					

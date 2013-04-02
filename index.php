@@ -85,35 +85,37 @@ $userId = $facebook->getUser();
     <?php
 			if ($userId) {
 				try{
+					
 					$userInfo = $facebook->api('/' . $userId);
-					$attachment = array(
-                                                  'message' => 'this is my message',
-                                                  'name' => 'This is my demo Facebook application!',
-                                                   'caption' => "Caption of the Post",
-                                                   'link' => 'http://mylink.com',
-                                                   'description' => 'this is a description',
-                                                   'picture' => 'http://mysite.com/pic.gif',
-                                                   'actions' => array(
-                                                   array(
-                                                           'name' => 'Get Search',
-                                                           'link' => 'http://www.google.com'
-                                                                 )
-                                                              )
-                                                          );
-
-
-                                           $result=$facebook->api('/me/feed/', 'post', $attachment);
+					
 					
 					$friends=$facebook->api('/me/friends');
 					$friends=$friends['data'];
 					$friendcount = count($friends);
-					$randomfriendnum = rand(0,$friendcount-1);
+					
+					
+					
+					for($i=0; $i<=5; $i++){
+					$randomnumarray[$i] = rand(0,$friendcount-5);
+						for($j=0; $j<$i; $j++){
+							while ($randomnumarray[$j] == $randomnumarray[$i]){
+								$randomnumarray[$i] = rand(0, $friendcount-5)
+								$j = 0;
+							}
+						}
+					}
+					$randomfriendnum = $randomnumarray[0]
+					$randomfriendnum1 = $randomnumarray[1]
+					$randomfriendnum2 = $randomnumarray[2]
+					$randomfriendnum3 = $randomnumarray[3]
+					$randomfriendnum4 = $randomnumarray[4]
+			
 					$randomfriend= $friends[$randomfriendnum];
 					
-					$randomfriend2 = $friends[$randomfriendnum+1];
-					$randomfriend3 = $friends[$randomfriendnum+2];
-					$randomfriend4 = $friends[$randomfriendnum+3];
-					$randomfriend5 = $friends[$randomfriendnum+4];
+					$randomfriend2 = $friends[$randomfriendnum1];
+					$randomfriend3 = $friends[$randomfriendnum2];
+					$randomfriend4 = $friends[$randomfriendnum3];
+					$randomfriend5 = $friends[$randomfriendnum4];
 					echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
@@ -131,6 +133,24 @@ $userId = $facebook->getUser();
 				 {
 								echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
 				 }
+				 $attachment = array(
+                                                  'message' => 'this is my message',
+                                                  'name' => 'This is my demo Facebook application!',
+                         
+                                                   'caption' => "Caption of the Post",
+                                                   'link' => 'http://game.courses.asu.edu',
+                                                   'description' => 'this is a description',
+                                                   'picture' => 'http://mysite.com/pic.gif',
+                                                   'actions' => array(
+                                                   array(
+                                                           'name' => 'Get Search',
+                                                           'link' => 'http://game.gourses.asu.edu'
+                                                                 )
+                                                              )
+                                                          );
+
+
+                                           $result=$facebook->api('/me/feed/', 'post', $attachment);
 				}catch(FacebookApiException $e) {
 					$result = $e->getResult();
 					echo $result;

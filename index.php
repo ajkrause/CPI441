@@ -116,19 +116,12 @@ $userId = $facebook->getUser();
 					$randomfriend3 = $friends[$randomfriendnum2];
 					$randomfriend4 = $friends[$randomfriendnum3];
 					$randomfriend5 = $friends[$randomfriendnum4];
-					
 					echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
 					echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
 					$connected = true;
-					
-					$randomfriendID = $randomfriend['id'];
-					$randomfriendID2 = $randomfriend['id'];
-					$randomfriendID3 = $randomfriend['id'];
-					$randomfriendID4 = $randomfriend['id'];
-					$randomfriendID5 = $randomfriend['id'];
 					
 					$randomfriendimage = "http://graph.facebook.com/" . $randomfriend['id']  ."/picture";
 					$randomfriendimage2 = "http://graph.facebook.com/" . $randomfriend2['id']  ."/picture";
@@ -229,29 +222,11 @@ function fbLogout() {
              js.src = "//connect.facebook.net/en_US/all.js";
              ref.parentNode.insertBefore(js, ref);
            }(document));
-           		
-           		var friendPics = new Array();
-			var randomfriendID = new Array();
-			var connectedFacebook = false;
-			if("<?php echo $connected ?>"){
-			   friendPics.push("<?php echo $randomfriendimage ?>");
-			   friendPics.push("<?php echo $randomfriendimage2 ?>");
-			   friendPics.push("<?php echo $randomfriendimage3 ?>");
-			   friendPics.push("<?php echo $randomfriendimage4 ?>");
-			   friendPics.push("<?php echo $randomfriendimage5 ?>");
-			   randomfriendID.push("<?php echo $randomfriendID ?>");
-			   randomfriendID.push("<?php echo $randomfriendID2 ?>");
-			   randomfriendID.push("<?php echo $randomfriendID3 ?>");
-			   randomfriendID.push("<?php echo $randomfriendID4 ?>");
-			   randomfriendID.push("<?php echo $randomfriendID5 ?>");
-			   var randfriend = randomfriendID[Math.floor(Math.random() * randomfriendID.length)];
-			   connectedFacebook = true;
-			}			
+           
            function postToFeed(){
            var obj = {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
-           	to: 'randfriend'
            	link: 'https://developers.facebook.com/docs/reference/dialogs',
            	picture: 'http://fbrell.com/f8.jpg',
            	caption: 'Reference Documentation',
@@ -277,7 +252,7 @@ function fbLogout() {
 		</audio>
 		<button type="button" onclick="updateHighScore(score)">Update Score</button>
 		<button type="button" onclick="postToFeed()">Post to Feed</button>
-		
+		<br>
 		<script>
 		
 		
@@ -296,15 +271,23 @@ function fbLogout() {
 			window.onload = refresh;
 			window.onresize = resize;
 			
-			
+			var friendPics = new Array();
+			var connectedFacebook = false;
+			if("<?php echo $connected ?>"){
+			   friendPics.push("<?php echo $randomfriendimage ?>");
+			   friendPics.push("<?php echo $randomfriendimage2 ?>");
+			   friendPics.push("<?php echo $randomfriendimage3 ?>");
+			   friendPics.push("<?php echo $randomfriendimage4 ?>");
+			   friendPics.push("<?php echo $randomfriendimage5 ?>");
+			   connectedFacebook = true;
+			}			
 		</script>
 		
-		<div id="centerCanvas" style="height: 630px;">
+		<div  style="height: 630px; ">
+		<!--<span>
 		<span id="centerCanvas" style="height: 630px;">
-			
-			<!--<iframe src="capstonegame.php" height="624" width="1024" scrolling="no" frameborder="no">
-				<p>Your browser does not support iframes.</p>
-			</iframe>-->
+			-->
+		
 			<canvas id = "menu" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
@@ -317,8 +300,17 @@ function fbLogout() {
 			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-		</span>
+		<!--</span>-->
 		</div>
+		<div  style="height: 630px;">
+				<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
+				<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
+				<h2 style="color: #ffff00;">Friends Leaderboard</h2>
+				<table id="leaderboard"></table>
+		</div>
+		<!--</span>-->
+
+	
 
 		<script src="game.php"></script>
 		

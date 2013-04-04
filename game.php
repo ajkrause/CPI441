@@ -306,7 +306,7 @@ function init() {
         wall1.src = "art/house/Log1.png";
         wall2.src = "art/house/Log2.png";
         wall3.src = "art/house/Log3.png";
-        wall4.src = "art/house/log4.png";
+        wall4.src = "art/house/Log4.png";
         
         wallDamaged.src = "art/house/Log_Damaged.png";
         wallCritical.src = "art/house/Log_Critical.png";

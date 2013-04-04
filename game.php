@@ -38,13 +38,28 @@ var pulseOver = false;
 var pulseFriend = 0;
 var drawFriend = false;
 
-var characterImage;
+var newBear = 0;
+
+var blondeMale;
+var brunetteMale;
+var darkMale;
+var blondeFemale;
+var brunetteFemale;
+var darkFemale;
+
 var friendImage;
+
+var bearImage;
 var wall1;
 var wall2;
 var wall3;
 var wall4;
-var brokenWall;
+
+var wallDamaged;
+var wallCritical;
+var wallBroken;
+
+
 var grassLight;
 var grassDark;
 var grass;
@@ -52,12 +67,20 @@ var inside;
 var insideLight;
 var innerCorner;
 var outerCorner;
+
+var cornerBroken;
+var cornerCritical;
+var cornerDamaged;
+
 var logPoint1;
 var logPoint2;
+var splinters;
 var offset = 0;
+var bearOffset = 0;
 
 //how many characters to draw
 var numCharacters = 5;
+var characterValue = 0;
 
 var activePlayer = -1;
 var characterSelected = false;
@@ -72,6 +95,7 @@ var squareHeight = canvas.height/boardHeight;
 var board = new Array(boardWidth);
 
 var Characters = []; //set of pongs
+var Enemies = [];
 var neighbors = []; //neighbors
 var startNode;
 var endNode;
@@ -100,7 +124,7 @@ function object(index, health, type, opened, closed, g, f, h, parent, image, rot
         this.rotate = rotate;
 }
 
-function character(image, rotation, boardX, boardY, PosX, PosY, desiredPosX, desiredPosY, Path, power, mouseX, mouseY, moved){
+function character(image, rotation, boardX, boardY, PosX, PosY, desiredPosX, desiredPosY, Path, power, mouseX, mouseY, moved, friendNumber, speed){
         this.image = image;
         this.rotation = rotation;
         this.boardX = boardX;
@@ -114,6 +138,26 @@ function character(image, rotation, boardX, boardY, PosX, PosY, desiredPosX, des
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.moved = moved;
+        this.friendNumber = friendNumber;
+        this.speed = speed;
+}
+
+function enemy(image, type, startPosX, startPosY, posX, posY, desiredPosX, desiredPosY, rotation, damage, stage, speed, frame, translateX, translateY){
+        this.image = image;
+        this.type = type; //Bear, wolf, rabbit, etc
+        this.startPosX = startPosX;
+        this.startPosY = startPosY;
+        this.posX = posX;
+        this.posY = posY;
+        this.desiredPosX = desiredPosX;
+        this.desiredPosY = desiredPosY;
+        this.rotation = rotation;
+        this.damage = damage;
+        this.stage = stage;
+        this.speed = speed;
+        this.frame = frame;
+        this.translateX = translateX;
+        this.translateY = translateY;
 }
 
 //animation frame
@@ -158,7 +202,8 @@ function drawMenu(){
         
         if(!play){
                 var temp = Math.abs(Math.cos(pulseImage*Math.PI/180))*10;
-                ctxMenu.drawImage(menuImage, 0, 0, 1000, 600, 0, 0, 1000, 600);
+                ctxMenu.drawImage(grass, 0, 0, 1000, 600, 0, 0, 1000, 600);
+                ctxMenu.drawImage(menuImage, 0, 0, 972, 599, 175, 0, 672, 400);
                 if(pulseOver){
                         if(pulseImage >= 360){
                                 pulseImage = 0;
@@ -184,8 +229,10 @@ function menu(){
         ctxMenu = canvasMenu.getContext("2d");
         menuImage = new Image();
         playButtonImage = new Image();
-        menuImage.src = "gameHome.png";
+        grass = new Image();
+        menuImage.src = "art/house/LogoSimple.png";
         playButtonImage.src = "playGameImage.png";
+        grass.src = "art/house/Grass_Continuous_Grid2.png";
         
         drawMenu();
         stopMenu = setInterval(drawMenu, 30);
@@ -194,13 +241,13 @@ function menu(){
 function playGame(){
         refresh();
         drawWalls();
-        setInterval(drawWalls, 400);
+        setInterval(drawWalls, 200);
         gameLoop();
 }
 
 function init() {
         document.onkeydown = keyDown;
-        document.onmousedown = mouseDown;
+        document.onmouseup = mouseUp;
         document.onmousemove = mouseMove;
         
         c = document.getElementById("canvas");
@@ -213,40 +260,71 @@ function init() {
         ctxWalls = canvasWalls.getContext("2d");
         
         //Image variables
-        characterImage = new Image();
+        blondeMale = new Image();
+        brunetteMale = new Image();
+        darkMale = new Image();
+        blondeFemale = new Image();
+        brunetteFemale = new Image();
+        darkFemale = new Image();
+        
         friendImage = new Image();
+        
+        bearImage = new Image();
         wall1 = new Image();
         wall2 = new Image();
         wall3 = new Image();
         wall4 = new Image();
-        brokenWall = new Image();
+        
+        wallDamaged = new Image();
+        wallCritical = new Image();
+        wallBroken = new Image();
+        
         grassLight = new Image();
         grassDark = new Image();
-        grass = new Image();
         inside = new Image();
         insideLight = new Image();
         innerCorner = new Image();
         outerCorner = new Image();
+        
+        cornerCritical = new Image();
+        cornerDamaged = new Image();
+        cornerBroken = new Image();
+        
         logPoint1 = new Image();
         logPoint2 = new Image();
+        splinters = new Image();
         
         //Loading images
-        characterImage.src = "blonde_male.png";
-        friendImage.src = friendPics[4];
-        wall1.src = "tiles/Log1_Test.png";
-        wall2.src = "tiles/Log2_Test.png";
-        wall3.src = "tiles/Log3_Test.png";
-        wall4.src = "tiles/log4_Test.png";
-        brokenWall.src = "tiles/brokenWall_Test.png";
-        grassLight.src = "tiles/Grass_Light_Test.png";
-        grassDark.src = "tiles/Grass_Dark_Test.png";
-        grass.src = "grass_continuous.png";
-        inside.src = "tiles/Floor_Dark_Test.png";
-        insideLight.src = "tiles/Floor_Light_Test.png";
-        innerCorner.src = "tiles/LOG_InteriorCorner_Test.png";
-        outerCorner.src = "tiles/Log_ExteriorCorner_Test.png";
-        logPoint1.src = "tiles/Log_Point1_Test.png";
-        logPoint2.src = "tiles/Log_Point2_Test.png";
+        blondeMale.src = "art/characters/blonde_male.png";
+        brunetteMale.src = "art/characters/brunette_male.png";
+        darkMale.src = "art/characters/dark_male.png";
+        blondeFemale.src = "art/characters/blonde_female.png";
+        brunetteFemale.src = "art/characters/brunette_female.png";
+        darkFemale.src = "art/characters/black_hair_female.png";
+        
+        bearImage.src = "art/enemies/bear_sprite_sheet.png";
+        wall1.src = "art/house/Log1.png";
+        wall2.src = "art/house/Log2.png";
+        wall3.src = "art/house/Log3.png";
+        wall4.src = "art/house/log4.png";
+        
+        wallDamaged.src = "art/house/Log_Damaged.png";
+        wallCritical.src = "art/house/Log_Critical.png";
+        wallBroken.src = "art/house/Log_Destroyed.png";
+        
+        inside.src = "art/house/Floor_Dark_Test.png";
+        insideLight.src = "art/house/Floor_Light_Test.png";
+        //are these new?
+        innerCorner.src = "art/house/Log_Interior.png";
+        outerCorner.src = "art/house/Log_Exterior.png";
+        
+        cornerCritical.src = "art/house/Log_Interior_Critical.png";
+        cornerDamaged.src = "art/house/Log_Interior_Damaged.png";
+        cornerBroken.src = "art/house/Log_Interior_Destroyed.png";
+        
+        logPoint1.src = "art/house/Log_Point1_Test.png";
+        logPoint2.src = "art/house/Log_Point2_Test.png";
+        splinters.src = "art/house/splinter_spritesheet2.png";
 
         //Create 2D board
         //(0 == wall, 1 == outerfloor, 2 == character, 3 == innerfloor, 4 == enemy, 5 == logPoint)
@@ -333,40 +411,40 @@ function init() {
                 for(var x = roomXmin; x < roomXmax; x++){
                         if(board[x+1][y].index == 3 && (board[x-1][y].index == 1 || board[x-1][y].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //left wall
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                                 
                         }
                         if(board[x-1][y].index == 3 && (board[x+1][y].index == 1 || board[x+1][y].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //right wall
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                         }
                         if(board[x][y+1].index == 3 && (board[x][y-1].index == 1 || board[x][y-1].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //top wall
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                         }
                         if(board[x][y-1].index == 3 && (board[x][y+1].index == 1 || board[x][y+1].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //bottom wall
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                         }
                         //check
                         if(board[x-1][y-1].index == 3 && (board[x+1][y+1].index == 1 || board[x+1][y+1].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //bottom right corner
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                         }
                         //check
                         if(board[x+1][y-1].index == 3 && (board[x-1][y+1].index == 1 || board[x-1][y+1].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //bottom left corner
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                         }
                         //check
                         if(board[x-1][y+1].index == 3 && (board[x+1][y-1].index == 1 || board[x+1][y-1].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //top right corner
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                         }
                         //check		
                         if(board[x+1][y+1].index == 3 && (board[x-1][y-1].index == 1 || board[x-1][y-1].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //top left corner
-                                board[x][y].health = 0;
+                                board[x][y].health = 180;
                         }
                         if((board[x][y].index == 0 || board[x][y].index == 1) && 
                         (((board[x+1][y].index == 3 || board[x+2][y].index == 3) && board[x-1][y].index == 3) || 
@@ -441,40 +519,63 @@ function init() {
                         //bottom right
                         if(board[x][y].index == 0 && board[x][y-1].index == 0 && board[x-1][y].index == 0 && board[x-1][y-1].index == 3){
                                 if(numCharacters != 0){
-                                        board[x-1][y-1].index = 2;
-                                        Characters.push(new character(characterImage, 0, x-1, y-1, (squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), 
-                                        (squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), [], 1, 0, 0, false));
-                                        numCharacters = numCharacters - 1;
+                                        createCharacters(x-1, y-1);
                                 }
                         }
                         //bottom left
                         if(board[x][y].index == 0 && board[x][y-1].index == 0 && board[x+1][y].index == 0 && board[x+1][y-1].index == 3){
                                 if(numCharacters != 0){
-                                        board[x+1][y-1].index = 2;
-                                        Characters.push(new character(characterImage, 0, x+1, y-1, (squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), 
-                                        (squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y-1)) + (squareHeight/2), [], 1, 0, 0, false));
-                                        numCharacters = numCharacters - 1;
+                                        createCharacters(x+1, y-1);
                                 }
                         }
                         //top right
                         if(board[x][y].index == 0 && board[x-1][y].index == 0 && board[x][y+1].index == 0 && board[x-1][y+1].index == 3){
                                 if(numCharacters != 0){
-                                        board[x-1][y+1].index = 2;
-                                        Characters.push(new character(characterImage, 0, x-1, y+1, (squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), 
-                                        (squareWidth*(x-1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), [], 1, 0, 0, false));
-                                        numCharacters = numCharacters - 1;
+                                        createCharacters(x-1, y+1);
                                 }
                         }
                         //top left	
                         if(board[x][y].index == 0 && board[x+1][y].index == 0 && board[x][y+1].index == 0 && board[x+1][y+1].index == 3){
                                 if(numCharacters != 0){
-                                        board[x+1][y+1].index = 2;
-                                        Characters.push(new character(characterImage, 0, x+1, y+1, (squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), 
-                                        (squareWidth*(x+1)) + (squareWidth/2), (squareHeight*(y+1)) + (squareHeight/2), [], 1, 0, 0, false));
-                                        numCharacters = numCharacters - 1;
+                                        createCharacters(x+1, y+1);
                                 }
                         }
                 }
+        }
+        
+        function createCharacters(x, y){
+                board[x][y].index = 2;
+                var pic;
+                pic = new Image();
+                var check = randomInterval(0,5);
+                switch(check){
+                        case 0:
+                                pic.src = blondeMale.src;
+                                break;
+                        case 1:
+                                pic.src = brunetteMale.src;
+                                break;
+                        case 2: 
+                                pic.src = darkMale.src;
+                                break;
+                        case 3:
+                                pic.src = blondeFemale.src;
+                                break;
+                        case 4:
+                                pic.src = brunetteFemale.src;
+                                break;
+                        case 5:
+                                pic.src = darkFemale.src;
+                                break;
+                        default:
+                                pic.src = brunetteMale.src;
+                                break;
+                }
+                Characters.push(new character(pic, 0, x, y, (squareWidth*x) + (squareWidth/2), (squareHeight*y) + (squareHeight/2), 
+                (squareWidth*x) + (squareWidth/2), (squareHeight*y) + (squareHeight/2), [], 1, 0, 0, false, characterValue, 2.0));
+                numCharacters = numCharacters - 1;
+                characterValue++;
+                
         }
         
         //Get image and rotation
@@ -528,18 +629,9 @@ function keyDown(e) {
         if(!e) {
                 e = window.event;
         }
-        //h key for test
-        else if(e.keyCode == 72){
-                var path = findPath(Characters[0].boardX, Characters[0].boardY, 15, 16);
-                alert(path);
-        }
-        else if(e.keyCode == 107){
-                board[13][10].index = 2;
-                Characters.push({boardX: 13, boardY: 10, PosX: (squareWidth*13) + (squareWidth/2), PosY: (squareHeight*10) + (squareHeight/2), Rotate: 0, power: 1});
-        }
 }
 
-function mouseDown(e){
+function mouseUp(e){
         mouseX = e.clientX + document.body.scrollLeft +
         document.documentElement.scrollLeft - c.offsetLeft;
         mouseY = e.clientY + document.body.scrollTop +
@@ -548,6 +640,7 @@ function mouseDown(e){
         //Mouse click on play game
         if(!play && mouseX <= 560 && mouseX >= 440 && mouseY <= 472 && mouseY >= 400){
                 play = !play;
+                var place=setTimeout(placeBear, 500);
         }
         
         //Mouse click on play/pause...or mute/unmute
@@ -612,23 +705,37 @@ function gameSelection(){
                 var y2 = (((squareHeight-(mouseY%squareHeight))+mouseY)/squareHeight)-1;
                 var x1 = Math.round(x2);
                 var y1 = Math.round(y2);
-                
+
                 //move active player
                 if(board[x1][y1].index == 3 && activePlayer != -1){
                         board[Characters[activePlayer].boardX][Characters[activePlayer].boardY].index = 3;
                         Characters[activePlayer].mouseX = x1;
                         Characters[activePlayer].mouseY = y1;
                         Characters[activePlayer].moved = true;
+                        openList = [];
+                        neighbors = [];
                         var path = findPath(Characters[activePlayer].boardX, Characters[activePlayer].boardY, x1, y1);
-                        alert(path);
                         Characters[activePlayer].Path = path;
-                        alert(Characters[activePlayer].Path);
                         Characters[activePlayer].desiredPosX = ((squareWidth*Characters[activePlayer].Path[1][0]) + (squareWidth/2));
                         Characters[activePlayer].desiredPosY = ((squareHeight*Characters[activePlayer].Path[1][1]) + (squareHeight/2));
                         Characters[activePlayer].Path = Characters[activePlayer].Path.splice(2, Characters[activePlayer].Path.length-2);
-                        board[x1][y1].index = 2;
+                        board[x1][y1].index = -1;
                         activePlayer = -1;
                         characterSelected = false;
+                        resetBoard();
+                }
+        }
+}
+
+function resetBoard(){
+        for(var y = roomYmin; y < roomYmax; y++){
+                for(var x = roomXmin; x < roomXmax; x++){
+                        board[x][y].opened = false;
+                        board[x][y].closed = false;
+                        board[x][y].g = 0;
+                        board[x][y].f = 0;
+                        board[x][y].h = 0;
+                        board[x][y].parent = [];
                 }
         }
 }
@@ -636,13 +743,95 @@ function gameSelection(){
 function gameLoop() {
         draw();
         moveCharacter();
+        moveEnemy();
         requestAnimFrame(gameLoop);
+}
+
+function placeBear(){
+        var y1 = randomInterval(roomYmin+1, roomYmax-1);
+        var x1 = randomInterval(roomXmin+1, roomXmax-1);
+        var dir = randomInterval(0, 3);
+        
+        //Attack from left
+        if(dir == 0){
+                for(var i = roomXmin; i < roomXmax; i++){
+                        if(board[i][y1].index == 0){
+                                if(board[i][y1].type == 4){
+                                        Enemies.push(new enemy(bearImage, 0, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, 50, 0, 2.59, 0, -squareWidth, squareHeight*(5/8)));
+                                        break;
+                                }
+                                else{
+                                        placeBear();
+                                        break;
+                                }
+                        }
+                }
+        }
+        
+        //Attack from top
+        else if(dir == 1){
+                for(var i = roomYmin; i < roomYmax; i++){
+                        if(board[x1][i].index == 0){
+                                if(board[x1][i].type == 6){
+                                        Enemies.push(new enemy(bearImage, 0, x1*squareWidth, -squareHeight, x1*squareWidth, -squareHeight, x1*squareWidth, (i-1)*squareHeight, 0, 50, 0, 0.59, 0, squareWidth*(3/8), 0));
+                                        break;
+                                }
+                                else{
+                                        placeBear();
+                                        break;
+                                }
+                        }
+                }
+        }
+        
+        //Attack from right
+        else if(dir == 2){
+                for(var i = roomXmax; i > roomXmin; i--){
+                        if(board[i][y1].index == 0){
+                                if(board[i][y1].type == 5){
+                                        Enemies.push(new enemy(bearImage, 0, canvas.width, y1*squareHeight, canvas.width, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, 50, 0, 0.59, 0, squareWidth*2, squareHeight*(3/8)));
+                                        break;
+                                }
+                                else{
+                                        placeBear();
+                                        break;
+                                }
+                        }
+                }
+        }
+        
+        //Attack from bottom
+        else if(dir == 3){
+                for(var i = roomYmax; i > roomYmin; i--){
+                        if(board[x1][i].index == 0){
+                                if(board[x1][i].type == 7){
+                                        Enemies.push(new enemy(bearImage, 0, x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, (i-1)*squareHeight, 180, 50, 0, 0.59, 0, squareWidth*(5/8), squareHeight*3));
+                                        break;
+                                }
+                                else{
+                                        placeBear();
+                                        break;
+                                }
+                        }
+                }
+        }
+}
+
+function moveEnemy(position){
+        for(var x = 0; x < Enemies.length; x++){
+                if(Enemies[x].posX != Enemies[x].desiredPosX || Enemies[x].posY != Enemies[x].desiredPosY){
+                        var set = animate(Enemies[x].posX, Enemies[x].posY, Enemies[x].desiredPosX, Enemies[x].desiredPosY, Enemies[x].rotation, Enemies[x].speed);
+                        Enemies[x].posX = set[0];
+                        Enemies[x].posY = set[1];
+                        Enemies[x].rotate = set[2];
+                }
+        }
 }
 
 function moveCharacter(){
         for(var x = 0; x < Characters.length; x++){
                 if(Characters[x].PosX != Characters[x].desiredPosX || Characters[x].PosY != Characters[x].desiredPosY){
-                        var set = animate(Characters[x].PosX, Characters[x].PosY, Characters[x].desiredPosX, Characters[x].desiredPosY, Characters[x].rotate);
+                        var set = animate(Characters[x].PosX, Characters[x].PosY, Characters[x].desiredPosX, Characters[x].desiredPosY, Characters[x].rotate, Characters[x].speed);
                         Characters[x].PosX = set[0];
                         Characters[x].PosY = set[1];
                         Characters[x].rotate = set[2];
@@ -659,7 +848,37 @@ function moveCharacter(){
                                         Characters[x].boardX = Characters[x].mouseX;
                                         Characters[x].boardY = Characters[x].mouseY;
                                         Characters[x].moved = false;
+                                        
+                                        if(board[Characters[x].boardX + 1][Characters[x].boardY - 1].type == 1){
+                                                Characters[x].rotate = 45;
+                                        }
+                                        else if(board[Characters[x].boardX + 1][Characters[x].boardY + 1].type == 2){
+                                                Characters[x].rotate = 135;
+                                        }
+                                        else if(board[Characters[x].boardX - 1][Characters[x].boardY - 1].type == 0){
+                                                Characters[x].rotate = 315;
+                                        }
+                                        else if(board[Characters[x].boardX - 1][Characters[x].boardY + 1].type == 3){
+                                                Characters[x].rotate = 225;
+                                        }
+                                        //top
+                                        else if(board[Characters[x].boardX][Characters[x].boardY - 1].index == 0){
+                                                Characters[x].rotate = 0;
+                                        }
+                                        //left
+                                        else if(board[Characters[x].boardX + 1][Characters[x].boardY].index == 0){
+                                                Characters[x].rotate = 90;
+                                        }
+                                        //bottom
+                                        else if(board[Characters[x].boardX][Characters[x].boardY + 1].index == 0){
+                                                Characters[x].rotate = 180;
+                                        }
+                                        //right
+                                        else if(board[Characters[x].boardX - 1][Characters[x].boardY].index == 0){
+                                                Characters[x].rotate = 270;
+                                        }
                                 }
+                                board[Characters[x].boardX][Characters[x].boardY].index = 2;
                         }
                 }
         }
@@ -716,15 +935,25 @@ function drawWalls() {
                         
                                 ctxWalls.translate((squareWidth*x)+(squareWidth/2), (squareHeight*y)+(squareHeight/2));
                                 //Walls
-                                if(board[x][y].index == 0){
+                                if(board[x][y].index == 0 && board[x][y].health > 0){
                                         ctxWalls.rotate(board[x][y].rotate*Math.PI/180);
                                         ctxWalls.drawImage(board[x][y].image, 0, 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
                                         ctxWalls.rotate(-board[x][y].rotate*Math.PI/180);	
                                 }
+                                
+                                if(board[x][y].health < 0){
+                                        //end
+                                        alert("YOU LOSE!!!!!");
+                                }
+                                
                                 ctxWalls.translate(-((squareWidth*x)+(squareWidth/2)), -((squareHeight*y)+(squareHeight/2)));
                         }
                 }
         }
+}
+
+function changeStage(x){
+        Enemies[x].stage++;
 }
 
 function draw() {
@@ -741,6 +970,98 @@ function draw() {
         if(offset == 60){
                 offset = 0;
         }
+        if(newBear == 240){
+                newBear = 0;
+                placeBear();
+        }
+
+        for(var x = 0; x < Enemies.length; x++){
+                ctx.save();
+                ctx.translate(Math.floor(Enemies[x].posX+Enemies[x].translateX), Math.floor(Enemies[x].posY+Enemies[x].translateY));
+                ctx.rotate(Enemies[x].rotation*(Math.PI/180));
+                if(Enemies[x].posX != Enemies[x].desiredPosX || Enemies[x].posY != Enemies[x].desiredPosY){
+                        if(Enemies[x].type == 0){
+                                if(Enemies[x].stage == 0){
+                                        var test = Math.floor(Enemies[x].frame/7);
+                                        ctx.drawImage(Enemies[x].image, 50*test, 0, 50, 50, -squareWidth, -squareHeight, squareWidth*2, squareHeight*2);
+                                        if(Enemies[x].frame == 55){
+                                                Enemies[x].frame = 0;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 2){
+                                        var test = Math.floor(Enemies[x].frame/5);
+                                        ctx.drawImage(Enemies[x].image, 50*test, 0, 50, 50, -squareWidth, -squareHeight, squareWidth*2, squareHeight*2);
+                                        if(Enemies[x].frame == 39){
+                                                Enemies[x].frame = 0;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                        }
+                }
+                else{
+                        if(Enemies[x].type == 0){
+                                if(Enemies[x].stage == 0){
+                                        var test = Math.floor(Enemies[x].frame/7);
+                                        ctx.drawImage(Enemies[x].image, 50*test, 0, 50, 50, -squareWidth, -squareHeight, squareWidth*2, squareHeight*2);
+                                        Enemies[x].stage = 1;
+                                        Enemies[x].frame = 0;
+                                }
+                                else if(Enemies[x].stage == 1){
+                                        var test = Math.floor(Enemies[x].frame/8);
+                                        if(Enemies[x].frame == 60){
+                                                if(Enemies[x].rotation == 270){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                }
+                                                else if(Enemies[x].rotation == 180){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)+1].health -= Enemies[x].damage;
+                                                }
+                                                else if(Enemies[x].rotation == 90){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                }
+                                                else if(Enemies[x].rotation == 0){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)+1].health -= Enemies[x].damage;
+                                                }
+                                        }
+                                        if(test >= 9 && test <= 12){
+                                                ctx.translate(0, squareHeight/2);
+                                                ctx.rotate(180*(Math.PI/180));
+                                                ctx.drawImage(splinters, 25*(test-9), 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                                ctx.rotate(-180*(Math.PI/180));
+                                                ctx.translate(0, -squareHeight/2);
+                                        }
+                                        ctx.drawImage(Enemies[x].image, 50*test, 51, 50, 49, -squareHeight, -squareWidth, squareWidth*2, squareHeight*2);
+                                        if(Enemies[x].frame == 125){
+                                                Enemies[x].frame = 0;
+                                                Enemies[x].stage = 2;
+                                                Enemies[x].speed = 1.5;
+                                                Enemies[x].desiredPosX = Enemies[x].startPosX;
+                                                Enemies[x].desiredPosY = Enemies[x].startPosY;
+                                                Enemies[x].rotation -= 180;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 2){
+                                        Enemies[x].stage = 3;
+                                }
+                        }
+                }
+                ctx.restore();
+        }
+        
+        for(var i = 0; i < Enemies.length; i++){
+                if(Enemies[i].stage == 3){
+                        Enemies.splice(i, 1);
+                }
+        }
+        
+        document.getElementById('colorTitle').innerHTML = Enemies.length;
         
         //Highlight selected character
         if(characterSelected){
@@ -800,29 +1121,27 @@ function draw() {
                 ctx.rotate((Characters[i].rotate)*Math.PI/180);
                 if(Characters[i].PosX != Characters[i].desiredPosX || Characters[i].PosY != Characters[i].desiredPosY){
                         var test = Math.floor(offset/8);
-                        ctx.drawImage(Characters[i].image, 142.222*(test+1), 0, 142.22, 128, -(squareHeight/2), -(squareWidth/2), squareHeight, squareWidth);
+                        ctx.drawImage(Characters[i].image, 27.77*(test+1), 0, 27.77, 25, -(squareHeight/2), -(squareWidth/2), squareHeight, squareWidth);
                 }
                 else{
-                        ctx.drawImage(Characters[i].image, 0, 0, 128, 128, -(squareHeight/2), -(squareWidth/2), squareHeight, squareWidth);
+                        ctx.drawImage(Characters[i].image, 0, 0, 25, 25, -(squareHeight/2), -(squareWidth/2), squareHeight, squareWidth);
                 }
                 ctx.translate(Characters[i].PosX, Characters[i].PosY);
                 ctx.restore();
         }
         offset += 1;
+        newBear += 1;
         
-        if(drawFriend && connectedFacebook){
-                ctx.drawImage(friendImage, Math.floor(moveX/25)*25-3, Math.floor(moveY/25)*25-33, 31, 31);
-        }
-        
-        rotate = rotate + 3;
-        
-        //update score
-        ctx.save();
-        ctx.font="40px Georgia";
-        ctx.fillStyle ="#000000";
-        score++;
-        ctx.fillText("Score: " + Math.round(score / 6), 20, canvas.height-50);
-        ctx.restore();
+        /*if(drawFriend && connectedFacebook){
+                var xSnap = Math.floor(moveX/25);
+                var ySnap = Math.floor(moveY/25);
+                for(var i = 0; i < Characters.length; i++){
+                    if(Characters[i].boardX == xSnap && Characters[i].boardY == ySnap){
+                        friendImage.src = friendPics[Characters[i].friendNumber];
+                    }
+                }
+                ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
+        }*/
 }
 
 function initializeWalls(type){
@@ -841,11 +1160,14 @@ function initializeWalls(type){
 function updateWalls(type, health, x, y){
         if(type <= 3 && type >= 0){
                 switch(true){
-                        case ((health>=0) && (health<119)):
-                                return outerCorner;
+                        case (health < 0):
+                                return cornerBroken;
                                 break;
-                        case ((health>=120) && (health<180)):
-                                return brokenWall;
+                        case ((health>=0) && (health<89)):
+                                return cornerCritical;
+                                break;
+                        case ((health>=90) && (health<180)):
+                                return cornerDamaged;
                                 break;
                         default:
                                 return outerCorner;
@@ -854,11 +1176,11 @@ function updateWalls(type, health, x, y){
         }
         else if(type <= 11 && type >= 8){
                 switch(true){
-                        case ((health>=0) && (health<119)):
-                                return innerCorner;
+                        case ((health>=0) && (health<89)):
+                                return wallDamaged;
                                 break;
-                        case ((health>=120) && (health<180)):
-                                return brokenWall;
+                        case ((health>=90) && (health<180)):
+                                return wallDamaged;
                                 break;
                         default:
                                 return innerCorner;
@@ -867,19 +1189,17 @@ function updateWalls(type, health, x, y){
         }
         else{
                 switch(true){
-                                case ((health>=0) && (health<119)):
-                                        if(board[x][y].image != brokenWall){
-                                                return board[x][y].image;
-                                        }
-                                        else{
-                                                return randomWall(randomInterval(1, 4));
-                                        }
+                                case (health < 0):
+                                        return wallBroken;
                                         break;
-                                case ((health>=120) && (health<180)):
-                                        return brokenWall;
+                                case ((health >= 0) && (health<89)):
+                                        return wallCritical;
+                                        break;
+                                case ((health>=90) && (health<180)):
+                                        return wallDamaged;
                                         break;
                                 default:
-                                        if(board[x][y].image != brokenWall){
+                                        if(board[x][y].image != wallDamaged){
                                                 return board[x][y].image;
                                         }
                                         else{
@@ -930,25 +1250,25 @@ function findRotation(type){
                         return 180;
                         break;
                 default:
-                        alert("Wall type unknown");
+                        //alert("Wall type unknown");
                         break;
         }
         return null;
 }
 
-function animate(PosX, PosY, PosXDesired, PosYDesired, rotate){
+function animate(PosX, PosY, PosXDesired, PosYDesired, rotate, speed){
         if(PosX != PosXDesired || PosY != PosYDesired){
                 var deltaY, deltaX;
                 deltaY = PosYDesired - PosY;
                 deltaX = PosXDesired - PosX;
                 rotate = (Math.atan2(deltaY, deltaX) * 180/Math.PI)+90;
                 
-                var temp1 = (Math.sin((rotate)*Math.PI/180))*2;
-                var temp2 = (Math.cos((rotate)*Math.PI/180))*2;
+                var temp1 = (Math.sin((rotate)*Math.PI/180))*speed;
+                var temp2 = (Math.cos((rotate)*Math.PI/180))*speed;
                 var dist = Math.sqrt(((PosXDesired-PosX)*(PosXDesired-PosX))
                                      + ((PosYDesired-PosY)*(PosYDesired-PosY)));
                 
-                if(dist < 2.0) {
+                if(dist < speed) {
                         PosX = PosXDesired;
                         PosY = PosYDesired;	
                 }
@@ -983,16 +1303,22 @@ function findPath(startX, startY, endX, endY){
         board[startX][startY].opened = true;
 
         while(openList.count != 0){
+        //while(openList.length != 0){
                 //pop the position of the node which has the minimum 'f' value
+                //alert(openList);
                 var node = openList.pop();
                 board[node[0]][node[1]].closed = true;
 
                 if(node[0] == endX && node[1] == endY){
                         var path = [[node[0], node[1]]];
+                        //alert(path);
                         var par = board[node[0]][node[1]].parent;
                         while (par.length != 0) {
+                                var node1 = node;
                                 node = board[node[0]][node[1]].parent;
+                                board[node1[0]][node1[1]].parent = [];
                                 path.push([node[0], node[1]]);
+                                //alert(path);
                                 par = board[node[0]][node[1]].parent;
                         }
                         return path.reverse();
@@ -1037,7 +1363,10 @@ function identifySuccessors(x, y){
                 
                         if(!board[jx][jy].opened || ng < board[jx][jy].g){
                                 board[jx][jy].g = ng;
-                                board[jx][jy].h = board[jx][jy].h || Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])));
+                                //board[jx][jy].h = board[jx][jy].h || Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])));
+                                if(board[jx][jy].h < Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])))){
+                                        board[jx][jy].h = Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])))
+                                }
                                 //cost of moving from[x,y] to the jump point
                                 board[jx][jy].f = board[jx][jy].g + board[jx][jy].h;
                                 board[jx][jy].parent = [x, y];
@@ -1045,7 +1374,8 @@ function identifySuccessors(x, y){
                                 if(!board[jx][jy].opened){
                                         openList.push([jx, jy]);
                                         //sort openList in reverse order on f value
-                                        openList.sort(function(a,b) {return board[b[0]][b[1]].f-board[a[0]][b[1]].f});
+                                        //b[0]b[1] - a[0]b[1]
+                                        openList.sort(function(a,b) {return board[b[0]][b[1]].f-board[a[0]][a[1]].f});
                                         board[jx][jy].opened = true;
                                 }
                                 else{
@@ -1068,7 +1398,7 @@ function jump(x, y, px, py){
         var jy;
 
         //if your in a wall
-        if(board[x][y].index == 0){
+        if(board[x][y].index == 0 || board[x][y].index == 2){
                 return null;
         }
         //if your at the end
@@ -1079,8 +1409,10 @@ function jump(x, y, px, py){
         //check for forced neighbors
         //along the diagonal
         if(dx != 0 && dy != 0){
-                if((board[x-dx][y+dy].index != 0 && board[x-dx][y].index == 0) ||
-                (board[x+dx][y-dy].index != 0 && board[x][y-dy].index == 0)){
+                if(((board[x-dx][y+dy].index != 0 && board[x-dx][y+dy].index != 2) && 
+                (board[x-dx][y].index == 0 || board[x-dx][y].index == 2)) ||
+                ((board[x+dx][y-dy].index != 0 && board[x+dx][y-dy].index != 2) && 
+                (board[x][y-dy].index == 0 || board[x][y-dy].index == 2))){
                         return[x, y];
                 }
         }
@@ -1088,14 +1420,18 @@ function jump(x, y, px, py){
         else{
                 //vertical
                 if(dx != 0){
-                        if((board[x+dx][y+1].index != 0 && board[x][y+1].index == 0) ||
-                        (board[x+dx][y-1].index != 0 && board[x][y-1].index == 0)){
+                        if(((board[x+dx][y+1].index != 0 && board[x+dx][y+1].index != 2) && 
+                        (board[x][y+1].index == 0 || board[x][y+1].index == 2)) ||
+                        ((board[x+dx][y-1].index != 0 && board[x+dx][y-1].index != 2) && 
+                        (board[x][y-1].index == 0 || board[x][y-1].index == 2))){
                                 return[x, y];
                         }
                 }
                 else{
-                        if((board[x+1][y+dy].index != 0 && board[x+1][y].index == 0) ||
-                        (board[x-1][y+dy].index != 0 && board[x-1][y].index == 0)){
+                        if(((board[x+1][y+dy].index != 0 && board[x+1][y+dy].index != 2) && 
+                        (board[x+1][y].index == 0 || board[x+1][y].index == 2)) ||
+                        ((board[x-1][y+dy].index != 0 && board[x-1][y+dy].index != 2) && 
+                        (board[x-1][y].index == 0 || board[x-1][y].index == 2))){
                                 return[x, y];
                         }
                 }
@@ -1112,7 +1448,7 @@ function jump(x, y, px, py){
 
         //moving diagonally, must make sure one of the vertical/horivontal
         //neighbors is open to allow the path
-        if(board[x+dx][y].index != 0 || board[x][y+dy].index != 0){
+        if((board[x+dx][y].index != 0) || (board[x][y+dy].index != 0)){
                 return jump(x+dx, y+dy, x, y);
         }
         else{
@@ -1133,23 +1469,25 @@ function findNeighbors(x, y){
                 //search diagonally 
                 if(dx != 0 && dy != 0){
                         //vertical
-                        if(board[x][y+dy].index != 0){
+                        if(board[x][y+dy].index != 0 && board[x][y+dy].index != 2){
                                 neighbors.push({xpos: x, ypos: y+dy});
                         }	
                         //horizontal
-                        if(board[x+dx][y].index != 0){
+                        if(board[x+dx][y].index != 0 && board[x+dy][y].index != 2){
                                 neighbors.push({xpos:x+dx, ypos: y});
                         }
                         //diagonal
-                        if(board[x+dx][y+dy].index != 0){
+                        if(board[x+dx][y+dy].index != 0 && board[x+dx][y+dy].index != 2){
                                 neighbors.push({xpos:x+dx, ypos: y+dy});
                         }
                         //forced neightbor
-                        if(board[x-dx][y].index == 0 && board[x][y+dy].index != 0){
+                        if((board[x-dx][y].index == 0 || board[x-dx][y].index == 2) && 
+                        (board[x][y+dy].index != 0 && board[x][y+dy].index != 2)){
                                 neighbors.push({xpos:x-dx, ypos: y+dy});
                         }
                         //forced neightbor
-                        if(board[x][y-dy].index == 0 && board[x+dx][y].index != 0){
+                        if((board[x][y-dy].index == 0 || board[x][y-dy].index == 2) && 
+                        (board[x+dx][y].index != 0 && board[x+dx][y].index != 2)){
                                 neighbors.push({xpos: x+dx, ypos: y-dy});
                         }
                 }
@@ -1157,27 +1495,27 @@ function findNeighbors(x, y){
                 else{
                         //vertical
                         if(dx == 0){
-                                if(board[x][y+dy].index != 0){
-                                        if(board[x][y+dy].index != 0){
+                                if(board[x][y+dy].index != 0 && board[x][y+dy].index != 2){
+                                        if(board[x][y+dy].index != 0 && board[x][y+dy].index != 2){
                                                 neighbors.push({xpos: x, ypos: y+dy});
                                         }
-                                        if(board[x+1][y].index == 0){
+                                        if(board[x+1][y].index == 0 || board[x+1][y].index == 2){
                                                 neighbors.push({xpos: x+1, ypos: y+dy});
                                         }
-                                        if(board[x-1][y].index == 0){
+                                        if(board[x-1][y].index == 0 || board[x-1][y].index == 2){
                                                 neighbors.push({xpos: x-1, ypos: y+dy});
                                         }
                                 }
                         }
                         else{
-                                if(board[x+dx][y].index != 0){
-                                        if(board[x+dx][y].index != 0){
+                                if(board[x+dx][y].index != 0 && board[x+dx][y].index != 2){
+                                        if(board[x+dx][y].index != 0 && board[x+dx][y].index != 2){
                                                 neighbors.push({xpos: x+dx, ypos: y});
                                         }
-                                        if(board[x][y+1].index == 0){
+                                        if(board[x][y+1].index == 0 || board[x][y+1].index == 2){
                                                 neighbors.push({xpos: x+dx, ypos: y+1});
                                         }
-                                        if(board[x][y-1].index == 0){
+                                        if(board[x][y-1].index == 0 || board[x][y-1].index == 2){
                                                 neighbors.push({xpos: x+dx, ypos: y-1});
                                         }
                                 }
@@ -1185,28 +1523,28 @@ function findNeighbors(x, y){
                 }
         }
         else{
-                if(board[x][y-1].index != 0){
+                if(board[x][y-1].index != 0 && board[x][y-1].index != 2){
                         neighbors.push({xpos: x, ypos: y-1});
                 }	
-                if(board[x+1][y].index != 0){
+                if(board[x+1][y].index != 0 && board[x+1][y].index != 2){
                         neighbors.push({xpos: x+1, ypos: y});
                 }
-                if(board[x][y+1].index != 0){
+                if(board[x][y+1].index != 0 && board[x][y+1].index != 2){
                         neighbors.push({xpos: x, ypos: y+1});
                 }
-                if(board[x-1][y].index != 0){
+                if(board[x-1][y].index != 0 && board[x-1][y].index != 2){
                         neighbors.push({xpos: x-1, ypos: y});
                 }
-                if(board[x-1][y-1].index != 0){
+                if(board[x-1][y-1].index != 0 && board[x-1][y-1].index != 2){
                         neighbors.push({xpos: x-1, ypos: y-1});
                 }
-                if(board[x+1][y-1].index != 0){
+                if(board[x+1][y-1].index != 0 && board[x+1][y-1].index != 2){
                         neighbors.push({xpos: x+1, ypos: y-1});
                 }
-                if(board[x+1][y+1].index != 0){
+                if(board[x+1][y+1].index != 0 && board[x+1][y+1].index != 2){
                         neighbors.push({xpos: x+1, ypos: y+1});
                 }
-                if(board[x-1][y+1].index != 0){
+                if(board[x-1][y+1].index != 0 && board[x-1][y+1].index != 2){
                         neighbors.push({xpos: x-1, ypos: y+1});
                 }	
         }

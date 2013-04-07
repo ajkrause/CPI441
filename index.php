@@ -27,7 +27,7 @@ $userId = $facebook->getUser();
 		mysql_close($dbhandle);
 		//fetch tha data from the database
 		while ($row = mysql_fetch_array($result)) {
-		   echo "ID:".$row{'ID'}." Name:".$row{'Name'}." ".$row{'Score'}."<br>";
+		   //echo "ID:".$row{'ID'}." Name:".$row{'Name'}." ".$row{'Score'}."<br>";
 		}
 ?>
 <html xmlns:fb="https://www.facebook.com/2008/fbml">
@@ -43,6 +43,8 @@ $userId = $facebook->getUser();
 			board.innerHTML = "<th>Rank</th><th>Name</th><th>Score</th>";
 			for(var i= 0; i < data.length && i < 10; i++)
 			{
+				leadernames[i] = data[i].user.name;
+				leaderscores[i] = data[i].score;
 				board.innerHTML += "<tr><td>" + (i+1) + "</td><td>" + data[i].user.name + "</td><td>" + data[i].score + "</td></tr>";
 			}
 
@@ -200,7 +202,8 @@ function fbLogout() {
 					var hscore =  <?php echo $hscore ?>;
 					var gamesplayed = <?php echo $gamesplayed; ?>;
 					var newgame = true;
-					
+					var leadernames = new Array();
+					var leaderscores = new Array();
 					var appID = '312229638880822';
           window.fbAsyncInit = function() {
             FB.init({
@@ -309,7 +312,7 @@ function fbLogout() {
 			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-			<canvas id="UICanvas" height = "600" width="200" style="position: absolute; left: 1012px;"></canvas>
+			<canvas id="UICanvas" height = "600" width="300" style="position: absolute; left: 1012px;"></canvas>
 			
 		<!--</span>-->
 		</div>

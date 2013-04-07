@@ -197,6 +197,7 @@ menu();
 init();
 
 function drawMenu(){
+        drawUI();
         ctxMenu.clearRect(0, 0, canvasMenu.width, canvasMenu.height);
         ctxMenu.beginPath();
         
@@ -943,7 +944,19 @@ function drawWalls() {
                                 
                                 if(board[x][y].health < 0){
                                         //end
-                                        alert("YOU LOSE!!!!!");
+                                        if(newgame)
+                                        {
+                                          updateHighScore(score);
+                                          
+                                          if(score > hscore)
+                                          {
+                                            hscore = score;
+                                          }
+                                          score = 0;
+                                          
+                                          alert("YOU LOSE!!!!!");
+                                          newgame = false;
+                                        }
                                 }
                                 
                                 ctxWalls.translate(-((squareWidth*x)+(squareWidth/2)), -((squareHeight*y)+(squareHeight/2)));
@@ -957,6 +970,8 @@ function changeStage(x){
 }
 
 function draw() {
+        score++;
+        drawUI();
         ctx.save();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         

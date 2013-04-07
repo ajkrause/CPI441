@@ -17,9 +17,9 @@ $userId = $facebook->getUser();
 		//connection to the database
 		$dbhandle = mysql_connect($hostname, $username, $password) 
 		  or die("Unable to connect to MySQL");
-		echo "Connected to MySQL<br>";
+	//	echo "Connected to MySQL<br>";
 
-		printf("MySQL server version: %s\n", mysql_get_server_info());
+		//printf("MySQL server version: %s\n", mysql_get_server_info());
 
 
 		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
@@ -50,7 +50,7 @@ $userId = $facebook->getUser();
 	    function updateHighScore(score)
 	    {
 		    var xmlhttp;    
-		    
+		    gamesplayed++;
 		    if (window.XMLHttpRequest)
 			    {// code for IE7+, Firefox, Chrome, Opera, Safari
 			    xmlhttp=new XMLHttpRequest();
@@ -65,17 +65,19 @@ $userId = $facebook->getUser();
 				    {
 							document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
 					   //send the new high score to facebook
-						 FB.api("/me/scores?score=" + xmlhttp.responseText, "post", function(response){});
+						 FB.api("/me/scores?score=" + xmlhttp.responseText, "post", function(response){
+							FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
+							});
 						 //read the scores for your friends and update the leaderboard
-						 FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
+						 
 						 // alert("request complete " + xmlhttp.responseText);
 				    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
 				    }
 			    }
-		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+window.parent.getUserId(),true);
-		    xmlhttp.send();
+		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+window.parent.getUserId() +"&games="+gamesplayed,true);
+				xmlhttp.send();
 		    }
-		    var score = 0;
+		    
 	    </script>
 	<body>
 		<!-- <div class="title">Hello</div> -->
@@ -145,7 +147,7 @@ $userId = $facebook->getUser();
 
 		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
 		$result = mysql_query("SELECT * FROM userdata");
-		 echo "<b><center>Database Test</center></b><br><br>";
+		// echo "<b><center>Database Test</center></b><br><br>";
 		//fetch tha data from the database
 		$newuser =true;
 		while ($row = mysql_fetch_array($result)) {
@@ -157,8 +159,9 @@ $userId = $facebook->getUser();
 					$newuser = false;
 					$name=$row["NAME"];
 					$hscore=$row["HSCORE"];
+					$gamesplayed=$row["GAMES"];
 			}
-      echo "<b> $tname </b><br>Score: $thscore <br>";
+      //echo "<b> $tname </b><br>Score: $thscore <br>";
 		}
 			if($newuser == 1)
 			{ 
@@ -175,6 +178,7 @@ $userId = $facebook->getUser();
 
 		 <h2 id='colorTitle'> Welcome <?= $userInfo['name'] ?> </h2>
      <script>
+		 
 function fbLogout() {
         FB.logout(function (response) {
             //Do what ever you want here when logged out like reloading the page
@@ -192,6 +196,11 @@ function fbLogout() {
 
         <div id="fb-root"></div>
         <script>
+					var score = 0;
+					var hscore =  <?php echo $hscore ?>;
+					var gamesplayed = <?php echo $gamesplayed; ?>;
+					var newgame = true;
+					
 					var appID = '312229638880822';
           window.fbAsyncInit = function() {
             FB.init({
@@ -300,8 +309,11 @@ function fbLogout() {
 			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
+			<canvas id="UICanvas" height = "600" width="200" style="position: absolute; left: 1012px;"></canvas>
+			
 		<!--</span>-->
 		</div>
+		
 		<div  style="height: 630px;">
 				<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
 				<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
@@ -311,9 +323,9 @@ function fbLogout() {
 		<!--</span>-->
 
 	
+		<script src="UIControl.js"></script>
 
 		<script src="game.php"></script>
-		
 		
 		<div id="tables">
 			<?php if($userId){ ?>

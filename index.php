@@ -9,7 +9,9 @@ $facebook = new Facebook(array(
 
 $userId = $facebook->getUser();
 
-
+		$hscore = 0;
+		$score = 0;
+		$gamesplayed = 0;
 		$username = "gameadm";
 		$password = "7IjJDGpB";
 		$hostname = "localhost"; 
@@ -51,6 +53,7 @@ $userId = $facebook->getUser();
 		}
 	    function updateHighScore(score)
 	    {
+				score = Math.floor(score/6);
 		    var xmlhttp;    
 		    gamesplayed++;
 		    if (window.XMLHttpRequest)
@@ -198,12 +201,7 @@ function fbLogout() {
 
         <div id="fb-root"></div>
         <script>
-					var score = 0;
-					var hscore =  <?php echo $hscore ?>;
-					var gamesplayed = <?php echo $gamesplayed; ?>;
-					var newgame = true;
-					var leadernames = new Array();
-					var leaderscores = new Array();
+					
 					var appID = '312229638880822';
           window.fbAsyncInit = function() {
             FB.init({
@@ -252,6 +250,13 @@ function fbLogout() {
            }
            FB.ui(obj, callback);
            }
+					 
+					 var score = 0;
+					var hscore =  <?php echo $hscore ?>;
+					var gamesplayed = <?php echo $gamesplayed; ?>;
+					var newgame = true;
+					var leadernames = new Array();
+					var leaderscores = new Array();
         </script>
 				
 		<p id="textColor">click to select player</p>

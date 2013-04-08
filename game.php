@@ -948,9 +948,9 @@ function drawWalls() {
                                         {
                                           updateHighScore(score);
                                           
-                                          if(score > hscore)
+                                          if(Math.floor(score/6) > hscore)
                                           {
-                                            hscore = score;
+                                            hscore = Math.floor(score/6);
                                           }
                                           score = 0;
                                           

@@ -1155,6 +1155,8 @@ function draw() {
                         friendImage.src = friendPics[Characters[i].friendNumber];
                     }
                 }
+                ctx.fillStyle="#C0C0C0";
+                ctx.fillRect(0,0,100,50);
                 ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
         }*/
 }

@@ -138,9 +138,16 @@ $userId = $facebook->getUser();
 					$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
 		                       
                                         $randomfriendID = $randomfriend['id'];
+                                        
+                                        $randomfriendName = $randomfriend['name']
+                                        $randomfriendName2 = $randomfriend2['name']
+                                        $randomfriendName3 = $randomfriend3['name']
+                                        $randomfriendName4 = $randomfriend4['name']
+                                        $randomfriendName5 = $randomfriend5['name']
+                                        
 				 foreach($friends['data'] as $key=>$value)
 				 {
-								echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
+					echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
 				 }
 				 
 				}catch(FacebookApiException $e) {
@@ -292,6 +299,7 @@ function fbLogout() {
 			window.onresize = resize;
 			
 			var friendPics = new Array();
+			var friendNames = new Array();
 			var connectedFacebook = false;
 			if("<?php echo $connected ?>"){
 			   friendPics.push("<?php echo $randomfriendimage ?>");
@@ -300,6 +308,12 @@ function fbLogout() {
 			   friendPics.push("<?php echo $randomfriendimage4 ?>");
 			   friendPics.push("<?php echo $randomfriendimage5 ?>");
                            var friendID = "<?php echo $randomfriendID ?>";
+                           friendNames.push("<?php echo $randomfriendName ?>");
+                           friendNames.push("<?php echo $randomfriendName2 ?>");
+                           friendNames.push("<?php echo $randomfriendName3 ?>");
+                           friendNames.push("<?php echo $randomfriendName4 ?>");
+                           friendNames.push("<?php echo $randomfriendName5 ?>");
+                           
 			   connectedFacebook = true;
 			}			
 		</script>

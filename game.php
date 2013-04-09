@@ -48,6 +48,7 @@ var brunetteFemale;
 var darkFemale;
 
 var friendImage;
+var friendName;
 
 var bearImage;
 var wall1;
@@ -1153,11 +1154,15 @@ function draw() {
                 for(var i = 0; i < Characters.length; i++){
                     if(Characters[i].boardX == xSnap && Characters[i].boardY == ySnap){
                         friendImage.src = friendPics[Characters[i].friendNumber];
+                        friendName = friendNames[Characters[i].friendNumber]
                     }
                 }
                 ctx.fillStyle="#C0C0C0";
-                ctx.fillRect(0,0,100,50);
+                ctx.fillRect(xSnap*25-3,ySnap*25-33,100,50);
                 ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
+                ctx.fillStyle = "#f00";
+                ctx.font = "bold 10px sans-serif"
+                ctx.fillText(friendName,xsnap*25-3, ySnap*25-33)
         }*/
 }
 

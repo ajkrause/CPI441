@@ -1161,8 +1161,8 @@ function draw() {
                 ctx.fillRect(xSnap*25-3,ySnap*25-33,100,50);
                 ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
                 ctx.fillStyle = "#f00";
-                ctx.font = "bold 10px sans-serif"
-                ctx.fillText(friendName,xsnap*25-3, ySnap*25-33)
+                ctx.font = "bold 10px sans-serif";
+                ctx.fillText(friendName,xsnap*25-3, ySnap*25-33);
         }*/
 }
 

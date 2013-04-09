@@ -117,7 +117,7 @@ $userId = $facebook->getUser();
 					$randomfriendnum3 = $randomnumarray[3];
 					$randomfriendnum4 = $randomnumarray[4];
 			
-					$randomfriend= $friends[$randomfriendnum];
+					$randomfriend = $friends[$randomfriendnum];
 					
 					$randomfriend2 = $friends[$randomfriendnum1];
 					$randomfriend3 = $friends[$randomfriendnum2];
@@ -135,7 +135,9 @@ $userId = $facebook->getUser();
 					$randomfriendimage3 = "http://graph.facebook.com/" . $randomfriend3['id']  ."/picture";
 					$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
 					$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
-		
+					
+					$randomfriendID = "http://graph.facebook.com/" . $randomfriend['id'];
+					
 				 foreach($friends['data'] as $key=>$value)
 				 {
 								echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
@@ -237,6 +239,7 @@ function fbLogout() {
            var obj = {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
+           	to: 
            	link: 'https://developers.facebook.com/docs/reference/dialogs',
            	picture: 'http://fbrell.com/f8.jpg',
            	caption: 'Reference Documentation',
@@ -287,7 +290,7 @@ function fbLogout() {
 			}
 			window.onload = refresh;
 			window.onresize = resize;
-			
+			var friendID;
 			var friendPics = new Array();
 			var connectedFacebook = false;
 			if("<?php echo $connected ?>"){
@@ -296,6 +299,7 @@ function fbLogout() {
 			   friendPics.push("<?php echo $randomfriendimage3 ?>");
 			   friendPics.push("<?php echo $randomfriendimage4 ?>");
 			   friendPics.push("<?php echo $randomfriendimage5 ?>");
+			   friendID = <?php echo $randomfriendID ?>;
 			   connectedFacebook = true;
 			}			
 		</script>

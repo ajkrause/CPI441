@@ -139,11 +139,11 @@ $userId = $facebook->getUser();
 		                       
                                         $randomfriendID = $randomfriend['id'];
                                         
-                                        $randomfriendName = $randomfriend['name']
-                                        $randomfriendName2 = $randomfriend2['name']
-                                        $randomfriendName3 = $randomfriend3['name']
-                                        $randomfriendName4 = $randomfriend4['name']
-                                        $randomfriendName5 = $randomfriend5['name']
+                                        $randomfriendName = $randomfriend['name'];
+                                        $randomfriendName2 = $randomfriend2['name'];
+                                        $randomfriendName3 = $randomfriend3['name'];
+                                        $randomfriendName4 = $randomfriend4['name'];
+                                        $randomfriendName5 = $randomfriend5['name'];
                                         
 				 foreach($friends['data'] as $key=>$value)
 				 {

@@ -301,13 +301,14 @@ function fbLogout() {
 			var friendPics = new Array();
 			var friendNames = new Array();
 			var connectedFacebook = false;
+			var friendID;
 			if("<?php echo $connected ?>"){
 			   friendPics.push("<?php echo $randomfriendimage ?>");
 			   friendPics.push("<?php echo $randomfriendimage2 ?>");
 			   friendPics.push("<?php echo $randomfriendimage3 ?>");
 			   friendPics.push("<?php echo $randomfriendimage4 ?>");
 			   friendPics.push("<?php echo $randomfriendimage5 ?>");
-                           var friendID = "<?php echo $randomfriendID ?>";
+                           friendID = "<?php echo $randomfriendID ?>";
                            friendNames.push("<?php echo $randomfriendName ?>");
                            friendNames.push("<?php echo $randomfriendName2 ?>");
                            friendNames.push("<?php echo $randomfriendName3 ?>");

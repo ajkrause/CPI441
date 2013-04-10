@@ -137,7 +137,6 @@ $userId = $facebook->getUser();
 					$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
 					$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
 		                       
-                                        $randomfriendID = $randomfriend['id'];
                                         
                                         $randomfriendName = $randomfriend['name'];
                                         $randomfriendName2 = $randomfriend2['name'];
@@ -246,7 +245,7 @@ function fbLogout() {
            var obj = {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
-                to: 'friendID',
+                to: friendID,
            	link: 'https://developers.facebook.com/docs/reference/dialogs',
            	picture: 'http://fbrell.com/f8.jpg',
            	caption: 'Reference Documentation',

@@ -1158,8 +1158,9 @@ function draw() {
                     }
                 }
                 ctx.fillStyle="#C0C0C0";
-                ctx.fillRect(xSnap*25-3,ySnap*25-33,100,50);
+                ctx.fillRect(xSnap*25-3,ySnap*25-33,100,50
                 ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
+                var Name = friendName.toString();
                 ctx.font = "bold 10px sans-serif";
                 ctx.fillText(friendName,xsnap*25-3, ySnap*25-33);
         }*/

@@ -1157,12 +1157,14 @@ function draw() {
                         friendName = friendNames[Characters[i].friendNumber];
                     }
                 }
-                ctx.fillStyle="#C0C0C0";
-                ctx.fillRect(xSnap*25-3,ySnap*25-33,100,50
-                ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
+                 ctx.fillStyle="#C0C0C0";
+                ctx.fillRect(xSnap*25,ySnap*25-50,100,50);
+                ctx.drawImage(friendImage, xSnap*25, ySnap*25-50, 31, 31);
                 var Name = friendName.toString();
-                ctx.font = "bold 10px sans-serif";
-                ctx.fillText(friendName,xsnap*25-3, ySnap*25-33);
+                ctx.fillStyle="#000000";
+                ctx.font = "10px Arial";
+                //alert(friendName);
+                ctx.fillText(Name,xSnap*25, ySnap*25-5);
         }*/
 }
 

@@ -85,8 +85,13 @@ $userId = $facebook->getUser();
 		    
 	    </script>
 	<body>
-		<!-- <div class="title">Hello</div> -->
-		<h1 id="colorTitle">Game</h1>
+		<!-- UPPER UI BAR ----------------------------------- -->
+		<div id="upperBar" >
+			<div style="float:left; width:500px;"><img src="art\ui\LogoSimple.png" width=486px height=300px></div>
+			<div style="text-align: center; height: 300px; clear: right;" id="rightBox" class="mainfont">
+				<span style=" font-size: 60px;" id="welcome"><br>Welcome, please log in!</span>
+			</div>
+		</div>
 
   <div id="fb-root"></div>
     <?php
@@ -156,7 +161,7 @@ $userId = $facebook->getUser();
 
 		$dbhandle = mysql_connect($hostname, $username, $password) 
 		  or die("Unable to connect to MySQL");
-		echo "Connected to MySQL<br>";
+		
 
 		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
 		$result = mysql_query("SELECT * FROM userdata");
@@ -189,9 +194,11 @@ $userId = $facebook->getUser();
 
 		?>
 
-		 <h2 id='colorTitle'> Welcome <?= $userInfo['name'] ?> </h2>
-     <script>
 		 
+     <script>
+document.getElementById("welcome").innerHTML = "Welcome, <?php echo $userInfo['name']; ?><br>";
+document.getElementById("rightBox").innerHTML = document.getElementById("rightBox").innerHTML +
+			"<span id='fbLogout' onclick='fbLogout()'><a class='fb_button fb_button_medium'><span class='fb_button_text'>Logout</span></a></span>";
 function fbLogout() {
         FB.logout(function (response) {
             //Do what ever you want here when logged out like reloading the page
@@ -200,13 +207,14 @@ function fbLogout() {
     }
 </script>
 
-<span id="fbLogout" onclick="fbLogout()"><a class="fb_button fb_button_medium"><span class="fb_button_text">Logout</span></a></span>
+
+ </div></div>
     <?php } else { ?>
-      <p>Not Logged into Facebook</p>
+      <!-- <p>Not Logged into Facebook</p> -->
     <fb:login-button scope ='publish_stream, friends_games_activity, user_games_activity'></fb:login-button>
     <?php } ?>
 
-
+					<div id="colorTitle"></div>
         <div id="fb-root"></div>
         <script>
 					
@@ -268,16 +276,15 @@ function fbLogout() {
 					var leaderscores = new Array();
         </script>
 				
-		<p id="textColor">click to select player</p>
-		<p id="textColor">click again to move them</p>
+
 		<br/>
 		
 		<audio id="MyAudio" loop="true">
 			<source src="testHouseholds.mp3" type="audio/mpeg"/> //Rest of the browsers
 			<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported
 		</audio>
-		<button type="button" onclick="updateHighScore(score)">Update Score</button>
-		<button type="button" onclick="postToFeed()">Post to Feed</button>
+		<!--<button type="button" onclick="updateHighScore(score)">Update Score</button>
+		<button type="button" onclick="postToFeed()">Post to Feed</button>-->
 		<br>
 		<script>
 		
@@ -335,7 +342,7 @@ function fbLogout() {
 			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-			<canvas id="UICanvas" height = "600" width="300" style="position: absolute; left: 1012px;"></canvas>
+			<canvas id="UICanvas" height = "600" width="300" style="position: relative; left: 1012px;"></canvas>
 			
 		<!--</span>-->
 		</div>

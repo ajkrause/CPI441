@@ -300,7 +300,7 @@ function fbLogout() {
 			function resize() {
 				var width = window.innerWidth/2 - 500;
 				//document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";
-				document.getElementById("tables").style.paddingLeft = width.toString() - 12 + "px";
+				//document.getElementById("tables").style.paddingLeft = width.toString() - 12 + "px";
 			}
 			function refresh(){
 				drawFloor();
@@ -367,12 +367,21 @@ function fbLogout() {
 		<div id="tables">
 			<?php if($userId){ ?>
 				
-				<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
-				<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
-				<h2 style="color: #ffff00;">Friends Leaderboard</h2>
+				
+				<h2 class = "mainfont">Friends Leaderboard</h2>
 				<table id="leaderboard"></table>
 				<?php } ?>
 				<br>
+					<h2 class="mainfont">Instructions: </h2>
+					<p class="mainfont">You and your friends were just about to sit down to a delicious meal
+					when some uninvited guests showed up for dinner! Defend your food from the relentless
+					woodland creatures by repairing cabin walls before the animals break through!</p>
+					<p class="mainfont">Click on a person, then click a spot on the interior of the
+					cabin to direct them there. You can repair cabin walls adjacent to you in any direction, and
+					you will repair walls faster if working with another person. </p>
+					<p class="mainfont">Friends in the cabin who have played Cabin Crashers before get a boost to
+					repair ability, so the more people you get to try the game, the higher chance of getting a "starred" player in your crew!
+					</p>
 				<div><iframe src = "https://www.facebook.com/plugins/like.php?href=http://game.courses.asu.edu/"
 					scrolling = "no" frameborder = "0">
 					Sorry your browser doesn't support inline frames

@@ -40,26 +40,55 @@
   }
   
   function uiclick() {
-
-    
+    var uimouseX = mouseX - 1000;
+   var uimouseY = mouseY;
+   //uictx.drawImage(soundim, 52, 535, 92, 35);
+   if(uimouseX > 156 && uimouseX < 156+92 && uimouseY >525 && uimouseY < 560){
+    soundOn = !soundOn;
+    if(soundOn) playSound(); else pauseSound();
+   }
+    if(uimouseX > 52 && uimouseX < 52+92 && uimouseY >525 && uimouseY < 560){
+    paused = !paused;
+   }
   }
   function uimove(){
    var uimoveX = moveX - 1000;
    var uimoveY = moveY;
    //uictx.drawImage(soundim, 52, 535, 92, 35);
-   if(uimoveX > 51 && uimoveX < 144 && uimoveY >535 && uimoveY < 570)
+   if(uimoveX > 156 && uimoveX < 156+92 && uimoveY >525 && uimoveY < 560)
    {
-    if(soundOn == false)
-    {
-      soundim.src = soundOffMo.src;
+    if(soundOn == false){
+      soundim.src = "art/ui/UI_nosound_mo.png";
+    }
+    else{
+      soundim.src = "art/ui/UI_sound_mo.png"
     }
    }
   else{
-    if(soundOn == false)
-    {
-      soundim.src = soundOff.src;
+    if(soundOn == false){
+      soundim.src = "art/ui/UI_nosound.png";
     }
-    
+    else {
+      soundim.src = "art/ui/UI_sound.png"
+    }
+   }
+   // pause button
+   if(uimoveX > 52 && uimoveX < 52+92 && uimoveY >525 && uimoveY < 560)
+   {
+    if(paused == false){
+      pauseim.src = "art/ui/UI_play_mo.png";
+    }
+    else{
+      pauseim.src = "art/ui/UI_pause_mo.png"
+    }
+   }
+  else{
+    if(paused == false){
+      pauseim.src = "art/ui/UI_play.png";
+    }
+    else {
+      pauseim.src = "art/ui/UI_pause.png";
+    }
    }
    
   }
@@ -67,7 +96,7 @@
 function drawUI(){
   uictx.clearRect(0,0,uiCanvas.width, uiCanvas.height);
  uictx.drawImage(uibackground, 0, 0, uiCanvas.width, uiCanvas.height);
- uictx.drawImage(scoretext, 80, 30, 100, 50);
+ uictx.drawImage(scoretext, 100, 30, 100, 50);
  uictx.fillStyle="#E19c00";
   uictx.font="30px Calibri";
   
@@ -107,7 +136,7 @@ function drawUI(){
   //uictx.fillText("High Score: " + hscore,30,80);
   //uictx.fillText("Games Played: " + gamesplayed,30,110);
   //uictx.fillText("Leaderboard",30,140);
-  if(loggedIn)
+  if(connectedFacebook)
   {
     for(var i = 0; i < 4; i++)
     {
@@ -125,8 +154,9 @@ function drawUI(){
   }
   
           
-          uictx.drawImage(divider, 52, 520, 196, 5);
-          uictx.drawImage(soundim, 52, 535, 92, 35);
+          uictx.drawImage(divider, 52, 505, 196, 5);
+          uictx.drawImage(pauseim, 52, 525, 92, 35);
+          uictx.drawImage(soundim, 156, 525, 92, 35);
 
 
   

@@ -639,6 +639,9 @@ function mouseUp(e){
         mouseY = e.clientY + document.body.scrollTop +
         document.documentElement.scrollTop - c.offsetTop;
         
+        if(mouseX > 1000 && mouseY < 600)
+          uiclick();
+          
         //Mouse click on play game
         if(!play && mouseX <= 560 && mouseX >= 440 && mouseY <= 472 && mouseY >= 400){
                 play = !play;
@@ -669,6 +672,10 @@ function mouseMove(e){
         document.documentElement.scrollLeft - c.offsetLeft;
         moveY = e.clientY + document.body.scrollTop +
         document.documentElement.scrollTop - c.offsetTop;
+        
+        if(moveX > 1000 && moveY < 600)
+          uimove();
+        
         if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
             if(!play){
                 if(moveX <= 560 && moveX >= 440 && moveY <= 472 && moveY >= 400){

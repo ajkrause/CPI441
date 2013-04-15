@@ -130,11 +130,11 @@ $userId = $facebook->getUser();
 					$randomfriend3 = $friends[$randomfriendnum2];
 					$randomfriend4 = $friends[$randomfriendnum3];
 					$randomfriend5 = $friends[$randomfriendnum4];
-					echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
-					echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
-					echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
-					echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
-					echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
+					//echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
+					//echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
+					//echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
+					//echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
+					//echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
                                         
 					$connected = true;
 					
@@ -153,7 +153,7 @@ $userId = $facebook->getUser();
                                         
 				 foreach($friends['data'] as $key=>$value)
 				 {
-					echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
+					//echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
 				 }
 				 
 				}catch(FacebookApiException $e) {
@@ -198,9 +198,8 @@ $userId = $facebook->getUser();
 
 		 
      <script>
-document.getElementById("welcome").innerHTML = "Welcome, <?php echo $userInfo['name']; ?><br>";
-document.getElementById("rightBox").innerHTML = document.getElementById("rightBox").innerHTML +
-			"<span id='fbLogout' onclick='fbLogout()'><a class='fb_button fb_button_medium'><span class='fb_button_text'>Logout</span></a></span>";
+document.getElementById("welcome").innerHTML = "<br>Welcome, <?php echo $userInfo['name']; ?><br>";
+document.getElementById("rightBox").innerHTML += "<span id='fbLogout' onclick='fbLogout()'><a class='fb_button fb_button_medium'><span class='fb_button_text'>Logout</span></a></span>";
 function fbLogout() {
         FB.logout(function (response) {
             //Do what ever you want here when logged out like reloading the page
@@ -213,8 +212,10 @@ function fbLogout() {
  </div></div>
     <?php } else { ?>
       <!-- <p>Not Logged into Facebook</p> -->
-    <fb:login-button scope ='publish_stream, friends_games_activity, user_games_activity'></fb:login-button>
-    <?php } ?>
+			<script>
+			document.getElementById("rightBox").innerHTML += "<br><fb:login-button scope ='publish_stream, friends_games_activity, user_games_activity'></fb:login-button>";
+			</script>
+	  <?php } ?>
 
 					<div id="colorTitle"></div>
         <div id="fb-root"></div>
@@ -350,12 +351,12 @@ function fbLogout() {
 		<!--</span>-->
 		</div>
 		
-		<div  style="height: 630px;">
+		<!--<div  style="height: 630px;">
 				<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
 				<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
 				<h2 style="color: #ffff00;">Friends Leaderboard</h2>
 				<table id="leaderboard"></table>
-		</div>
+		</div>-->
 		<!--</span>-->
 
 	

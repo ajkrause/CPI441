@@ -106,11 +106,16 @@ a {
 
 table, td
 {
-border:1px solid green;
-background-color:lightgreen;
+border:1px solid #E19c00;
+background-color:black;
+color: #E19c00;
+font-family: calibri;
+font-size: 30px;
 }
 th
 {
-background-color:green;
-color:white;
+background-color:#c6a560;
+color:black;
+font-family: calibri;
+font-size: 30px;
 }

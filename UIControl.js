@@ -1,4 +1,8 @@
   var uiCanvas = document.getElementById("UICanvas");
+  
+  //var uimoveX = moveX - 1000;
+  //var uimoveY = moveY;
+  
   var uictx = uiCanvas.getContext("2d");
   var scoreim = new Image();
   scoreim.src = "art/ui/Numbers.png";
@@ -8,13 +12,26 @@
   hscoretext.src = "art/ui/HighScore.png";
   var pauseim = new Image();
   pauseim.src = "art/ui/UI_pause.png";
+  var soundim = new Image();
+  soundim.src = "art/ui/UI_nosound.png";
+  var soundOff = new Image();
+  soundOff.src = "art/ui/UI_nosound.png";
+  var soundOffMo = new Image();
+  soundOffMo.src = "art/ui/UI_nosound_mo.png";
   var uibackground = new Image();
    uibackground.src = "art/ui/UI_logs_bckrnd_woodgrain.png";
   var divider = new Image();
   divider.src = "art/ui/UI_div.png";
   var frameIm = new Image();
   frameIm.src = "art/ui/fb_profile_frame.png";
-
+  var starim = new Image();
+  starim.src = "art/ui/star.gif";
+  var estar = new Image();
+  estar.src = "art/ui/empty_star.png";
+  
+  var soundOn = false;
+  var paused = false;
+  
   var faces = new Array()
   for(var i = 0; i < 4; i++)
   {
@@ -22,6 +39,30 @@
     faces[i].src = friendPics[i];
   }
   
+  function uiclick() {
+
+    
+  }
+  function uimove(){
+   var uimoveX = moveX - 1000;
+   var uimoveY = moveY;
+   //uictx.drawImage(soundim, 52, 535, 92, 35);
+   if(uimoveX > 51 && uimoveX < 144 && uimoveY >535 && uimoveY < 570)
+   {
+    if(soundOn == false)
+    {
+      soundim.src = soundOffMo.src;
+    }
+   }
+  else{
+    if(soundOn == false)
+    {
+      soundim.src = soundOff.src;
+    }
+    
+   }
+   
+  }
   
 function drawUI(){
   uictx.clearRect(0,0,uiCanvas.width, uiCanvas.height);
@@ -70,6 +111,7 @@ function drawUI(){
   {
     for(var i = 0; i < 4; i++)
     {
+      uictx.drawImage(starim, 30, 220 + i * 70, 40, 40);
       uictx.drawImage(frameIm,88,218 + i * 70, 44,44)
       uictx.drawImage(faces[i],90,220 + i * 70, 40,40)
       uictx.fillText(friendNames[i],140,250 + i * 70);
@@ -77,10 +119,15 @@ function drawUI(){
   }
   else {
           uictx.fillText("Want some help?",30,250);
-          uictx.fillText("Log in with",37,290);
-          uictx.fillText("Facebook!",45,330);
+          uictx.fillText("Log in with",40,290);
+          uictx.fillText("Facebook!",50,330);
 
   }
+  
+          
+          uictx.drawImage(divider, 52, 520, 196, 5);
+          uictx.drawImage(soundim, 52, 535, 92, 35);
+
 
   
 }

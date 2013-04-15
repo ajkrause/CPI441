@@ -82,6 +82,7 @@ $userId = $facebook->getUser();
 		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+window.parent.getUserId() +"&games="+gamesplayed,true);
 				xmlhttp.send();
 		    }
+				var loggedIn = false;
 		    
 	    </script>
 	<body>
@@ -98,6 +99,7 @@ $userId = $facebook->getUser();
 			if ($userId) {
 				try{
 					
+					echo "<script>loggedIn = true</script>";
 					$userInfo = $facebook->api('/' . $userId);
 					
 					
@@ -217,7 +219,7 @@ function fbLogout() {
 					<div id="colorTitle"></div>
         <div id="fb-root"></div>
         <script>
-					
+					var loggedIn = false;
 					var appID = '312229638880822';
           window.fbAsyncInit = function() {
             FB.init({
@@ -229,10 +231,11 @@ function fbLogout() {
 				FB.getLoginStatus(function(response) {
 					if (response.status === 'connected') {
 						// connected
+						loggedIn = true;
 						FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
 					} else if (response.status === 'not_authorized') {
 						// not_authorized;
-					} else {
+					}else{
 						// not_logged_in
 					}
 				 });
@@ -295,7 +298,7 @@ function fbLogout() {
 			}
 			function resize() {
 				var width = window.innerWidth/2 - 500;
-				document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";
+				//document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";
 				document.getElementById("tables").style.paddingLeft = width.toString() - 12 + "px";
 			}
 			function refresh(){
@@ -326,10 +329,10 @@ function fbLogout() {
 		</script>
 		
 		<div  style="height: 630px; ">
-		<!--<span>
-		<span id="centerCanvas" style="height: 630px;">
-			-->
-		
+		<div id="centerCanvas" style="position:relative">
+
+			<div style="z-index: 0; position:absolute; left: -30px; top: -30px;"><img src="art\ui\canvas_bckrnd.png" width = "1360", height = "660" ></div>
+		</div>	
 			<canvas id = "menu" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
@@ -342,7 +345,7 @@ function fbLogout() {
 			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-			<canvas id="UICanvas" height = "600" width="300" style="position: relative; left: 1012px;"></canvas>
+			<canvas id="UICanvas" height = "600" width="300" style="position: relative; left: 1000px;"></canvas>
 			
 		<!--</span>-->
 		</div>

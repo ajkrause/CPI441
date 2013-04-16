@@ -80,7 +80,7 @@ var offset = 0;
 var bearOffset = 0;
 
 //how many characters to draw
-var numCharacters = 4;
+var numCharacters = 5;
 var characterValue = 0;
 
 var activePlayer = -1;
@@ -443,7 +443,7 @@ function init() {
                                 board[x][y].index = 0; //top right corner
                                 board[x][y].health = 180;
                         }
-                        //check		
+                        //check        	
                         if(board[x+1][y+1].index == 3 && (board[x-1][y-1].index == 1 || board[x-1][y-1].index == 0) && board[x][y].index == 1){
                                 board[x][y].index = 0; //top left corner
                                 board[x][y].health = 180;
@@ -954,8 +954,9 @@ function drawWalls() {
                                         //end
                                         if(newgame)
                                         {
-                                          updateHighScore(score);
                                           postToFeed();
+                                          updateHighScore(score);
+                                          //postToFeed();
                                           if(Math.floor(score/6) > hscore)
                                           {
                                             hscore = Math.floor(score/6);

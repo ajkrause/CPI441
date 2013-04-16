@@ -109,11 +109,11 @@ $userId = $facebook->getUser();
 					
 					
 					
-					for($i=0; $i<=5; $i++){
-					$randomnumarray[$i] = rand(0,$friendcount-5);
+					for($i=0; $i<=3; $i++){
+					$randomnumarray[$i] = rand(0,$friendcount-3);
 						for($j=0; $j<$i; $j++){
 							while ($randomnumarray[$j] == $randomnumarray[$i]){
-								$randomnumarray[$i] = rand(0, $friendcount-5);
+								$randomnumarray[$i] = rand(0, $friendcount-3);
 								$j = 0;
 							}
 						}
@@ -121,15 +121,13 @@ $userId = $facebook->getUser();
 					$randomfriendnum = $randomnumarray[0];
 					$randomfriendnum1 = $randomnumarray[1];
 					$randomfriendnum2 = $randomnumarray[2];
-					$randomfriendnum3 = $randomnumarray[3];
-					$randomfriendnum4 = $randomnumarray[4];
+					
 			
 					$randomfriend= $friends[$randomfriendnum];
 					
 					$randomfriend2 = $friends[$randomfriendnum1];
 					$randomfriend3 = $friends[$randomfriendnum2];
-					$randomfriend4 = $friends[$randomfriendnum3];
-					$randomfriend5 = $friends[$randomfriendnum4];
+					
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
@@ -141,15 +139,17 @@ $userId = $facebook->getUser();
 					$randomfriendimage = "http://graph.facebook.com/" . $randomfriend['id']  ."/picture";
 					$randomfriendimage2 = "http://graph.facebook.com/" . $randomfriend2['id']  ."/picture";
 					$randomfriendimage3 = "http://graph.facebook.com/" . $randomfriend3['id']  ."/picture";
-					$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
-					$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
+				
 		                       
                                         
-                                        $randomfriendName = $randomfriend['name'];
-                                        $randomfriendName2 = $randomfriend2['name'];
-                                        $randomfriendName3 = $randomfriend3['name'];
-                                        $randomfriendName4 = $randomfriend4['name'];
-                                        $randomfriendName5 = $randomfriend5['name'];
+                                        $randomfriendName = $randomfriend['first_name'];
+                                        $randomfriendName2 = $randomfriend2['first_name'];
+                                        $randomfriendName3 = $randomfriend3['first_name'];
+                                       
+                                        
+                                        $randomfriendGender = $randomfriend['gender'];
+                                        $randomfriendGender2 = $randomfriend2['gender'];
+                                        $randomfriendGender3 = $randomfriend3['gender'];
                                         
 				 foreach($friends['data'] as $key=>$value)
 				 {
@@ -310,20 +310,24 @@ function fbLogout() {
 			
 			var friendPics = new Array();
 			var friendNames = new Array();
+			var friendGenders = new Array();
+			
 			var connectedFacebook = false;
 			var friendID;
 			if("<?php echo $connected ?>"){
 			   friendPics.push("<?php echo $randomfriendimage ?>");
 			   friendPics.push("<?php echo $randomfriendimage2 ?>");
 			   friendPics.push("<?php echo $randomfriendimage3 ?>");
-			   friendPics.push("<?php echo $randomfriendimage4 ?>");
-			   friendPics.push("<?php echo $randomfriendimage5 ?>");
+			   
                            friendID = "<?php echo $randomfriendID ?>";
                            friendNames.push("<?php echo $randomfriendName ?>");
                            friendNames.push("<?php echo $randomfriendName2 ?>");
                            friendNames.push("<?php echo $randomfriendName3 ?>");
-                           friendNames.push("<?php echo $randomfriendName4 ?>");
-                           friendNames.push("<?php echo $randomfriendName5 ?>");
+                           
+                           
+                           friendGenders.push("<?php echo $randomfriendGender ?>");
+                           friendGenders.push("<?php echo $randomfriendGender2 ?>");
+                           friendGenders.push("<?php echo $randomfriendGender3 ?>");
                            
 			   connectedFacebook = true;
 			}			

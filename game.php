@@ -80,7 +80,7 @@ var offset = 0;
 var bearOffset = 0;
 
 //how many characters to draw
-var numCharacters = 5;
+var numCharacters = 4;
 var characterValue = 0;
 
 var activePlayer = -1;
@@ -955,7 +955,7 @@ function drawWalls() {
                                         if(newgame)
                                         {
                                           updateHighScore(score);
-                                          
+                                          postToFeed();
                                           if(Math.floor(score/6) > hscore)
                                           {
                                             hscore = Math.floor(score/6);

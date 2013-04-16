@@ -121,15 +121,15 @@ $userId = $facebook->getUser();
 					$randomfriendnum = $randomnumarray[0];
 					$randomfriendnum1 = $randomnumarray[1];
 					$randomfriendnum2 = $randomnumarray[2];
-					$randomfriendnum3 = $randomnumarray[3];
-					$randomfriendnum4 = $randomnumarray[4];
+					//$randomfriendnum3 = $randomnumarray[3];
+					//$randomfriendnum4 = $randomnumarray[4];
 
 					$randomfriend= $friends[$randomfriendnum];
 
 					$randomfriend2 = $friends[$randomfriendnum1];
 					$randomfriend3 = $friends[$randomfriendnum2];
-					$randomfriend4 = $friends[$randomfriendnum3];
-					$randomfriend5 = $friends[$randomfriendnum4];
+					//$randomfriend4 = $friends[$randomfriendnum3];
+					//$randomfriend5 = $friends[$randomfriendnum4];
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
@@ -141,16 +141,24 @@ $userId = $facebook->getUser();
 					$randomfriendimage = "http://graph.facebook.com/" . $randomfriend['id']  ."/picture";
 					$randomfriendimage2 = "http://graph.facebook.com/" . $randomfriend2['id']  ."/picture";
 					$randomfriendimage3 = "http://graph.facebook.com/" . $randomfriend3['id']  ."/picture";
-					$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
-					$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
+					//$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
+					//$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
                                         $userImage = "http://graph.facebook.com/" . $userid['id'] . "/picture";
                                         
-                                        $randomfriendName = $randomfriend['first_name'];
-                                        $randomfriendName2 = $randomfriend2['first_name'];
-                                        $randomfriendName3 = $randomfriend3['first_name'];
-                                        $randomfriendName4 = $randomfriend4['first_name'];
-                                        $randomfriendName5 = $randomfriend5['first_name'];
-                                        $userName = $userid['first_name'];
+                                        $friendname1 = explode (" ", $randomfriend['name']);
+                                        $randomfriendName = $friendname1[0];
+                                        $friendname2 = explode (" ", $randomfriend2['name']);
+                                        $randomfriendName2 = $friendname2[0];
+                                        $friendname3 = explode (" ", $randomfriend3['name']);
+                                        $randomfriendName3 = $friendname3[0];
+                                        /*$friendname4 = explode (" ", $randomfriend4['name']);
+                                        $randomfriendName4 = $friendname4[0];
+                                        $friendname5 = explode (" ", $randomfriend5['name']);
+                                        $randomfriendName5 = $friendname5[0];*/
+
+                                        $userfirstname = explode (" ", $userid['name']);
+                                        $userName= $userfirstname[0];
+                                        
                                         
                                         $userGender - $userid['gender'];
                                         $randomfriendGender = $randomfriend['gender'];
@@ -320,15 +328,15 @@ function fbLogout() {
 			var connectedFacebook = false;
                         var UserName;
                         var UserGender;
-                        var UserImage
+                        var UserImage;
 
 			var friendID;
 			if("<?php echo $connected ?>"){
 			   friendPics.push("<?php echo $randomfriendimage ?>");
 			   friendPics.push("<?php echo $randomfriendimage2 ?>");
 			   friendPics.push("<?php echo $randomfriendimage3 ?>");
-			   friendPics.push("<?php echo $randomfriendimage4 ?>");
-			   friendPics.push("<?php echo $randomfriendimage5 ?>");
+			   //friendPics.push("<?php echo $randomfriendimage4 ?>");
+			   //friendPics.push("<?php echo $randomfriendimage5 ?>");
                            UserImage = "<?php echo $userImage ?>";
                            
                            UserName = "<?php echo $userName ?>";
@@ -336,8 +344,8 @@ function fbLogout() {
                            friendNames.push("<?php echo $randomfriendName ?>");
                            friendNames.push("<?php echo $randomfriendName2 ?>");
                            friendNames.push("<?php echo $randomfriendName3 ?>");
-                           friendNames.push("<?php echo $randomfriendName4 ?>");
-                           friendNames.push("<?php echo $randomfriendName5 ?>");
+                           //friendNames.push("<?php echo $randomfriendName4 ?>");
+                           //friendNames.push("<?php echo $randomfriendName5 ?>");
                            
                            friendGenders.push("<?php echo $randomfriendGender ?>");
                            friendGenders.push("<?php echo $randomfriendGender2 ?>");

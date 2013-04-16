@@ -33,7 +33,7 @@
   var paused = false;
   
   var faces = new Array()
-  for(var i = 0; i < 4; i++)
+  for(var i = 0; i < 3; i++)
   {
     faces[i] = new Image();
     faces[i].src = friendPics[i];
@@ -138,7 +138,7 @@ function drawUI(){
   //uictx.fillText("Leaderboard",30,140);
   if(connectedFacebook)
   {
-    for(var i = 0; i < 4; i++)
+    for(var i = 0; i < 3; i++)
     {
       uictx.drawImage(starim, 30, 220 + i * 70, 40, 40);
       uictx.drawImage(frameIm,88,218 + i * 70, 44,44)

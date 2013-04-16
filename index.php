@@ -98,22 +98,22 @@ $userId = $facebook->getUser();
     <?php
 			if ($userId) {
 				try{
-					
+
 					echo "<script>loggedIn = true</script>";
 					$userInfo = $facebook->api('/' . $userId);
-					
-					
+
+
 					$friends=$facebook->api('/me/friends');
 					$friends=$friends['data'];
 					$friendcount = count($friends);
-					
-					
-					
-					for($i=0; $i<=3; $i++){
-					$randomnumarray[$i] = rand(0,$friendcount-3);
+
+
+
+					for($i=0; $i<=5; $i++){
+					$randomnumarray[$i] = rand(0,$friendcount-5);
 						for($j=0; $j<$i; $j++){
 							while ($randomnumarray[$j] == $randomnumarray[$i]){
-								$randomnumarray[$i] = rand(0, $friendcount-3);
+								$randomnumarray[$i] = rand(0, $friendcount-5);
 								$j = 0;
 							}
 						}
@@ -121,13 +121,15 @@ $userId = $facebook->getUser();
 					$randomfriendnum = $randomnumarray[0];
 					$randomfriendnum1 = $randomnumarray[1];
 					$randomfriendnum2 = $randomnumarray[2];
-					
-			
+					$randomfriendnum3 = $randomnumarray[3];
+					$randomfriendnum4 = $randomnumarray[4];
+
 					$randomfriend= $friends[$randomfriendnum];
-					
+
 					$randomfriend2 = $friends[$randomfriendnum1];
 					$randomfriend3 = $friends[$randomfriendnum2];
-					
+					$randomfriend4 = $friends[$randomfriendnum3];
+					$randomfriend5 = $friends[$randomfriendnum4];
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
@@ -135,17 +137,21 @@ $userId = $facebook->getUser();
 					//echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
                                         
 					$connected = true;
-					$userImage = "http://graph.facebook.com/" . $userid['id'] . "/picture";
+
 					$randomfriendimage = "http://graph.facebook.com/" . $randomfriend['id']  ."/picture";
 					$randomfriendimage2 = "http://graph.facebook.com/" . $randomfriend2['id']  ."/picture";
 					$randomfriendimage3 = "http://graph.facebook.com/" . $randomfriend3['id']  ."/picture";
-				
-		                       
-                                        $userName = $userid['first_name'];
+					$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
+					$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
+                                        $userImage = "http://graph.facebook.com/" . $userid['id'] . "/picture";
+                                        
                                         $randomfriendName = $randomfriend['first_name'];
                                         $randomfriendName2 = $randomfriend2['first_name'];
                                         $randomfriendName3 = $randomfriend3['first_name'];
-                                       
+                                        $randomfriendName4 = $randomfriend4['first_name'];
+                                        $randomfriendName5 = $randomfriend5['first_name'];
+                                        $userName = $userid['first_name'];
+                                        
                                         $userGender - $userid['gender'];
                                         $randomfriendGender = $randomfriend['gender'];
                                         $randomfriendGender2 = $randomfriend2['gender'];
@@ -155,7 +161,7 @@ $userId = $facebook->getUser();
 				 {
 					//echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
 				 }
-				 
+
 				}catch(FacebookApiException $e) {
 					$result = $e->getResult();
 					echo $result;
@@ -163,7 +169,7 @@ $userId = $facebook->getUser();
 
 		$dbhandle = mysql_connect($hostname, $username, $password) 
 		  or die("Unable to connect to MySQL");
-		
+
 
 		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
 		$result = mysql_query("SELECT * FROM userdata");
@@ -191,7 +197,7 @@ $userId = $facebook->getUser();
 			}
 
 		mysql_close($dbhandle);
-			
+
 
 
 		?>
@@ -310,25 +316,28 @@ function fbLogout() {
 			
 			var friendPics = new Array();
 			var friendNames = new Array();
-			var friendGenders = new Array();
-			
+                        var friendGenders = new Array();
 			var connectedFacebook = false;
+                        var UserName;
+                        var UserGender;
+                        var UserImage
+
 			var friendID;
-			var UserImage;
-			var UserGender;
-			var UserFirstName;
-			
 			if("<?php echo $connected ?>"){
 			   friendPics.push("<?php echo $randomfriendimage ?>");
 			   friendPics.push("<?php echo $randomfriendimage2 ?>");
 			   friendPics.push("<?php echo $randomfriendimage3 ?>");
-			   UserImage = "<?php echo $userImage ?>";
-			   
+			   friendPics.push("<?php echo $randomfriendimage4 ?>");
+			   friendPics.push("<?php echo $randomfriendimage5 ?>");
+                           UserImage = "<?php echo $userImage ?>";
+                           
+                           UserName = "<?php echo $userName ?>";
                            friendID = "<?php echo $randomfriendID ?>";
                            friendNames.push("<?php echo $randomfriendName ?>");
                            friendNames.push("<?php echo $randomfriendName2 ?>");
                            friendNames.push("<?php echo $randomfriendName3 ?>");
-                           UserName = "<?php echo $userName ?>";
+                           friendNames.push("<?php echo $randomfriendName4 ?>");
+                           friendNames.push("<?php echo $randomfriendName5 ?>");
                            
                            friendGenders.push("<?php echo $randomfriendGender ?>");
                            friendGenders.push("<?php echo $randomfriendGender2 ?>");

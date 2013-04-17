@@ -318,7 +318,7 @@ function fbLogout() {
 			}
 			function resize() {
 				var width = window.innerWidth/2 - 500;
-				//document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";
+				document.getElementById("centerCanvas").style.paddingLeft = width.toString() - 12 + "px";
 				//document.getElementById("tables").style.paddingLeft = width.toString() - 12 + "px";
 			}
 			function refresh(){
@@ -367,7 +367,7 @@ function fbLogout() {
 		<div  style="height: 630px; ">
 		<div id="centerCanvas" style="position:relative">
 
-			<div style="z-index: 0; position:absolute; left: -30px; top: -30px;"><img src="art\ui\canvas_bckrnd.png" width = "1360", height = "660" ></div>
+			<div style="z-index: 0; position:absolute; left: -30px; top: -30px;"><img src="art\GUI\canvas_bckrnd.png" width = "1360", height = "660" ></div>
 		</div>	
 			<canvas id = "menu" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
 				Your browser does not support the HTML5 canvas tag

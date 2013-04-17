@@ -297,9 +297,14 @@ function fbLogout() {
 
 		<br/>
 		
-		<audio id="MyAudio" loop="true">
-			<source src="testHouseholds.mp3" type="audio/mpeg"/> //Rest of the browsers
-			<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported
+		<audio id="MyAudio" autoplay loop="true">
+			<source src="menu.mp3" type="audio/mpeg"/> //Rest of the browsers
+			<!--<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported -->
+		</audio>
+		
+		<audio id="PlayAudio" loop="true">
+			<source src="InGameC.mp3" type="audio/mpeg"/> //Rest of the browsers
+			<!--<source src="testHouseholds.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported -->
 		</audio>
 		<!--<button type="button" onclick="updateHighScore(score)">Update Score</button>
 		<button type="button" onclick="postToFeed()">Post to Feed</button>-->

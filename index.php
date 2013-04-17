@@ -376,7 +376,9 @@ function fbLogout() {
 			<canvas id = "canvasWalls" width = "1000" height = "600" style = "z-index: 2; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
-			<canvas id="UICanvas" height = "600" width="300" style="position: relative; left: 1000px;"></canvas>
+			<canvas id = "canvasGUI" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
+				Your browser does not support the HTML5 canvas tag
+			</canvas>
 			
 		<!--</span>-->
 		</div>
@@ -388,9 +390,6 @@ function fbLogout() {
 				<table id="leaderboard"></table>
 		</div>-->
 		<!--</span>-->
-
-	
-		<script src="UIControl.js"></script>
 
 		<script src="game.php"></script>
 		

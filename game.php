@@ -401,8 +401,8 @@ splinters = new Image();
 //GUI image load
 GUIBackground.src = "art/GUI/UI_logs_bckrnd_woodgrains.png";
 GUIScore.src = "art/GUI/score.png";
-GUINumbers.src = "art/GUI/Numbers";
-divider.src = "art/GIU/UI_div.png";
+GUINumbers.src = "art/GUI/Numbers.png";
+divider.src = "art/GUI/UI_div.png";
 GUIHighScore.src = "art/GUI/HighScore.png";
 starFilled.src = "art/GUI/star.gif";
 starEmpty.src = "art/GUI/empty_star.png";

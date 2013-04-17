@@ -1709,7 +1709,7 @@ function draw() {
         newRam += 1;
         newFox += 1;
         
-        /*if(drawFriend && connectedFacebook){
+        if(drawFriend && connectedFacebook){
                 var xSnap = Math.floor(moveX/25);
                 var ySnap = Math.floor(moveY/25);
                 for(var i = 0; i < Characters.length; i++){
@@ -1718,7 +1718,7 @@ function draw() {
                     }
                 }
                 ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
-        }*/
+        }
 }
 
 function initializeWalls(type){

@@ -88,7 +88,7 @@ $userId = $facebook->getUser();
 	<body>
 		<!-- UPPER UI BAR ----------------------------------- -->
 		<div id="upperBar" >
-			<div style="float:left; width:500px;"><img src="art\ui\LogoSimple.png" width=486px height=300px></div>
+			<div style="float:left; width:500px;"><img src="art\GUI\LogoSimple.png" width=486px height=300px></div>
 			<div style="text-align: center; height: 300px; clear: right;" id="rightBox" class="mainfont">
 				<span style=" font-size: 60px;" id="welcome"><br>Welcome, please log in!</span>
 			</div>

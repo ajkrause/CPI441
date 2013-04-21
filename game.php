@@ -780,11 +780,11 @@ if(mouseX <= 952 && mouseX >= 860 && mouseY <= 555 && mouseY >= 520){
 if(mouseX <= 842 && mouseX >= 650 && mouseY <= 555 && mouseY >= 520){
         if(playState == 1){
                 playState = 3;
-                playing = false;
+                playing = true;
         }
         else{
                 playState = 1;
-                playing = true;
+                playing = false;
         }
 }
 
@@ -792,7 +792,10 @@ if(mouseX <= 842 && mouseX >= 650 && mouseY <= 555 && mouseY >= 520){
 mouseDownX = (Math.floor((mouseX/squareWidth))*squareWidth) + (squareWidth/2);
 mouseDownY = (Math.floor((mouseY/squareHeight))*squareHeight) + (squareHeight/2);
 
-gameSelection();
+  if(playing)
+  {
+    gameSelection();
+  }
 }
 
 function mouseMove(e){
@@ -920,11 +923,9 @@ function gameLoop() {
         drawGUI();
         if(playing)
         {
-        
-        draw();
-        drawWalls();
-        drawDamage();
-        
+          draw();
+          drawWalls();
+          drawDamage();
           moveCharacter();
           moveEnemy();
         }
@@ -1244,8 +1245,17 @@ function drawGUI(){
         ctxGUI.clearRect(0, 0, canvas.width, canvas.height);
         ctxGUI.beginPath();
         
+        if(!playing)
+        {
+          ctxGUI.fillStyle = "#000000";
+          ctxGUI.globalAlpha = .5;
+          ctxGUI.fillRect(0,0, canvas.width-GUIWidth, 600);
+          ctxGUI.globalAlpha = 1;
+        }
+        
         ctxGUI.fillStyle = "#E19C00";
         ctxGUI.font = "20px Calibri";
+        
         
         ctxGUI.drawImage(GUIBackground, 0, 0, 300, 600, canvas.width-GUIWidth, 0, GUIWidth, 600);
         ctxGUI.drawImage(GUIScore, 0, 0, 200, 100, canvas.width-GUIWidth+100, 25, 100, 50);

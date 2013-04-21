@@ -370,6 +370,8 @@ function menu(){
         menuImage.src = "art/house/LogoSimple.png";
         playButtonImage.src = "art/GUI/UI_Start.png";
 	playButtonImageMO.src = "art/GUI/UI_Start_mo";
+        startButtonState.push(playButtonImage);
+        startButtonState.push(playButtonImageMO);
         grass.src = "art/house/Grass_Continuous_Grid2.png";
         grassPlay.src = "art/house/Grass_Continuous_Grid_Play.png";
         

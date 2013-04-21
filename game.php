@@ -1,6 +1,5 @@
 <?php Header("Content-Type: application/x-javascript; charset=UTF-8"); ?>
 
-
 var playing = true;
 var buttonDown = false;
 var play = false;
@@ -43,6 +42,8 @@ var playState = 2;
 var gameState = new Array();
 var soundState = 0;
 var musicState = new Array();
+var playButtonState = 0;
+var startButtonState = new Array();
 
 //GUI images
 var GUIBackground;
@@ -65,7 +66,8 @@ var pauseMusicImageMO;
 
 var menuImage;
 var playButtonImage;
-var pulseImage = 0;
+var playButtonImageMO;
+var pulseImage = 90;
 var pulseOver = false;
 
 var pulseFriend = 0;
@@ -275,6 +277,8 @@ function drawMenu(){
         ctxMenu.clearRect(0, 0, canvasMenu.width, canvasMenu.height);
         ctxMenu.beginPath();
         
+        drawGUI();
+        
         var length = document.getElementById('MyAudio').duration - 2;
         var length2 = document.getElementById('MyAudio').currentTime;
         if(length2 > length){
@@ -282,21 +286,20 @@ function drawMenu(){
         }
         
         if(!play){
-                var temp = Math.abs(Math.cos(pulseImage*Math.PI/180))*10;
-                ctxMenu.drawImage(grass, 0, 0, 1000, 600, 0, 0, 1000, 600);
-                ctxMenu.drawImage(menuImage, 0, 0, 972, 599, 175, 0, 672, 400);
+                var temp = Math.abs(Math.cos(pulseImage*Math.PI/180))*3;
+		ctxMenu.drawImage(menuImage, 0, 0, 700, 600, 0, 0, 700, 600);
                 if(pulseOver){
                         if(pulseImage >= 360){
                                 pulseImage = 0;
                         }
                         else{
-                                pulseImage = pulseImage + 4;
+                                pulseImage = pulseImage + 6;
                         }
-                        ctxMenu.drawImage(playButtonImage, 0, 0, 200, 120, 440 - temp, 400 - temp, 120 + (temp*2), 72 + (temp*2));
+                        ctxMenu.drawImage(startButtonState[playButtonState], 0, 0, 230, 88, 235 - temp, 490 - temp, 230 + (temp*2), 88 + (temp*2));
                 }
                 else{
-                        pulseImage = 0;
-                        ctxMenu.drawImage(playButtonImage, 0, 0, 200, 120, 440, 400, 120, 72);
+                        pulseImage = 90;
+                        ctxMenu.drawImage(startButtonState[playButtonState], 0, 0, 230, 88, 235, 490, 230, 88);
                 }
         }
         else{
@@ -308,12 +311,65 @@ function drawMenu(){
 function menu(){
         canvasMenu = document.getElementById("menu");
         ctxMenu = canvasMenu.getContext("2d");
+        canvasGUI = document.getElementById("canvasGUI");
+        ctxGUI = canvasGUI.getContext("2d");
+        
+        //GUI images
+        GUIBackground = new Image();
+        GUIScore = new Image();
+        GUINumbers = new Image();
+        divider = new Image();
+        GUIHighScore = new Image();
+        starFilled = new Image();
+        starEmpty = new Image();
+        profileImage = new Image();
+        profileFrame = new Image();
+        playImage = new Image();
+        playImageMO = new Image();
+        pauseImage = new Image();
+        pauseImageMO = new Image();
+        playMusicImage = new Image();
+        playMusicImageMO = new Image();
+        pauseMusicImage = new Image();
+        pauseMusicImageMO = new Image();
+        
         menuImage = new Image();
         playButtonImage = new Image();
+	playButtonImageMO = new Image();
         grass = new Image();
         grassPlay = new Image();
+        friendImage = new Image();
+        
+        //GUI image load
+        GUIBackground.src = "art/GUI/UI_logs_bckrnd_woodgrains.png";
+        GUIScore.src = "art/GUI/score.png";
+        GUINumbers.src = "art/GUI/Numbers";
+        divider.src = "art/GIU/UI_div.png";
+        GUIHighScore.src = "art/GUI/HighScore.png";
+        starFilled.src = "art/GUI/star.gif";
+        starEmpty.src = "art/GUI/empty_star.png";
+        profileImage.src = "art/GUI/profileBearCute.png";
+        profileFrame.src = "art/GUI/fb_profile_frame.png";
+        playImage.src = "art/GUI/UI_play.png";
+        playImageMO.src = "art/GUI/UI_play_mo.png";
+        pauseImage.src = "art/GUI/UI_pause.png";
+        pauseImageMO.src = "art/GUI/UI_pause_mo.png";
+        gameState.push(playImage);
+        gameState.push(playImageMO);
+        gameState.push(pauseImage);
+        gameState.push(pauseImageMO);
+        playMusicImage.src = "art/GUI/UI_sound.png";
+        playMusicImageMO.src = "art/GUI/UI_sound_mo.png";
+        pauseMusicImage.src = "art/GUI/UI_nosound.png";
+        pauseMusicImageMO.src = "art/GUI/UI_nosound_mo.png";
+        musicState.push(playMusicImage);
+        musicState.push(playMusicImageMO);
+        musicState.push(pauseMusicImage);
+        musicState.push(pauseMusicImageMO);
+        
         menuImage.src = "art/house/LogoSimple.png";
-        playButtonImage.src = "playGameImage.png";
+        playButtonImage.src = "art/GUI/UI_Start.png";
+	playButtonImageMO.src = "art/GUI/UI_Start_mo";
         grass.src = "art/house/Grass_Continuous_Grid2.png";
         grassPlay.src = "art/house/Grass_Continuous_Grid_Play.png";
         
@@ -341,28 +397,6 @@ ctxFloor = canvasFloor.getContext("2d");
 canvasWalls = document.getElementById("canvasWalls");
 ctxWalls = canvasWalls.getContext("2d");
 
-canvasGUI = document.getElementById("canvasGUI");
-ctxGUI = canvasGUI.getContext("2d");
-
-//GUI images
-GUIBackground = new Image();
-GUIScore = new Image();
-GUINumbers = new Image();
-divider = new Image();
-GUIHighScore = new Image();
-starFilled = new Image();
-starEmpty = new Image();
-profileImage = new Image();
-profileFrame = new Image();
-playImage = new Image();
-playImageMO = new Image();
-pauseImage = new Image();
-pauseImageMO = new Image();
-playMusicImage = new Image();
-playMusicImageMO = new Image();
-pauseMusicImage = new Image();
-pauseMusicImageMO = new Image();
-
 //Image variables
 blondeMale = new Image();
 brunetteMale = new Image();
@@ -370,8 +404,6 @@ darkMale = new Image();
 blondeFemale = new Image();
 brunetteFemale = new Image();
 darkFemale = new Image();
-
-friendImage = new Image();
 
 bearImage = new Image();
 ramImage = new Image();
@@ -399,33 +431,6 @@ cornerBroken = new Image();
 logPoint1 = new Image();
 logPoint2 = new Image();
 splinters = new Image();
-
-//GUI image load
-GUIBackground.src = "art/GUI/UI_logs_bckrnd_woodgrains.png";
-GUIScore.src = "art/GUI/score.png";
-GUINumbers.src = "art/GUI/Numbers.png";
-divider.src = "art/GUI/UI_div.png";
-GUIHighScore.src = "art/GUI/HighScore.png";
-starFilled.src = "art/GUI/star.gif";
-starEmpty.src = "art/GUI/empty_star.png";
-profileImage.src = "art/GUI/profileBearCute.png";
-profileFrame.src = "art/GUI/fb_profile_frame.png";
-playImage.src = "art/GUI/UI_play.png";
-playImageMO.src = "art/GUI/UI_play_mo.png";
-pauseImage.src = "art/GUI/UI_pause.png";
-pauseImageMO.src = "art/GUI/UI_pause_mo.png";
-gameState.push(playImage);
-gameState.push(playImageMO);
-gameState.push(pauseImage);
-gameState.push(pauseImageMO);
-playMusicImage.src = "art/GUI/UI_sound.png";
-playMusicImageMO.src = "art/GUI/UI_sound_mo.png";
-pauseMusicImage.src = "art/GUI/UI_nosound.png";
-pauseMusicImageMO.src = "art/GUI/UI_nosound_mo.png";
-musicState.push(playMusicImage);
-musicState.push(playMusicImageMO);
-musicState.push(pauseMusicImage);
-musicState.push(pauseMusicImageMO);
 
 //Loading images
 blondeMale.src = "art/characters/blonde_male.png";
@@ -755,7 +760,7 @@ mouseY = e.clientY + document.body.scrollTop +
 document.documentElement.scrollTop - c.offsetTop;
 
 //Mouse click on play game
-if(!play && mouseX <= 560 && mouseX >= 440 && mouseY <= 472 && mouseY >= 400){
+if(!play && mouseX <= 465 && mouseX >= 235 && mouseY <= 578 && mouseY >= 490){
         play = !play;
         bearTime = randomInterval(bearMin, bearMax);
         Ftime = randomInterval(foxMin, foxMax);
@@ -769,10 +774,16 @@ if(mouseX <= 952 && mouseX >= 860 && mouseY <= 555 && mouseY >= 520){
         if(soundState == 1){
                 soundState = 3;
                 pauseGameSound();
+		pauseSound();
         }
         else{
                 soundState = 1;
-                playGameSound();
+                if(!play){
+                        playSound();
+                }
+                else{
+                        playGameSound();
+                }
         }
 }
 
@@ -805,56 +816,57 @@ moveY = e.clientY + document.body.scrollTop +
 document.documentElement.scrollTop - c.offsetTop;
 if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
     if(!play){
-        if(moveX <= 560 && moveX >= 440 && moveY <= 472 && moveY >= 400){
-                pulseOver = true;
-        }
-        else{
-                pulseOver = false;
-        }
+            if(moveX <= 465 && moveX >= 235 && moveY <= 578 && moveY >= 490){
+                    pulseOver = true;
+                    playButtonState = 1;
+            }
+            else{
+                    pulseOver = false;
+                    playButtonState = 0;
+            }
     }
     else{
-        if(board[Math.floor(moveX/squareWidth)][Math.floor(moveY/squareHeight)].index == 2){
-            drawFriend = true;
-        }
-        else{
-            drawFriend = false;
-        }
-        
-        if(moveX <= 842 && moveX >= 750 && moveY <= 555 && moveY >= 520){
-                if(playState == 0){
-                        playState = 1;
-                }
-                else if(playState == 2){
-                        playState = 3;
-                }
-        }
-        else{
-                if(playState == 1){
-                        playState = 0;
-                }
-                else if(playState == 3){
-                        playState = 2;
-                }
-        }
-        
-        if(moveX <= 952 && moveX >= 860 && moveY <= 555 && moveY >= 520){
-                if(soundState == 0){
-                        soundState = 1;
-                }
-                else if(soundState == 2){
-                        soundState = 3;
-                }
-        }
-        else{
-                if(soundState == 1){
-                        soundState = 0;
-                }
-                else if(soundState == 3){
-                        soundState = 2;
-                }
-        }
+            if(board[Math.floor(moveX/squareWidth)][Math.floor(moveY/squareHeight)].index == 2){
+                drawFriend = true;
+            }
+            else{
+                drawFriend = false;
+            }
     }
-}
+    if(moveX <= 842 && moveX >= 750 && moveY <= 555 && moveY >= 520){
+            if(playState == 0){
+                    playState = 1;
+            }
+            else if(playState == 2){
+                    playState = 3;
+            }
+    }
+    else{
+            if(playState == 1){
+                    playState = 0;
+            }
+            else if(playState == 3){
+                    playState = 2;
+            }
+    }
+    
+    if(moveX <= 952 && moveX >= 860 && moveY <= 555 && moveY >= 520){
+            if(soundState == 0){
+                    soundState = 1;
+            }
+            else if(soundState == 2){
+                    soundState = 3;
+            }
+    }
+    else{
+            if(soundState == 1){
+                    soundState = 0;
+            }
+            else if(soundState == 3){
+                    soundState = 2;
+            }
+    }
+    }
 }
 
 function gameSelection(){
@@ -941,13 +953,14 @@ function placeFox(){
         if(dir == 0){
                 for(var i = roomXmin; i < roomXmax; i++){
                         if(board[i][y1].type == 4 && !(board[i][y1-1].type == 9 || board[i][y1+1].type == 10) && !board[i][y1].beingAttacked){
-                                        Enemies.push(new enemy(foxImage, 1, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, 2, 0, 1.5, 0, -squareWidth-1, squareHeight/2, i, y1));
-                                        break;
-                                }
-                                else{
-                                        placeFox();
-                                        break;
-                                }
+                                board[i][y1].beingAttacked = true;
+                                Enemies.push(new enemy(foxImage, 1, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, 2, 0, 1.5, 0, -squareWidth-1, squareHeight/2, i, y1));
+                                break;
+                        }
+                        else{
+                                placeFox();
+                                break;
+                        }
                 }
         }
 
@@ -956,6 +969,7 @@ function placeFox(){
                 for(var i = roomYmin; i < roomYmax; i++){
                         if(board[x1][i].index == 0){
                                 if(board[x1][i].type == 6 && !(board[x1-1][i].type == 11 || board[x1+1][i].type == 10) && !board[x1][i].beingAttacked){
+                                        board[x1][i].beingAttacked = true;
                                         Enemies.push(new enemy(foxImage, 1, x1*squareWidth, 0, x1*squareWidth, 0, x1*squareWidth, (i-1)*squareHeight, 0, 2, 0, 1.5, 0, squareWidth/2, 0, x1, i));
                                         break;
                                 }
@@ -972,6 +986,7 @@ function placeFox(){
                 for(var i = roomXmax; i > roomXmin; i--){
                         if(board[i][y1].index == 0){
                                 if(board[i][y1].type == 5 && !(board[i][y1-1].type == 8 || board[i][y1+1].type == 11) && !board[i][y1].beingAttacked){
+                                        board[i][y1].beingAttacked = true;
                                         Enemies.push(new enemy(foxImage, 1, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, 2, 0, 1.5, 0, squareWidth*2, squareHeight/2, i, y1));
                                         break;
                                 }
@@ -988,6 +1003,7 @@ function placeFox(){
                 for(var i = roomYmax; i > roomYmin; i--){
                         if(board[x1][i].index == 0){
                                 if(board[x1][i].type == 7 && !(board[x1-1][i].type == 8 || board[x1+1][i].type == 9) && !board[x1][i].beingAttacked){
+                                        board[x1][i].beingAttacked = true;
                                         Enemies.push(new enemy(foxImage, 1, x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, (i-1)*squareHeight, 180, 2, 0, 1.5, 0, squareWidth/2, squareHeight*3, x1, i));
                                         break;
                                 }
@@ -1329,7 +1345,9 @@ function drawGUI(){
         ctxGUI.drawImage(starEmpty, 0, 0, 25, 25, 730, 444, 20, 20);
         ctxGUI.fillText(friendNames[3], 800, 482);
         
-        ctxGUI.drawImage(gameState[playState], 0, 0, 92, 35, 750, 520, 92, 35);
+        if(play){
+                ctxGUI.drawImage(gameState[playState], 0, 0, 92, 35, 750, 520, 92, 35);
+        }
         ctxGUI.drawImage(musicState[soundState], 0, 0, 92, 35, 860, 520, 92, 35);
 }
 
@@ -1363,7 +1381,7 @@ function draw() {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         
         //CLEAR CANVAS
-        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.clearRect(0,0,700,600);
         
         ctx.restore();
         
@@ -1382,31 +1400,12 @@ function draw() {
                 Ftime = randomInterval(foxMin, foxMax);
                 placeFox();
         }
-        /*if(newRam == ramTime){
-                newRam = 0;
-                ramTime = randomInterval(ramMin, ramMax);
-                placeRam();
-        }*/
         
         ctx.save();
         ctx.translate(((xMax+xMin)/2)*25, ((yMax+yMin)/2)*25);
         ctx.rotate(90*Math.PI/180);
         ctx.drawImage(table, 0, 0, 100, 50, -squareWidth, -37.5, 75, 50);
         ctx.restore();
-
-        /*for(var x = 0; x < Enemies.length; x++){
-                ctx.save();
-                ctx.translate(Math.floor(Enemies[x].posX+Enemies[x].translateX), Math.floor(Enemies[x].posY+Enemies[x].translateY));
-                ctx.rotate(Enemies[x].rotation*(Math.PI/180));
-                if(Enemies[x].type == 0){
-                        drawBear(x);
-                }
-                else if(Enemies[x].type == 1){
-                        drawRam(x);
-                }
-                ctx.restore();
-                ctx.clearRect(700, 0, 300, 600);
-        }*/
         
         for(var x = 0; x < Enemies.length; x++){
                 ctx.save();

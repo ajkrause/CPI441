@@ -343,8 +343,8 @@ function menu(){
         //GUI image load
         GUIBackground.src = "art/GUI/UI_logs_bckrnd_woodgrains.png";
         GUIScore.src = "art/GUI/score.png";
-        GUINumbers.src = "art/GUI/Numbers";
-        divider.src = "art/GIU/UI_div.png";
+        GUINumbers.src = "art/GUI/Numbers.png";
+        divider.src = "art/GUI/UI_div.png";
         GUIHighScore.src = "art/GUI/HighScore.png";
         starFilled.src = "art/GUI/star.gif";
         starEmpty.src = "art/GUI/empty_star.png";
@@ -367,9 +367,9 @@ function menu(){
         musicState.push(pauseMusicImage);
         musicState.push(pauseMusicImageMO);
         
-        menuImage.src = "art/house/LogoSimple.png";
+        menuImage.src = "art/GUI/Start_Splash.png";
         playButtonImage.src = "art/GUI/UI_Start.png";
-	playButtonImageMO.src = "art/GUI/UI_Start_mo";
+	playButtonImageMO.src = "art/GUI/UI_Start_mo.png";
         startButtonState.push(playButtonImage);
         startButtonState.push(playButtonImageMO);
         grass.src = "art/house/Grass_Continuous_Grid2.png";

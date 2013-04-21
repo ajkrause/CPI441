@@ -1,5 +1,7 @@
 <?php Header("Content-Type: application/x-javascript; charset=UTF-8"); ?>
 
+
+var playing = true;
 var buttonDown = false;
 var play = false;
 var stopMenu;
@@ -778,9 +780,11 @@ if(mouseX <= 952 && mouseX >= 860 && mouseY <= 555 && mouseY >= 520){
 if(mouseX <= 842 && mouseX >= 650 && mouseY <= 555 && mouseY >= 520){
         if(playState == 1){
                 playState = 3;
+                playing = false;
         }
         else{
                 playState = 1;
+                playing = true;
         }
 }
 
@@ -914,11 +918,16 @@ function gameLoop() {
                 document.getElementById('PlayAudio').currentTime = 0;
         }
         drawGUI();
+        if(playing)
+        {
+        
         draw();
         drawWalls();
         drawDamage();
-        moveCharacter();
-        moveEnemy();
+        
+          moveCharacter();
+          moveEnemy();
+        }
         requestAnimFrame(gameLoop);
 }
 

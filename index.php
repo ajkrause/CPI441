@@ -34,9 +34,9 @@ $userId = $facebook->getUser();
 ?>
 <html xmlns:fb="https://www.facebook.com/2008/fbml">
 	<head>
-		<title>Project</title>
+		<title>Cabin Crashers</title>
 		<link rel="stylesheet" type="text/css" href="styleTest.css">
-		
+	       <link rel="shortcut icon" href="favicon.ico">
 	</head>
 	<script>
 		function updateLeaderBoard(data)
@@ -382,6 +382,9 @@ function fbLogout() {
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
 			<canvas id = "canvasGUI" width = "1000" height = "600" style = "z-index: 4; position: absolute;">
+				Your browser does not support the HTML5 canvas tag
+			</canvas>
+			<canvas id = "canvasEnd" width = "1000" height = "600" style = "z-index: 6; position: absolute;">
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
 			

@@ -4,6 +4,7 @@ var playing = true;
 var buttonDown = false;
 var play = false;
 var stopMenu;
+var stopEnd;
 
 var mouseX = 0;
 var mouseY = 0;
@@ -28,6 +29,8 @@ var canvasMenu; //displays menu...then is transparent
 var ctxMenu;
 var canvasGUI;
 var ctxGUI;
+var canvasEnd;
+var ctxEnd;
 
 //GUI variables
 var GUIWidth = 300;
@@ -69,6 +72,12 @@ var playButtonImage;
 var playButtonImageMO;
 var pulseImage = 90;
 var pulseOver = false;
+var pulsePlayAgain = 90;
+var pulseOverPlayAgain = false;
+
+var endGameImage;
+var endPlayAgain;
+var endPlayAgainMO;
 
 var pulseFriend = 0;
 var drawFriend = false;
@@ -399,6 +408,9 @@ ctxFloor = canvasFloor.getContext("2d");
 canvasWalls = document.getElementById("canvasWalls");
 ctxWalls = canvasWalls.getContext("2d");
 
+canvasEnd = document.getElementById("canvasEnd");
+ctxEnd = canvasEnd.getContext("2d");
+
 //Image variables
 blondeMale = new Image();
 brunetteMale = new Image();
@@ -434,6 +446,10 @@ logPoint1 = new Image();
 logPoint2 = new Image();
 splinters = new Image();
 
+endGameImage = new Image();
+endPlayAgain = new Image();
+endPlayAgainMO = new Image();
+
 //Loading images
 blondeMale.src = "art/characters/blonde_male.png";
 brunetteMale.src = "art/characters/brunette_male.png";
@@ -468,6 +484,10 @@ cornerBroken.src = "art/house/Log_Interior_Destroyed.png";
 logPoint1.src = "art/house/Log_Point1_Test.png";
 logPoint2.src = "art/house/Log_Point2_Test.png";
 splinters.src = "art/house/splinter_spritesheet2.png";
+
+endGameImage.src = "art/GUI/corrected_game_over.png";
+endPlayAgain.src = "art/GUI/play_again_button.png";
+endPlayAgainMO.src = "art/GUI/play_again_button_mo.png";
 
 //Create 2D board
 //(0 == wall, 1 == outerfloor, 2 == character, 3 == innerfloor, 4 == enemy, 5 == logPoint)
@@ -771,6 +791,10 @@ if(!play && mouseX <= 465 && mouseX >= 235 && mouseY <= 578 && mouseY >= 490){
         //ramTime = randomInterval(ramMin, ramMax);
 }
 
+if(!playing && mouseX <= 725 && mouseX >= 275 && mouseY <= 520 && mouseY >= 400){
+        alert("Do restart stuff here");
+}
+
 //Mouse click on play/pause...or mute/unmute
 if(mouseX <= 952 && mouseX >= 860 && mouseY <= 555 && mouseY >= 520){
         if(soundState == 1){
@@ -867,6 +891,12 @@ if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
             else if(soundState == 3){
                     soundState = 2;
             }
+    }
+    if(!playing && moveX <= 725 && moveX >= 275 && moveY <= 520 && moveY >= 400){
+            pulseOverPlayAgain = true;
+    }
+    else{
+            pulseOverPlayAgain = false;
     }
     }
 }
@@ -1250,13 +1280,39 @@ function drawWalls() {
                                         ctxWalls.rotate(-board[x][y].rotate*Math.PI/180);	
                                 }
                                 if(board[x][y].health < 0){
-                                        //end
-                                        alert("YOU LOSE!!!!!");
+                                        //End of Game
+                                        updateHighScore(Math.floor(score));
+                                        drawEndGame();
+                                        stopEnd = setInterval(drawEndGame, 30);
+                                        playing = false;
                                 }
                                 ctxWalls.translate(-((squareWidth*x)+(squareWidth/2)), -((squareHeight*y)+(squareHeight/2)));
                         }
                 }
         }
+}
+
+function drawEndGame(){
+        ctxEnd.clearRect(0, 0, canvas.width, canvas.height);
+        ctxEnd.beginPath();
+        
+        var temp = Math.abs(Math.cos(pulsePlayAgain*Math.PI/180))*5;
+        ctxEnd.drawImage(endGameImage, 0, 0, 1000, 700, 0, 0, 1000, 600);
+        if(pulseOverPlayAgain){
+                if(pulsePlayAgain >= 360){
+                        pulsePlayAgain = 0;
+                }
+                else{
+                        pulsePlayAgain = pulsePlayAgain + 6;
+                }
+                ctxEnd.drawImage(endPlayAgainMO, 0, 0, 750, 200, 275-temp, 400-temp, 450+(temp*2), 120+(temp*2));
+        }
+        else{
+                pulsePlayAgain = 90;
+                ctxEnd.drawImage(endPlayAgain, 0, 0, 750, 200, 275, 400, 450, 120);
+        }
+        
+        
 }
 
 function drawGUI(){

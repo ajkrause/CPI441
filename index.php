@@ -53,7 +53,7 @@ $userId = $facebook->getUser();
 		}
 	    function updateHighScore(score)
 	    {
-				score = Math.floor(score/6);
+				score = Math.floor(score);
 		    var xmlhttp;    
 		    gamesplayed++;
 		    if (window.XMLHttpRequest)
@@ -68,7 +68,7 @@ $userId = $facebook->getUser();
 			    {
 			    if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				    {
-							document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
+							//document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
 					   //send the new high score to facebook
 						 FB.api("/me/scores?score=" + xmlhttp.responseText, "post", function(response){
 							FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});

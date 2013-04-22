@@ -37,7 +37,7 @@ var GUIWidth = 300;
 var digits = new Array();
 var digitOffset = 0;
 var scoreTemp = 0;
-var highScore = 11632;
+var highScore = hscore;
 var highScoreTemp = 0;
 var initializedHS = false;
 var highDigits = new Array();
@@ -792,7 +792,9 @@ if(!play && mouseX <= 465 && mouseX >= 235 && mouseY <= 578 && mouseY >= 490){
 }
 
 if(!playing && mouseX <= 725 && mouseX >= 275 && mouseY <= 520 && mouseY >= 400){
-        alert("Do restart stuff here");
+
+        //alert("Do restart stuff here");
+        restart();
 }
 
 //Mouse click on play/pause...or mute/unmute
@@ -1281,7 +1283,6 @@ function drawWalls() {
                                 }
                                 if(board[x][y].health < 0){
                                         //End of Game
-                                        updateHighScore(Math.floor(score));
                                         drawEndGame();
                                         stopEnd = setInterval(drawEndGame, 30);
                                         playing = false;
@@ -2007,7 +2008,7 @@ function identifySuccessors(x, y){
 
         //find all neighbors of point[x,y] from direction[px,py]
         findNeighbors(x, y);
-        for(i = 0; i<neighbors.length; i++){
+        for(i = 0; i< neighbors.length; i++){
                 var neighbor = neighbors[i];
                 //find a jumpPoint from each neighbor
                 var jumpPoint = jump(neighbor.xpos, neighbor.ypos, x, y);
@@ -2216,4 +2217,38 @@ function findNeighbors(x, y){
                         neighbors.push({xpos: x-1, ypos: y+1});
                 }	
         }
+}
+
+function restart()
+{
+
+ctxEnd.clearRect(0, 0, canvas.width, canvas.height);
+
+updateHighScore(Math.floor(score));
+if(score > highScore)
+{
+    highScore = Math.floor(score);
+}
+initializedHS = false;
+score = 0;
+
+//how many characters to draw
+ numCharacters = 5;
+ characterValue = 0;
+
+ activePlayer = -1;
+ characterSelected = false;
+
+var board = new Array(boardWidth);
+
+ damagedList = []; //value to draw regarding damaged walls
+ Characters = []; //set of characters
+ Enemies = [];
+ neighbors = []; //neighbors
+ openList = [];
+ clearInterval(stopEnd);
+ 
+ init();
+refresh();
+ playing = true;
 }

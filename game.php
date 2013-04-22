@@ -764,9 +764,12 @@ board[14][12].index = 2;
 board[14][13].index = 2;
 
 createCharacters(12, 11, 90);
-createCharacters(12, 13, 90);
-createCharacters(15, 11, -90);
-createCharacters(15, 13, -90);
+  if(connectedFacebook)
+  {
+    createCharacters(12, 13, 90);
+    createCharacters(15, 11, -90);
+    createCharacters(15, 13, -90);
+  }
 }
 
 function keyDown(e) {
@@ -1376,33 +1379,43 @@ function drawGUI(){
         }
         
         ctxGUI.drawImage(divider, 0, 0, 196, 5, 725, 185, 250, 5);
-        var friend0 = new Image();
-        friend0.src = friendPics[0];
-        ctxGUI.drawImage(friend0, 740, 210, 50, 50);
-        ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 210, 50, 50);
-        ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 204, 20, 20);
-        ctxGUI.fillText(friendNames[0], 800, 242);
-        
-        var friend1= new Image();
-          friend1.src = friendPics[1];
-        ctxGUI.drawImage(friend1, 740, 290, 50, 50);
-        ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 290, 50, 50);
-        ctxGUI.drawImage(starEmpty, 0, 0, 25, 25, 730, 284, 20, 20);
-        ctxGUI.fillText(friendNames[1], 800, 322);
-        
-        var friend2 = new Image();
-        friend2.src = friendPics[2];
-        ctxGUI.drawImage(friend2, 740, 370, 50, 50);
-        ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 370, 50, 50);
-        ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 364, 20, 20);
-        ctxGUI.fillText(friendNames[2], 800, 402);
-        
-         var friend3 = new Image();
-        friend3.src = friendPics[3];
-        ctxGUI.drawImage(friend3, 740, 450, 50, 50);
-        ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 450, 50, 50);
-        ctxGUI.drawImage(starEmpty, 0, 0, 25, 25, 730, 444, 20, 20);
-        ctxGUI.fillText(friendNames[3], 800, 482);
+        if(connectedFacebook)
+        {
+          var friend0 = new Image();
+          friend0.src = friendPics[0];
+          ctxGUI.drawImage(friend0, 740, 210, 50, 50);
+          ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 210, 50, 50);
+          ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 204, 20, 20);
+          ctxGUI.fillText(friendNames[0], 800, 242);
+          
+          var friend1= new Image();
+            friend1.src = friendPics[1];
+          ctxGUI.drawImage(friend1, 740, 290, 50, 50);
+          ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 290, 50, 50);
+          ctxGUI.drawImage(starEmpty, 0, 0, 25, 25, 730, 284, 20, 20);
+          ctxGUI.fillText(friendNames[1], 800, 322);
+          
+          var friend2 = new Image();
+          friend2.src = friendPics[2];
+          ctxGUI.drawImage(friend2, 740, 370, 50, 50);
+          ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 370, 50, 50);
+          ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 364, 20, 20);
+          ctxGUI.fillText(friendNames[2], 800, 402);
+          
+           var friend3 = new Image();
+          friend3.src = friendPics[3];
+          ctxGUI.drawImage(friend3, 740, 450, 50, 50);
+          ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 450, 50, 50);
+          ctxGUI.drawImage(starEmpty, 0, 0, 25, 25, 730, 444, 20, 20);
+          ctxGUI.fillText(friendNames[3], 800, 482);
+          }
+          else
+          {
+            ctxGUI.fillText("Overwhelmed? Login with", 740, 290 );
+            ctxGUI.fillText("  Facebook to call in the", 740, 320 );
+            ctxGUI.fillText("  cavalry!", 800, 350 );
+
+          }
         
         if(play){
                 ctxGUI.drawImage(gameState[playState], 0, 0, 92, 35, 750, 520, 92, 35);

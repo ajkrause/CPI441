@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+
 <?php require 'php-sdk/facebook.php';
 $facebook = new Facebook(array(
   'appId'  => '312229638880822',
@@ -34,9 +35,17 @@ $userId = $facebook->getUser();
 ?>
 <html xmlns:fb="https://www.facebook.com/2008/fbml">
 	<head>
+	
 		<title>Cabin Crashers</title>
 		<link rel="stylesheet" type="text/css" href="styleTest.css">
 	       <link rel="shortcut icon" href="favicon.ico">
+	       <meta property="og:image" content="https://fbcdn-photos-d-a.akamaihd.net/hphotos-ak-ash3/851556_331805843589868_516124963_n.png"/>
+	       <meta property="og:title" content="Cabin Crashers!"/>
+	       <meta property="og:url" content="http://game.courses.asu.edu"/>
+	       <meta property="og:site_name" content="Cabin Crashers: An Online Facebook Game"/>
+	       <meta property="og:type" content="facebook game"/>
+	       <meta name="description" content="Save your pie, and your cabin, from the hungry woodland creatures in this unique online facebook game!"
+	       
 	</head>
 	<script>
 		function updateLeaderBoard(data)
@@ -435,6 +444,7 @@ function fbLogout() {
 				<table id="leaderboard"></table>
 				<?php } ?>
 				<br>
+					<h1 class="mainfont"> Cabin Crashers Facebook Game </h1>
 					<h2 class="mainfont">Instructions: </h2>
 					<p class="mainfont">You and your friends were just about to sit down to a delicious meal
 					when some uninvited guests showed up for dinner! Defend your food from the relentless

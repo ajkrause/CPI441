@@ -79,7 +79,7 @@ $userId = $facebook->getUser();
 				    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
 				    }
 			    }
-		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+window.parent.getUserId() +"&games="+gamesplayed,true);
+		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+ getUserId() +"&games="+gamesplayed,true);
 				xmlhttp.send();
 		    }
 				var loggedIn = false;

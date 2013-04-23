@@ -1286,6 +1286,13 @@ function drawWalls() {
                                 }
                                 if(board[x][y].health < 0){
                                         //End of Game
+                                        updateHighScore(Math.floor(score));
+                                        if(score > highScore)
+                                        {
+                                            highScore = Math.floor(score);
+                                        }
+                                        initializedHS = false;
+                                        score = 0;
                                         drawEndGame();
                                         stopEnd = setInterval(drawEndGame, 30);
                                         playing = false;
@@ -2237,13 +2244,7 @@ function restart()
 
 ctxEnd.clearRect(0, 0, canvas.width, canvas.height);
 
-updateHighScore(Math.floor(score));
-if(score > highScore)
-{
-    highScore = Math.floor(score);
-}
-initializedHS = false;
-score = 0;
+
 
 //how many characters to draw
  numCharacters = 5;
@@ -2259,9 +2260,10 @@ var board = new Array(boardWidth);
  Enemies = [];
  neighbors = []; //neighbors
  openList = [];
- clearInterval(stopEnd);
  
  init();
+ clearInterval(stopEnd);
+ 
 refresh();
  playing = true;
 }

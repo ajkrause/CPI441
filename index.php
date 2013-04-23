@@ -186,6 +186,7 @@ $userId = $facebook->getUser();
 				}catch(FacebookApiException $e) {
 					$result = $e->getResult();
 					echo $result;
+					window.location.reload();
 				}
 
 		$dbhandle = mysql_connect($hostname, $username, $password) 

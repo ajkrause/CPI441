@@ -365,6 +365,7 @@ function fbLogout() {
 			   //friendPics.push("<?php echo $randomfriendimage4 ?>");
 			   //friendPics.push("<?php echo $randomfriendimage5 ?>");
                            //UserImage = "<?php echo $userImage ?>";
+                           friendGamesPlayed.push("<?php echo $gamesplayed ?>");
                            friendGamesPlayed.push("<?php echo $friendgames1 ?>");
                            friendGamesPlayed.push("<?php echo $friendgames2 ?>");
                            friendGamesPlayed.push("<?php echo $friendgames3 ?>");

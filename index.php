@@ -145,6 +145,10 @@ $userId = $facebook->getUser();
 					//$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
                                         $userImage = "http://graph.facebook.com/" . $userInfo['id'] . "/picture";
                                         
+                                        $friendId1 = $randomfriend['id'];
+                                        $friendId2 = $randomfriend2['id'];
+                                        $friendId3 = $randomfriend3['id'];
+                                        
                                         $friendname1 = explode (" ", $randomfriend['name']);
                                         $randomfriendName = $friendname1[0];
                                         $friendname2 = explode (" ", $randomfriend2['name']);
@@ -194,6 +198,21 @@ $userId = $facebook->getUser();
 					$name=$row["NAME"];
 					$hscore=$row["HSCORE"];
 					$gamesplayed=$row["GAMES"];
+			}
+			if($friendId1 == $id)
+			{
+				$friendgames1=$row["GAMES"];
+				
+			}
+			if($friendId2 == $id)
+			{
+				$friendgames2=$row["GAMES"];
+				
+			}
+			if($friendId3 == $id)
+			{
+				$friendgames3=$row["GAMES"];
+				
 			}
       //echo "<b> $tname </b><br>Score: $thscore <br>";
 		}
@@ -330,6 +349,7 @@ function fbLogout() {
 			var friendPics = new Array();
 			var friendNames = new Array();
                         var friendGenders = new Array();
+                        var friendGamesPlayed = new Array();
 			var connectedFacebook = false;
                         var UserName;
                         var UserGender;
@@ -340,10 +360,15 @@ function fbLogout() {
 			   friendPics.push("<?php echo $userImage ?>");
                            friendPics.push("<?php echo $randomfriendimage ?>");
 			   friendPics.push("<?php echo $randomfriendimage2 ?>");
+
 			   friendPics.push("<?php echo $randomfriendimage3 ?>");
 			   //friendPics.push("<?php echo $randomfriendimage4 ?>");
 			   //friendPics.push("<?php echo $randomfriendimage5 ?>");
                            //UserImage = "<?php echo $userImage ?>";
+                           friendGamesPlayed.push("<?php echo $friendgames1 ?>");
+                           friendGamesPlayed.push("<?php echo $friendgames2 ?>");
+                           friendGamesPlayed.push("<?php echo $friendgames3 ?>");
+                           
                            
                            //UserName = "<?php echo $userName ?>";
                            friendID = "<?php echo $randomfriendID ?>";

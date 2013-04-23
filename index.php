@@ -91,7 +91,7 @@ $userId = $facebook->getUser();
 		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+ getUserId() +"&games="+gamesplayed,true);
 				xmlhttp.send();
 		    }
-				var loggedIn = false;
+				var loggedIn = true;
 		    
 	    </script>
 	<body>
@@ -184,9 +184,10 @@ $userId = $facebook->getUser();
 				 }
 
 				}catch(FacebookApiException $e) {
-					$result = $e->getResult();
-					echo $result;
-					window.location.reload();
+					$result = $e->getType();
+					//echo $result;
+					//echo "<script>console.log(". $result .");</script>";
+					echo "<script>loggedIn = false;</script>";
 				}
 
 		$dbhandle = mysql_connect($hostname, $username, $password) 
@@ -263,7 +264,7 @@ function fbLogout() {
 					<div id="colorTitle"></div>
         <div id="fb-root"></div>
         <script>
-					var loggedIn = false;
+					
 					var appID = '312229638880822';
           window.fbAsyncInit = function() {
             FB.init({
@@ -275,7 +276,10 @@ function fbLogout() {
 				FB.getLoginStatus(function(response) {
 					if (response.status === 'connected') {
 						// connected
-						loggedIn = true;
+						if(!loggedIn)
+						{
+							window.location.reload();
+						}
 						FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
 					} else if (response.status === 'not_authorized') {
 						// not_authorized;

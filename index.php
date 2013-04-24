@@ -304,11 +304,11 @@ function fbLogout() {
            var obj = {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
-                to: friendID,
+                to: friendId2,
            	link: 'https://developers.facebook.com/docs/reference/dialogs',
-           	picture: 'http://fbrell.com/f8.jpg',
-           	caption: 'Reference Documentation',
-           	description: 'Someone beat your High Score in Cabin Crashers! Play again!'
+           	picture: 'https://photos-a.xx.fbcdn.net/hphotos-ash3/851575_331805890256530_1016490711_n.png',
+           	caption: 'You helped save a pie!',
+           	description: 'Your Avatar helped someone save their pie in Cabin Crashers! Try and beat their score!'
            	
            };
            

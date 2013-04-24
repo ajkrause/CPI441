@@ -1294,6 +1294,7 @@ function drawWalls() {
                                         initializedHS = false;
                                         score = 0;
                                         drawEndGame();
+                                        postToFeed();
                                         stopEnd = setInterval(drawEndGame, 30);
                                         playing = false;
                                 }
@@ -1304,6 +1305,7 @@ function drawWalls() {
 }
 
 function drawEndGame(){
+	
         ctxEnd.clearRect(0, 0, canvas.width, canvas.height);
         ctxEnd.beginPath();
         

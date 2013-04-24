@@ -243,7 +243,7 @@ $userId = $facebook->getUser();
 		 
      <script>
 document.getElementById("welcome").innerHTML = "<br>Welcome, <?php echo $userInfo['name']; ?><br>";
-document.getElementById("rightBox").innerHTML += "<button class='fbbutton confirm' id='fbLogout' onclick='fbLogout()'>Logout</button>";
+document.getElementById("rightBox").innerHTML += "<span id='fbLogout' onclick='fbLogout()'><a class='fb_button fb_button_medium'><span class='fb_button_text'>Logout</span></a></span>";
 function fbLogout() {
         FB.logout(function (response) {
             //Do what ever you want here when logged out like reloading the page
@@ -305,8 +305,8 @@ function fbLogout() {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
                 to: friendID,
-           	link: 'https://developers.facebook.com/docs/reference/dialogs',
-           	picture: 'https://photos-a.xx.fbcdn.net/hphotos-ash3/851575_331805890256530_1016490711_n.png',
+           	link: 'https://www.facebook.com/appcenter/asu_cpi_game?preview=1&locale=en_US',
+           	picture: 'google.com',
            	caption: 'You helped save a pie!',
            	description: 'Your Avatar helped someone save their pie in Cabin Crashers! Try and beat their score!'
            	

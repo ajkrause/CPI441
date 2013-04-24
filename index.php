@@ -304,7 +304,7 @@ function fbLogout() {
            var obj = {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
-                to: friendId2,
+                to: friendID,
            	link: 'https://developers.facebook.com/docs/reference/dialogs',
            	picture: 'https://photos-a.xx.fbcdn.net/hphotos-ash3/851575_331805890256530_1016490711_n.png',
            	caption: 'You helped save a pie!',
@@ -386,7 +386,7 @@ function fbLogout() {
                            
                            
                            //UserName = "<?php echo $userName ?>";
-                           friendID = "<?php echo $randomfriendID ?>";
+                           friendID = "<?php echo $friendId2 ?>";
                            friendNames.push("<?php echo $userName ?>");
                            friendNames.push("<?php echo $randomfriendName ?>");
                            friendNames.push("<?php echo $randomfriendName2 ?>");

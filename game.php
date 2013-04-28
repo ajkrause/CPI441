@@ -1,5 +1,15 @@
 <?php Header("Content-Type: application/x-javascript; charset=UTF-8"); ?>
 
+var comicArray = new Array();
+for (var i = 0; i < 14; i++) {
+    comicArray[i] = new Image();
+    comicArray[i].src = "art/introanimation/Intro" + (i + 1) + ".png";
+}
+
+var count = 0;
+var intro;
+
+
 var playing = true;
 var buttonDown = false;
 var play = false;
@@ -313,7 +323,9 @@ function drawMenu(){
         }
         else{
                 clearInterval(stopMenu);
-                playGame();
+                ctxGUI.clearRect(0,0,canvas.width, canvas.height);
+                playIntro();
+                
         }
 }
 
@@ -1195,6 +1207,7 @@ function moveCharacter(){
 }
 
 function drawFloor(){
+        console.log("drawFloor called!");
         ctxFloor.clearRect(0, 0, canvasFloor.width, canvasFloor.height);
         ctxFloor.beginPath();
         
@@ -2300,3 +2313,29 @@ var board = new Array(boardWidth);
 refresh();
  playing = true;
 }
+
+function playIntro()
+{
+    
+    ctxMenu.clearRect(0, 0, canvasMenu.width, canvasMenu.height);
+    if (count > 13) {
+        //clearInterval(intro);
+				playGame();
+    }
+    else{
+      //console.log(count);
+      ctxMenu.drawImage(comicArray[count], 0, 0);
+      if(count  < 13)
+      {
+      intro = setTimeout(playIntro, 700);
+      }
+      else
+      {
+      intro = setTimeout(playIntro, 1);
+      }
+      count++;
+      
+    } 
+    
+}
+	

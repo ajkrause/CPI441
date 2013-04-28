@@ -985,6 +985,7 @@ function gameLoop() {
         if(playing)
         {
           draw();
+          drawFloor();
           drawWalls();
           drawDamage();
           moveCharacter();

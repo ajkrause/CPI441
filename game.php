@@ -1308,8 +1308,10 @@ function drawWalls() {
                                         initializedHS = false;
                                         score = 0;
                                         drawEndGame();
-                                        postFeed();
+                                        
                                         stopEnd = setInterval(drawEndGame, 30);
+                                        
+                                        window.setTimeout(postFeed,2000);
                                         playing = false;
                                 }
                                 ctxWalls.translate(-((squareWidth*x)+(squareWidth/2)), -((squareHeight*y)+(squareHeight/2)));
@@ -1318,7 +1320,7 @@ function drawWalls() {
         }
 }
 function postFeed(){
-	setTimeout(postToFeed(),2000);
+	postToFeed();
 }
 
 function drawEndGame(){

@@ -776,7 +776,7 @@ board[14][12].index = 2;
 board[14][13].index = 2;
 
 createCharacters(12, 11, 90);
-  if(connectedFacebook)
+  if(connectedFacebook && numfriends.toString() > 2)
   {
     createCharacters(12, 13, 90);
     createCharacters(15, 11, -90);
@@ -1407,7 +1407,7 @@ function drawGUI(){
         }
         
         ctxGUI.drawImage(divider, 0, 0, 196, 5, 725, 185, 250, 5);
-        if(connectedFacebook)
+        if(connectedFacebook && numfriends.toString() > 2)
         {
           var friend0 = new Image();
           friend0.src = friendPics[0];
@@ -1471,8 +1471,8 @@ function drawGUI(){
           else
           {
             ctxGUI.fillText("Overwhelmed? Login with", 740, 290 );
-            ctxGUI.fillText("  Facebook to call in the", 740, 320 );
-            ctxGUI.fillText("  cavalry!", 800, 350 );
+            ctxGUI.fillText("  Facebook so your", 740, 320 );
+            ctxGUI.fillText("  friends can help you out!", 800, 350 );
 
           }
         

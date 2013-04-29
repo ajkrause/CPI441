@@ -1308,7 +1308,7 @@ function drawWalls() {
                                         initializedHS = false;
                                         score = 0;
                                         drawEndGame();
-                                        postToFeed();
+                                        postFeed();
                                         stopEnd = setInterval(drawEndGame, 30);
                                         playing = false;
                                 }
@@ -1316,6 +1316,9 @@ function drawWalls() {
                         }
                 }
         }
+}
+function postFeed(){
+	setTimeout(postToFeed(),2000);
 }
 
 function drawEndGame(){

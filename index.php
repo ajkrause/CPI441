@@ -368,7 +368,7 @@ function fbLogout() {
                         var UserName;
                         var UserGender;
                         var UserImage;
-
+                        var numfriends;
 			var friendID;
 			if("<?php echo $connected ?>"){
 			   friendPics.push("<?php echo $userImage ?>");
@@ -384,7 +384,7 @@ function fbLogout() {
                            friendGamesPlayed.push("<?php echo $friendgames2 ?>");
                            friendGamesPlayed.push("<?php echo $friendgames3 ?>");
                            
-                           
+                           numfriends = "<?php echo $friendcount ?>";
                            //UserName = "<?php echo $userName ?>";
                            friendID = "<?php echo $friendId2 ?>";
                            friendNames.push("<?php echo $userName ?>");

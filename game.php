@@ -1,7 +1,7 @@
 <?php Header("Content-Type: application/x-javascript; charset=UTF-8"); ?>
 
 var comicArray = new Array();
-for (var i = 0; i < 14; i++) {
+for (var i = 0; i < 13; i++) {
     comicArray[i] = new Image();
     comicArray[i].src = "art/introanimation/Intro" + (i + 1) + ".png";
 }
@@ -9,7 +9,7 @@ for (var i = 0; i < 14; i++) {
 var count = 0;
 var intro;
 
-
+var introActive = false;
 var playing = true;
 var buttonDown = false;
 var play = false;
@@ -58,6 +58,9 @@ var musicState = new Array();
 var playButtonState = 0;
 var startButtonState = new Array();
 
+var skipMouse = 0;
+var skipState = new Array();
+
 //GUI images
 var GUIBackground;
 var GUIScore;
@@ -76,6 +79,9 @@ var playMusicImage;
 var playMusicImageMO;
 var pauseMusicImage;
 var pauseMusicImageMO;
+
+var skipImage;
+var skipImageMO;
 
 var menuImage;
 var playButtonImage;
@@ -323,7 +329,10 @@ function drawMenu(){
         }
         else{
                 clearInterval(stopMenu);
-                ctxGUI.clearRect(0,0,canvas.width, canvas.height);
+                //ctxGUI.clearRect(0,0,canvas.width, canvas.height);
+                playing = false;
+                introActive = true;
+                playGame();
                 playIntro();
                 
         }
@@ -353,6 +362,8 @@ function menu(){
         playMusicImageMO = new Image();
         pauseMusicImage = new Image();
         pauseMusicImageMO = new Image();
+        skipImage = new Image();
+        skipImageMO = new Image();
         
         menuImage = new Image();
         playButtonImage = new Image();
@@ -395,6 +406,12 @@ function menu(){
         startButtonState.push(playButtonImageMO);
         grass.src = "art/house/Grass_Continuous_Grid2.png";
         grassPlay.src = "art/house/Grass_Continuous_Grid_Play.png";
+        
+        
+        skipImage.src = "art/GUI/UI_skip.png";
+        skipImageMO.src = "art/GUI/UI_skip_mo.png";
+        skipState.push(skipImage);
+        skipState.push(skipImageMO);
         
         drawMenu();
         stopMenu = setInterval(drawMenu, 30);
@@ -832,13 +849,22 @@ if(mouseX <= 952 && mouseX >= 860 && mouseY <= 555 && mouseY >= 520){
 
 //Still need to add code to actually pause and play game
 if(mouseX <= 842 && mouseX >= 650 && mouseY <= 555 && mouseY >= 520){
-        if(playState == 1){
-                playState = 3;
-                playing = true;
+        if(introActive)
+        {
+            introActive = false;
+            count = 14;
+            
         }
-        else{
-                playState = 1;
-                playing = false;
+        else
+        {
+          if(playState == 1){
+                  playState = 3;
+                  playing = true;
+          }
+          else{
+                  playState = 1;
+                  playing = false;
+          }
         }
 }
 
@@ -877,6 +903,7 @@ if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
             }
     }
     if(moveX <= 842 && moveX >= 750 && moveY <= 555 && moveY >= 520){
+            skipMouse = 1; 
             if(playState == 0){
                     playState = 1;
             }
@@ -885,6 +912,7 @@ if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
             }
     }
     else{
+            skipMouse = 0;
             if(playState == 1){
                     playState = 0;
             }
@@ -1351,7 +1379,7 @@ function drawGUI(){
         ctxGUI.clearRect(0, 0, canvas.width, canvas.height);
         ctxGUI.beginPath();
         
-        if(!playing)
+        if(!playing && !introActive)
         {
           ctxGUI.fillStyle = "#000000";
           ctxGUI.globalAlpha = .5;
@@ -1476,7 +1504,11 @@ function drawGUI(){
 
           }
         
-        if(play){
+        if(introActive)
+        {
+          ctxGUI.drawImage(skipState[skipMouse], 0, 0, 92, 35, 750, 520, 92, 35);
+        }
+        else if(play){
                 ctxGUI.drawImage(gameState[playState], 0, 0, 92, 35, 750, 520, 92, 35);
         }
         ctxGUI.drawImage(musicState[soundState], 0, 0, 92, 35, 860, 520, 92, 35);
@@ -2324,20 +2356,22 @@ function playIntro()
 {
     
     ctxMenu.clearRect(0, 0, canvasMenu.width, canvasMenu.height);
-    if (count > 13) {
+    if (count > 12) {
         //clearInterval(intro);
-				playGame();
+        introActive = false;
+				playing = true;
+        //playGame();
     }
     else{
       //console.log(count);
       ctxMenu.drawImage(comicArray[count], 0, 0);
-      if(count  < 13)
+      if(count  < 12)
       {
-      intro = setTimeout(playIntro, 700);
+      intro = setTimeout(playIntro, 1000);
       }
       else
       {
-      intro = setTimeout(playIntro, 1);
+      intro = setTimeout(playIntro, 1500);
       }
       count++;
       

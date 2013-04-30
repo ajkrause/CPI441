@@ -518,7 +518,7 @@ darkFemale.src = "art/characters/black_hair_female.png";
 bearImage.src = "art/enemies/bear_sprite_sheet2.png";
 birdImage.src = "art/enemies/woodpecker_sprite_sheet.png";
 ramImage.src = "art/enemies/Ram_Sprite_Sheet.png";
-smoke.src = "art/enemies/dustcloud_spritesheet.png";
+smoke.src = "art/enemies/dustcloud_sprite_sheet.png";
 foxImage.src = "art/enemies/Fox_Sprite_Sheet.png";
 
 wall1.src = "art/house/Log1.png";

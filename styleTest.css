@@ -194,3 +194,7 @@ font-size: 30px;
     -moz-box-shadow: none;
     box-shadow: none;
 }
+#tables {
+margin: auto;
+width: 1000px;
+}

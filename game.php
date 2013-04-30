@@ -103,18 +103,26 @@ var damagePulseSwitch = false;
 
 var newBear = 0;
 var bearTime = -1;
-var bearMin = 120;
-var bearMax = 240;
 var newFox = 0;
 var Ftime = -1;
-var foxMin = 120;
-var foxMax = 240;
-
 var newRam = 0;
 var ramTime = -1;
+var birdPath = [];
+var ramAttacked = false;
+var newBird = 0;
+var Btime = -1;
+var bearMin = 120;
+var bearMax = 240;
+var foxMin = 120;
+var foxMax = 240;
 var ramMin = 120;
 var ramMax = 240;
-var ramAttacked = false;
+var birdMin = 120;
+var birdMax = 240;
+var bearDamage = 50; //must be even
+var foxDamage = 2;
+var woodPeckerDamage = 1;
+var ramDamage = 60;
 
 var score = 0;
 
@@ -129,7 +137,9 @@ var friendImage;
 var friendName;
 
 var bearImage;
+var birdImage;
 var ramImage;
+var smoke;
 var foxImage;
 
 var wall1;
@@ -234,7 +244,7 @@ function character(image, rotate, boardX, boardY, PosX, PosY, desiredPosX, desir
         this.speed = speed;
 }
 
-function enemy(image, type, startPosX, startPosY, posX, posY, desiredPosX, desiredPosY, rotation, damage, stage, speed, frame, translateX, translateY, attackBoardX, attackBoardY){
+function enemy(image, type, startPosX, startPosY, posX, posY, desiredPosX, desiredPosY, rotation, damage, stage, speed, frame, translateX, translateY, attackBoardX, attackBoardY, phase){
         this.image = image;
         this.type = type; //Bear, wolf, rabbit, etc
         this.startPosX = startPosX;
@@ -252,12 +262,26 @@ function enemy(image, type, startPosX, startPosY, posX, posY, desiredPosX, desir
         this.translateY = translateY;
         this.attackBoardX = attackBoardX;
         this.attackBoardY = attackBoardY;
+        this.phase = phase;
+}
+
+function pathPoint(x, y){
+        this.x = x;
+        this.y = y;
 }
 
 function damagedObject(posX, posY, damage, alpha, linger, time){
         this.posX = posX;
         this.posY = posY;
         this.damage = damage;
+        this.alpha = alpha;
+        this.linger = linger;
+        this.time = time;
+}
+
+function smokeObject(posX, posY, alpha, linger, time){
+        this.posX = posX;
+        this.posY = posY;
         this.alpha = alpha;
         this.linger = linger;
         this.time = time;
@@ -450,7 +474,9 @@ brunetteFemale = new Image();
 darkFemale = new Image();
 
 bearImage = new Image();
+birdImage = new Image();
 ramImage = new Image();
+smoke = new Image();
 foxImage = new Image();
 
 wall1 = new Image();
@@ -489,7 +515,9 @@ brunetteFemale.src = "art/characters/brunette_female.png";
 darkFemale.src = "art/characters/black_hair_female.png";
 
 bearImage.src = "art/enemies/bear_sprite_sheet2.png";
-ramImage.src = "art/enemies/ram_sprite_sheet.png";
+birdImage.src = "art/enemies/woodpecker_sprite_sheet.png";
+ramImage.src = "art/enemies/Ram_Sprite_Sheet.png";
+smoke.src = "art/enemies/dustcloud_spritesheet.png";
 foxImage.src = "art/enemies/Fox_Sprite_Sheet.png";
 
 wall1.src = "art/house/Log1.png";
@@ -597,6 +625,21 @@ roomXmax++;
 roomXmin--;
 roomYmax++;
 roomYmin--;
+
+//bird path
+//top
+birdPath.push(new pathPoint(7, 1));
+//left
+birdPath.push(new pathPoint(2, 6));
+birdPath.push(new pathPoint(2, 17));
+//bottom
+birdPath.push(new pathPoint(7, 22));
+birdPath.push(new pathPoint(22, 22));
+//right
+birdPath.push(new pathPoint(27, 17));
+birdPath.push(new pathPoint(27, 7));
+//top
+birdPath.push(new pathPoint(22, 1));
 
 //place walls
 //Possibly think about cleaning up...
@@ -792,6 +835,12 @@ board[13][13].index = 2;
 board[14][11].index = 2;
 board[14][12].index = 2;
 board[14][13].index = 2;
+board[13][11].type = -2;
+board[13][12].type = -2;
+board[13][13].type = -2;
+board[14][11].type = -2;
+board[14][12].type = -2;
+board[14][13].type = -2;
 
 createCharacters(12, 11, 90);
   if(connectedFacebook && numfriends.toString() > 2)
@@ -819,9 +868,13 @@ if(!play && mouseX <= 465 && mouseX >= 235 && mouseY <= 578 && mouseY >= 490){
         play = !play;
         bearTime = randomInterval(bearMin, bearMax);
         Ftime = randomInterval(foxMin, foxMax);
-        pauseSound();
-        playGameSound();
-        //ramTime = randomInterval(ramMin, ramMax);
+        ramTime = randomInterval(ramMin, ramMax);
+        Btime = randomInterval(birdMin, birdMax);
+        placeBird();
+        if(soundState == 0){
+                pauseSound();
+                playGameSound();
+        }
 }
 
 if(!playing && mouseX <= 725 && mouseX >= 275 && mouseY <= 520 && mouseY >= 400){
@@ -1023,6 +1076,12 @@ function gameLoop() {
         requestAnimFrame(gameLoop);
 }
 
+function placeBird(){
+        var i = 1;
+
+        Enemies.push(new enemy(birdImage, 2, 0, (birdPath[i].y)*squareHeight, 0, (birdPath[i].y)*squareHeight, (birdPath[i].x)*squareWidth, (birdPath[i].y)*squareHeight, 270, woodPeckerDamage,i+4, 2, 0, -squareWidth/2, squareHeight/2, 0, 0, 0));
+}
+
 function placeFox(){
         var y1 = randomInterval(roomYmin+1, roomYmax-1);
         var x1 = randomInterval(roomXmin+1, roomXmax+1);
@@ -1033,7 +1092,7 @@ function placeFox(){
                 for(var i = roomXmin; i < roomXmax; i++){
                         if(board[i][y1].type == 4 && !(board[i][y1-1].type == 9 || board[i][y1+1].type == 10) && !board[i][y1].beingAttacked){
                                 board[i][y1].beingAttacked = true;
-                                Enemies.push(new enemy(foxImage, 1, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, 2, 0, 1.5, 0, -squareWidth-1, squareHeight/2, i, y1));
+                                Enemies.push(new enemy(foxImage, 1, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, foxDamage, 0, 1.5, 0, -squareWidth-1, squareHeight/2, i, y1, -1));
                                 break;
                         }
                         else{
@@ -1049,7 +1108,7 @@ function placeFox(){
                         if(board[x1][i].index == 0){
                                 if(board[x1][i].type == 6 && !(board[x1-1][i].type == 11 || board[x1+1][i].type == 10) && !board[x1][i].beingAttacked){
                                         board[x1][i].beingAttacked = true;
-                                        Enemies.push(new enemy(foxImage, 1, x1*squareWidth, 0, x1*squareWidth, 0, x1*squareWidth, (i-1)*squareHeight, 0, 2, 0, 1.5, 0, squareWidth/2, 0, x1, i));
+                                        Enemies.push(new enemy(foxImage, 1, x1*squareWidth, -squareHeight, x1*squareWidth, -squareHeight, x1*squareWidth, (i-1)*squareHeight, 0, foxDamage, 0, 1.5, 0, squareWidth/2, 0, x1, i, -1));
                                         break;
                                 }
                                 else{
@@ -1066,7 +1125,7 @@ function placeFox(){
                         if(board[i][y1].index == 0){
                                 if(board[i][y1].type == 5 && !(board[i][y1-1].type == 8 || board[i][y1+1].type == 11) && !board[i][y1].beingAttacked){
                                         board[i][y1].beingAttacked = true;
-                                        Enemies.push(new enemy(foxImage, 1, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, 2, 0, 1.5, 0, squareWidth*2, squareHeight/2, i, y1));
+                                        Enemies.push(new enemy(foxImage, 1, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, foxDamage, 0, 1.5, 0, squareWidth*2, squareHeight/2, i, y1, -1));
                                         break;
                                 }
                                 else{
@@ -1083,7 +1142,7 @@ function placeFox(){
                         if(board[x1][i].index == 0){
                                 if(board[x1][i].type == 7 && !(board[x1-1][i].type == 8 || board[x1+1][i].type == 9) && !board[x1][i].beingAttacked){
                                         board[x1][i].beingAttacked = true;
-                                        Enemies.push(new enemy(foxImage, 1, x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, (i-1)*squareHeight, 180, 2, 0, 1.5, 0, squareWidth/2, squareHeight*3, x1, i));
+                                        Enemies.push(new enemy(foxImage, 1, x1*squareWidth, canvas.height-(squareHeight*2), x1*squareWidth, canvas.height-(squareHeight*2), x1*squareWidth, (i-1)*squareHeight, 180, foxDamage, 0, 1.5, 0, squareWidth/2, squareHeight*3, x1, i, -1));
                                         break;
                                 }
                                 else{
@@ -1106,7 +1165,7 @@ function placeBear(){
                         if(board[i][y1].index == 0){
                                 if(board[i][y1].type == 4 && !(board[i][y1-1].type == 9 || board[i][y1+1].type == 10) && !board[i][y1].beingAttacked){
                                         board[i][y1].beingAttacked = true;
-                                        Enemies.push(new enemy(bearImage, 0, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, 50, 0, 0.59, 0, -squareWidth-6, squareHeight*(5/8), i, y1));
+                                        Enemies.push(new enemy(bearImage, 0, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, bearDamage, 0, 0.59, 0, -squareWidth-6, squareHeight*(5/8), i, y1, -1));
                                         break;
                                 }
                                 else{
@@ -1123,7 +1182,7 @@ function placeBear(){
                         if(board[x1][i].index == 0){
                                 if(board[x1][i].type == 6 && !(board[x1-1][i].type == 11 || board[x1+1][i].type == 10) && !board[x1][i].beingAttacked){
                                         board[x1][i].beingAttacked = true;
-                                        Enemies.push(new enemy(bearImage, 0, x1*squareWidth, -squareHeight, x1*squareWidth, -squareHeight, x1*squareWidth, (i-1)*squareHeight, 0, 50, 0, 0.59, 0, squareWidth*(3/8), -6, x1, i));
+                                        Enemies.push(new enemy(bearImage, 0, x1*squareWidth, -squareHeight, x1*squareWidth, -squareHeight, x1*squareWidth, (i-1)*squareHeight, 0, bearDamage, 0, 0.59, 0, squareWidth*(3/8), -6, x1, i, -1));
                                         break;
                                 }
                                 else{
@@ -1140,7 +1199,7 @@ function placeBear(){
                         if(board[i][y1].index == 0){
                                 if(board[i][y1].type == 5 && !(board[i][y1-1].type == 8 || board[i][y1+1].type == 11) && !board[i][y1].beingAttacked){
                                         board[i][y1].beingAttacked = true;
-                                        Enemies.push(new enemy(bearImage, 0, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, 50, 0, 0.59, 0, squareWidth*2+6, squareHeight*(3/8), i, y1));
+                                        Enemies.push(new enemy(bearImage, 0, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, bearDamage, 0, 0.59, 0, squareWidth*2+6, squareHeight*(3/8), i, y1, -1));
                                         break;
                                 }
                                 else{
@@ -1157,11 +1216,85 @@ function placeBear(){
                         if(board[x1][i].index == 0){
                                 if(board[x1][i].type == 7 && !(board[x1-1][i].type == 8 || board[x1+1][i].type == 9) && !board[x1][i].beingAttacked){
                                         board[x1][i].beingAttacked = true;
-                                        Enemies.push(new enemy(bearImage, 0, x1*squareWidth, canvas.height-(squareHeight*2), x1*squareWidth, canvas.height-(squareHeight*2), x1*squareWidth, (i-1)*squareHeight, 180, 50, 0, 0.59, 0, squareWidth*(5/8), squareHeight*3+6, x1, i));
+                                        Enemies.push(new enemy(bearImage, 0, x1*squareWidth, canvas.height-(squareHeight*2), x1*squareWidth, canvas.height-(squareHeight*2), x1*squareWidth, (i-1)*squareHeight, 180, bearDamage, 0, 0.59, 0, squareWidth*(5/8), squareHeight*3+6, x1, i, -1));
                                         break;
                                 }
                                 else{
                                         placeBear();
+                                        break;
+                                }
+                        }
+                }
+        }
+}
+
+function placeRam(){
+        var y1 = randomInterval(roomYmin+1, roomYmax-1);
+        var x1 = randomInterval(roomXmin+1, roomXmax-1);
+        var dir = randomInterval(0, 3);
+        
+        //Attack from left
+        if(dir == 0){
+                for(var i = roomXmin; i < roomXmax; i++){
+                        if(board[i][y1].index == 0){
+                                if(board[i][y1].type == 4 && !(board[i][y1-1].type == 9 || board[i][y1+1].type == 10) && !board[i][y1].beingAttacked){
+                                        board[i][y1].beingAttacked = true;
+                                        Enemies.push(new enemy(ramImage, 3, 0, y1*squareHeight, 0, y1*squareHeight, squareWidth*2, y1*squareHeight, 270, ramDamage, 0, 0.8, 0, -squareWidth/2, squareHeight/2, i, y1, -1));
+                                        break;
+                                }
+                                else{
+                                        placeRam();
+                                        break;
+                                }
+                        }
+                }
+        }
+        
+        //Attack from top
+        else if(dir == 1){
+                for(var i = roomYmin; i < roomYmax; i++){
+                        if(board[x1][i].index == 0){
+                                if(board[x1][i].type == 6 && !(board[x1-1][i].type == 11 || board[x1+1][i].type == 10) && !board[x1][i].beingAttacked){
+                                        board[x1][i].beingAttacked = true;
+                                        Enemies.push(new enemy(ramImage, 3, x1*squareWidth, -squareHeight, x1*squareWidth, -squareHeight, x1*squareWidth, squareHeight*2, 0, ramDamage, 0, 0.8, 0, squareWidth/2, -squareHeight/2, x1, i, -1));
+                                        break;
+                                }
+                                else{
+                                        placeRam();
+                                        break;
+                                }
+                        }
+                }
+        }
+        
+        //Attack from right
+        else if(dir == 2){
+                for(var i = roomXmax; i > roomXmin; i--){
+                        if(board[i][y1].index == 0){
+                                if(board[i][y1].type == 5 && !(board[i][y1-1].type == 8 || board[i][y1+1].type == 11) && !board[i][y1].beingAttacked){
+                                        board[i][y1].beingAttacked = true;
+                                        Enemies.push(new enemy(ramImage, 3, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth-squareWidth*3, y1*squareHeight, 90, ramDamage, 0, 0.8, 0, squareWidth*(3/2), squareHeight/2, i, y1, -1));
+                                        break;
+                                }
+                                else{
+                                        placeRam();
+                                        break;
+                                }
+                        }
+                }
+        }
+        
+        //Attack from bottom
+        else if(dir == 3){
+                for(var i = roomYmax; i > roomYmin; i--){
+                        if(board[x1][i].index == 0){
+                                if(board[x1][i].type == 7 && !(board[x1-1][i].type == 8 || board[x1+1][i].type == 9) && !board[x1][i].beingAttacked){
+                                        board[x1][i].beingAttacked = true;
+                                        Enemies.push(new enemy(ramImage, 3, x1*squareWidth, canvas.height, x1*squareWidth, canvas.height, x1*squareWidth, canvas.height-squareHeight*3, 180, ramDamage, 0, 0.8, 0, squareWidth/2, squareHeight*(3/2), x1, i, -1));
+                                        break;
+                                }
+                                else{
+                                        placeRam();
                                         break;
                                 }
                         }
@@ -1544,6 +1677,151 @@ function drawDamage(){
         }
 }
 
+function drawSmoke(){
+        for(var i = 0; i < smokeList.length; i++){
+                var progress = Math.floor(smokeList[i].time/10);
+                ctx.translate(smokeList[i].posX, smokeList[i].posY);
+                ctx.globalAlpha = smokeList[i].alpha;
+                ctx.drawImage(smoke, 300, 0, 50, 50, -squareWidth, -squareHeight, squareWidth, squareHeight);
+                ctx.translate(-smokeList[i].posX, -smokeList[i].posY);
+                smokeList[i].alpha -= (1/smokeList[i].linger);
+                smokeList[i].time += 1;
+                ctx.globalAlpha = 1;
+        }
+        for(var i = 0; i < smokeList.length; i++){
+                if(smokeList[i].time >= smokeList[i].linger){
+                        smokeList.splice(i, 1);
+                        if(i < 0){
+                                i--;
+                        }
+                        else{
+                                i = 0;
+                        }
+                }
+        }
+}
+
+function birdAttack(x){
+        var x1 = randomInterval(roomXmin+1, roomXmax-1);
+        var y1 = randomInterval(roomYmin+1, roomYmax-1);
+        //attack from the left
+        if(Enemies[x].stage == 6){
+                for(var i = roomXmin; i < roomXmax; i++){
+                        if(board[i][y1].type == 4 && !(board[i][y1-1].type == 9 || board[i][y1+1].type == 10)  && !board[i][y1].beingAttacked){
+                                //Enemies.push(new enemy(birdImage, 2, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, 1, 0, 1, 0, -10, squareHeight/2));
+                                Enemies[x].startPosX = Enemies[x].desiredPosX;
+                                Enemies[x].startPosY = Enemies[x].desiredPosY;
+                                Enemies[x].desiredPosX = i*squareWidth;
+                                Enemies[x].desiredPosY = y1*squareHeight;
+                                Enemies[x].rotation -= 90;
+                                Enemies[x].translateX = -squareWidth/2;
+                                Enemies[x].translateY = squareHeight/2;
+                                board[i][y1].beingAttacked = true;
+                                Enemies[x].attackBoardX = i;
+                                Enemies[x].attackBoardY = y1;
+                                Enemies[x].phase = 2;
+                                break;
+                        }
+                        else{
+                                birdAttack(x);
+                                //placeBird();
+                                break;
+                        }
+                }
+        }
+                                        //Attack from top
+                                        else if(Enemies[x].stage == 4){
+                                                for(var i = roomYmin; i < roomYmax; i++){
+                                                        if(board[x1][i].index == 0){
+                                                                if(board[x1][i].type == 6 && !(board[x1-1][i].type == 11 || board[x1+1][i].type == 10) && !board[x1][i].beingAttacked){
+                                                                        //Enemies.push(new enemy(birdImage, 2, x1*squareWidth, 0, x1*squareWidth, 0, x1*squareWidth, (i-1)*squareHeight, 0, 1, 0, 1, 0, squareWidth/2, squareHeight/2));
+                                                                        Enemies[x].startPosX = Enemies[x].desiredPosX;
+                                                                        Enemies[x].startPosY = Enemies[x].desiredPosY;
+                                                                        Enemies[x].desiredPosX = x1*squareWidth;
+                                                                        Enemies[x].desiredPosY = (i-1)*squareHeight;
+                                                                        Enemies[x].rotation -= 90;
+                                                                        Enemies[x].translateX = (squareWidth/2);
+                                                                        Enemies[x].translateY = squareHeight/2;
+                                                                        Enemies[x].posX -= (squareWidth/2);
+                                                                        Enemies[x].posY -= squareHeight/2;
+                                                                        board[x1][i].beingAttacked = true;
+                                                                        Enemies[x].attackBoardX = x1;
+                                                                        Enemies[x].attackBoardY = i;
+                                                                        Enemies[x].phase = 2;
+                                                                        break;
+                                                                }
+                                                                else{
+                                                                        birdAttack(x);
+                                                                        //placeBird();
+                                                                        break;
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                        //Attack from right
+                                        else if(Enemies[x].stage == 10){
+                                                for(var i = roomXmax; i > roomXmin; i--){
+                                                        if(board[i][y1].index == 0){
+                                                                if(board[i][y1].type == 5 && !(board[i][y1-1].type == 8 || board[i][y1+1].type == 11) && !board[i][y1].beingAttacked){
+                                                                        //Enemies.push(new enemy(birdImage, 2, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, 1, 0, 1, 0, squareWidth+10, squareHeight/2));
+                                                                        Enemies[x].startPosX = Enemies[x].desiredPosX;
+                                                                        Enemies[x].startPosY = Enemies[x].desiredPosY;
+                                                                        Enemies[x].desiredPosX = i*squareWidth;
+                                                                        Enemies[x].desiredPosY = y1*squareHeight;
+                                                                        Enemies[x].rotation -= 90;
+                                                                        Enemies[x].translateX = squareWidth+(squareWidth/2);
+                                                                        Enemies[x].translateY = squareHeight/2;
+                                                                        Enemies[x].posX -= squareWidth+(squareWidth/2);
+                                                                        Enemies[x].posY -= squareHeight/2;
+                                                                        board[i][y1].beingAttacked = true;
+                                                                        Enemies[x].attackBoardX = i;
+                                                                        Enemies[x].attackBoardY = y1;
+                                                                        Enemies[x].phase = 2;
+                                                                        break;
+                                                                }
+                                                                else{
+                                                                        birdAttack(x);
+                                                                        //placeBird();
+                                                                        break;
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                        //Attack from bottom
+                                        else if(Enemies[x].stage == 8){
+                                                for(var i = roomYmax; i > roomYmin; i--){
+                                                        if(board[x1][i].index == 0){
+                                                                if(board[x1][i].type == 7 && !(board[x1-1][i].type == 8 || board[x1+1][i].type == 9) && !board[x1][i].beingAttacked){
+                                                                        //Enemies.push(new enemy(birdImage, 2, x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, (i-1)*squareHeight, 180, 1, 0, 1, 0, squareWidth/2, (squareHeight*2)+10));
+                                                                        Enemies[x].startPosX = Enemies[x].desiredPosX;
+                                                                        Enemies[x].startPosY = Enemies[x].desiredPosY;
+                                                                        Enemies[x].desiredPosX = x1*squareWidth;
+                                                                        Enemies[x].desiredPosY = (i-1)*squareHeight;
+                                                                        Enemies[x].rotation -= 90;
+                                                                        Enemies[x].translateX = squareWidth/2;
+                                                                        Enemies[x].translateY = (squareHeight*2)+(squareHeight/2);
+                                                                        Enemies[x].posX -= squareWidth/2;
+                                                                        Enemies[x].posY -= (squareHeight*2)+(squareHeight/2);
+                                                                        board[x1][i].beingAttacked = true;
+                                                                        Enemies[x].attackBoardX = x1;
+                                                                        Enemies[x].attackBoardY = i;
+                                                                        Enemies[x].phase = 2;
+                                                                        break;
+                                                                }
+                                                                else{
+                                                                        birdAttack(x);
+                                                                        //placeBird();
+                                                                        break;
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                        else{
+                                                newBird = 0;
+                                                Btime = randomInterval(birdMin, birdMax);
+                                        }
+}
+
 function draw() {
         ctx.save();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -1555,7 +1833,7 @@ function draw() {
         
         ctx.beginPath();
         
-        
+        var attack = false;
         
         
         if(offset == 60){
@@ -1570,6 +1848,17 @@ function draw() {
                 newFox = 0;
                 Ftime = randomInterval(foxMin, foxMax);
                 placeFox();
+        }
+        if(newRam == ramTime){
+                newRam = 0;
+                ramTime = randomInterval(ramMin, ramMax);
+                placeRam();
+        }
+        if(newBird == Btime){
+                //newBird = 0;
+                //Btime = randomInterval(birdMin, birdMax);
+                attack = true;
+                //placeBird();
         }
         
         ctx.save();
@@ -1605,7 +1894,7 @@ function draw() {
                                         }
                                 }
                         }
-                        if(Enemies[x].type == 1){
+                        else if(Enemies[x].type == 1){
                                 if(Enemies[x].stage == 0){
                                         var test = Math.floor(Enemies[x].frame/7);
                                         ctx.drawImage(Enemies[x].image, 25*test, 0, 25, 42, -squareWidth/2, -squareHeight, squareWidth, squareHeight*2);
@@ -1620,6 +1909,63 @@ function draw() {
                                         var test = Math.floor(Enemies[x].frame/5);
                                         ctx.drawImage(Enemies[x].image, 25*test, 0, 25, 42, -squareWidth/2, -squareHeight, squareWidth, squareHeight*2);
                                         if(Enemies[x].frame == 39){
+                                                Enemies[x].frame = 0;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                        }
+                        else if(Enemies[x].type == 2){
+                                /*var x1 = Math.floor(Enemies[x].posX/squareWidth);
+                                var y1 = Math.floor(Enemies[x].posY/squareHeight);*/
+
+                                if(attack){
+                                        attack = false;
+                                        birdAttack(x);
+                                }
+                                if(Enemies[x].stage >= 4 && Enemies[x].stage <= 11){
+                                        var test = Math.floor(Enemies[x].frame/6);
+                                        ctx.drawImage(Enemies[x].image, 35.75*test, 0, 35.75, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                        if(Enemies[x].frame == 23){
+                                                Enemies[x].frame = 0;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                        }
+                        else if(Enemies[x].type == 3){
+                                if(Enemies[x].stage == 0){
+                                        ctx.drawImage(Enemies[x].image, 0, 0, 30, 36, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                }
+                                if(Enemies[x].stage == 1){
+                                        ctx.drawImage(Enemies[x].image, 0, 0, 30, 36, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                        if(Enemies[x].frame%5 == 0){
+                                                
+                                                if(Enemies[x].rotation == 270){
+                                                        smokeList.push(new smokeObject(Enemies[x].posX-squareWidth/2, Enemies[x].posY+squareHeight, 1, 50, 0));
+                                                }
+                                                else if(Enemies[x].rotation == 180){
+                                                        smokeList.push(new smokeObject(Enemies[x].posX+squareWidth, Enemies[x].posY+squareHeight*(5/2), 1, 50, 0));
+                                                }
+                                                else if(Enemies[x].rotation == 90){
+                                                        smokeList.push(new smokeObject(Enemies[x].posX+squareWidth*(5/2), Enemies[x].posY+squareHeight, 1, 50, 0));
+                                                }
+                                                //Top
+                                                else if(Enemies[x].rotation == 0){
+                                                        smokeList.push(new smokeObject(Enemies[x].posX+squareWidth, Enemies[x].posY-squareHeight/2, 1, 50, 0));
+                                                }
+                                                Enemies[x].frame += 1;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 3){
+                                        var test = Math.floor(Enemies[x].frame/7);
+                                        ctx.drawImage(Enemies[x].image, test*30, 36, 30, 36, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                        if(Enemies[x].frame == 48){
                                                 Enemies[x].frame = 0;
                                         }
                                         else{
@@ -1700,39 +2046,38 @@ function draw() {
                                         Enemies[x].stage = 3;
                                 }
                         }
-                        if(Enemies[x].type == 1){
+                        else if(Enemies[x].type == 1){
                                 var person = false;
-                                if(Enemies[x].posX/squareWidth > 1 && Enemies[x].posY/squareHeight > 1 && Enemies[x].posX/squareWidth > 1 && Enemies[x].posY/squareHeight > 1 && Enemies[x].posX/squareWidth > 1){
-                                if(Enemies[x].rotation == 270){
-                                        if(board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)+1].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)-1].index == 2){
-                                                person = true;
+                                if(Enemies[x].posX/squareWidth > 1 && Enemies[x].posY/squareHeight > 1 && Enemies[x].posY/squareHeight < roomYmax && Enemies[x].posX/squareWidth < roomXmax){
+                                        if(Enemies[x].rotation == 270){
+                                                if(board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)+1].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)-1].index == 2){
+                                                        person = true;
+                                                }
+                                        }
+                                        else if(Enemies[x].rotation == 0){
+                                                if(board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2){
+                                                        person = true;
+                                                }
+                                        }
+                                        else if(Enemies[x].rotation == 90){
+                                                if(board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)+1].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)-1].index == 2){
+                                                        person = true;
+                                                }
+                                        }
+                                        else if(Enemies[x].rotation == 180){
+                                                if(board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                                board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)].index == 2){
+                                                        person = true;
+                                                }
                                         }
                                 }
-                                else if(Enemies[x].rotation == 0){
-                                        if(board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2){
-                                                person = true;
-                                        }
-                                }
-                                else if(Enemies[x].rotation == 90){
-                                        if(board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)+1].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)-1].index == 2){
-                                                person = true;
-                                        }
-                                }
-                                else if(Enemies[x].rotation == 180){
-                                        if(board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
-                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)].index == 2){
-                                                person = true;
-                                        }
-                                }
-                                }
-
                                 if(Enemies[x].stage == 0 && !person){
                                         var test = Math.floor(Enemies[x].frame/7);
                                         ctx.drawImage(Enemies[x].image, 25*test, 0, 25, 42, -squareWidth/2, -squareHeight, squareWidth, squareHeight*2);
@@ -1764,7 +2109,7 @@ function draw() {
                                                 ctx.save();
                                                 ctx.translate(squareWidth/2, squareHeight/2);
                                                 ctx.rotate(180*(Math.PI/180));
-                                                ctx.translate(15, 0);
+                                                ctx.translate(15, -2);
                                                 ctx.drawImage(splinters, 25*(test-2), 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
                                                 ctx.restore();
                                         }
@@ -1779,6 +2124,7 @@ function draw() {
                                 else if(Enemies[x].stage == 2 || person){
                                         //alert("hi");
                                         if(person){
+                                                Enemies[x].frame = 0;
                                                 Enemies[x].stage = 2;
                                                 Enemies[x].speed = 1.5;
                                                 Enemies[x].desiredPosX = Enemies[x].startPosX;
@@ -1791,6 +2137,217 @@ function draw() {
                                         }
                                 }
                         }
+                        else if(Enemies[x].type == 2){
+                                //Enemies[x].translateX = 0;
+                                //Enemies[x].translateY = 0;
+                                var person = false;
+                                
+                                if(Enemies[x].posX/squareWidth > 1 && Enemies[x].posY/squareHeight > 1 && Enemies[x].posX/squareWidth < roomXmax && Enemies[x].posY/squareHeight < roomYmax){
+                                if(Enemies[x].stage == 6){
+                                        if(board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)+1].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)-1].index == 2){
+                                                person = true;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 4){
+                                        if(board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)+2].index == 2){
+                                                person = true;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 10){
+                                        if(board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)+1].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)-1].index == 2){
+                                                person = true;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 8){
+                                        if(board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)+1][Math.floor(Enemies[x].posY/squareHeight)].index == 2 || 
+                                        board[Math.floor(Enemies[x].posX/squareWidth)-1][Math.floor(Enemies[x].posY/squareHeight)].index == 2){
+                                                person = true;
+                                        }
+                                }
+                                }
+
+                                if(!person && (Enemies[x].phase == 0 || Enemies[x].phase == 1)){
+                                        var test = Math.floor(Enemies[x].frame/6);
+                                        ctx.drawImage(Enemies[x].image, 35.75*test, 0, 35.75, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                
+                                        if(Enemies[x].stage != 11){
+                                                Enemies[x].stage = Enemies[x].stage + 1;
+                                        }
+                                        else{
+                                                Enemies[x].stage = 4;
+                                        }
+                                        if(Enemies[x].phase == 0){
+                                                Enemies[x].rotation += 90;
+                                                Enemies[x].phase = 1;
+                                        }
+                                        else{
+                                                if(Enemies[x].stage == 8){
+                                                        Enemies[x].rotation = 270;
+                                                }
+                                                else if(Enemies[x].stage == 7){
+                                                        Enemies[x].rotation = 315;
+                                                }
+                                                else if(Enemies[x].stage == 6){
+                                                        Enemies[x].rotation = 0;
+                                                }
+                                                else if(Enemies[x].stage == 5){
+                                                        Enemies[x].rotation = 45;
+                                                }
+                                                else if(Enemies[x].stage == 4){
+                                                        Enemies[x].rotation = 90;
+                                                }
+                                                else if(Enemies[x].stage == 11){
+                                                        Enemies[x].rotation = 135;
+                                                }
+                                                else if(Enemies[x].stage == 10){
+                                                        Enemies[x].rotation = 180;
+                                                }
+                                                else if(Enemies[x].stage == 9){
+                                                        Enemies[x].rotation = 225;
+                                                }
+                                        }
+                                        
+                                        Enemies[x].desiredPosX = (birdPath[Enemies[x].stage-4].x)*squareWidth;
+                                        Enemies[x].desiredPosY = (birdPath[Enemies[x].stage-4].y)*squareHeight;
+                                        Enemies[x].frame = 0;
+                                }
+                                else if(Enemies[x].phase == 2 && !person){
+                                        var test = Math.floor(Enemies[x].frame/6);
+                                        //var test2 = Math.floor(Enemies[x].frame/4);
+                                        if(Enemies[x].frame == 18){
+                                                if(Enemies[x].rotation == 270){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                                else if(Enemies[x].rotation == 180){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)+1].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY+25, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                                else if(Enemies[x].rotation == 90){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                                else if(Enemies[x].rotation == 0){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)+1].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY+25, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                        }
+                                        if(test >= 2 && test <= 3){
+                                                ctx.save();
+                                                ctx.translate(squareWidth/2, (squareHeight/2));
+                                                ctx.rotate(180*(Math.PI/180));
+                                                ctx.translate(13, 9);
+                                                ctx.drawImage(splinters, 25*(test-2), 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                                ctx.restore();
+                                        }
+                                        ctx.drawImage(Enemies[x].image, 35.75*test, 25, 35.75, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                        if(Enemies[x].frame == 24){
+                                                Enemies[x].frame = 12;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                                else if(person){
+                                        Enemies[x].phase = 1;
+                                        Enemies[x].frame = 0;
+                                        Enemies[x].speed = 2;
+                                        Enemies[x].desiredPosX = Enemies[x].startPosX;
+                                        Enemies[x].desiredPosY = Enemies[x].startPosY;
+                                        Enemies[x].rotation += 90;
+                                        Enemies[x].translateX = -squareWidth/2;
+                                        Enemies[x].translateY = squareHeight/2;
+                                        if(Enemies[x].stage == 8){
+                                                Enemies[x].posX += squareWidth/2;
+                                                Enemies[x].posY += (squareHeight*2)+(squareHeight/2);
+                                        }
+                                        else if(Enemies[x].stage == 10){
+                                                Enemies[x].posX += squareWidth+(squareWidth/2);
+                                                Enemies[x].posY += squareHeight/2;
+                                        }
+                                        else if(Enemies[x].stage == 4){
+                                                Enemies[x].posX += (squareWidth/2);
+                                                Enemies[x].posY += squareHeight/2;
+                                        }
+                                        newBird = 0;
+                                        Btime = randomInterval(birdMin, birdMax);
+                                        board[Enemies[x].attackBoardX][Enemies[x].attackBoardY].beingAttacked = false;
+                                }
+                        }
+                        else if(Enemies[x].type == 3){
+                                if(Enemies[x].stage == 0){
+                                        ctx.drawImage(Enemies[x].image, 0, 0, 30, 36, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                        if(Enemies[x].frame == 30){
+                                                Enemies[x].speed = 3.0;
+                                                Enemies[x].desiredPosY = Enemies[x].attackBoardY*squareHeight;
+                                                Enemies[x].desiredPosX = Enemies[x].attackBoardX*squareWidth;
+                                                Enemies[x].frame = 0;
+                                                Enemies[x].stage = 1;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 1){
+                                        ctx.drawImage(Enemies[x].image, 0, 0, 30, 36, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                        Enemies[x].frame = 0;
+                                        Enemies[x].stage = 2;
+                                }
+                                else if(Enemies[x].stage == 2){
+                                        var test = Math.floor(Enemies[x].frame/8);
+                                        if(Enemies[x].frame == 0){
+                                                if(Enemies[x].rotation == 270){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                                else if(Enemies[x].rotation == 180){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY+25, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                                else if(Enemies[x].rotation == 90){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                                //Top
+                                                else if(Enemies[x].rotation == 0){
+                                                        board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
+                                                        damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY+25, Enemies[x].damage, 1, 50, 0));
+                                                }
+                                        }
+                                        if(test >= 0 && test <= 3){
+                                                ctx.save();
+                                                ctx.rotate(180*(Math.PI/180));
+                                                ctx.drawImage(splinters, 25*(test), 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                                ctx.translate(15, 0);
+                                                ctx.drawImage(splinters, 25*(test), 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                                ctx.translate(-30, 0);
+                                                ctx.drawImage(splinters, 25*(test), 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                                ctx.restore();
+                                        }
+                                        ctx.drawImage(Enemies[x].image, 0, 0, 30, 36, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
+                                        if(Enemies[x].frame == 24){
+                                                Enemies[x].frame = 0;
+                                                Enemies[x].stage = 3;
+                                                Enemies[x].speed = 0.6;
+                                                Enemies[x].desiredPosX = Enemies[x].startPosX;
+                                                Enemies[x].desiredPosY = Enemies[x].startPosY;
+                                                Enemies[x].rotation -= 180;
+                                        }
+                                        else{
+                                                Enemies[x].frame += 1;
+                                        }
+                                }
+                                else if(Enemies[x].stage == 3){
+                                        Enemies[x].stage = 4;
+                                }
+                        }
                 }
                 ctx.restore();
         }
@@ -1798,13 +2355,13 @@ function draw() {
         ctx.clearRect(700, 0, 300, 600);
         
         for(var i = 0; i < Enemies.length; i++){
-                if(Enemies[i].type == 0){
+                if(Enemies[i].type == 0 || Enemies[i].type == 1){
                         if(Enemies[i].stage == 3){
                                 board[Enemies[i].attackBoardX][Enemies[i].attackBoardY].beingAttacked = false;
                                 Enemies.splice(i, 1);
                         }
                 }
-                else if(Enemies[i].type == 1){
+                else if(Enemies[i].type == 3){
                         if(Enemies[i].stage == 4){
                                 board[Enemies[i].attackBoardX][Enemies[i].attackBoardY].beingAttacked = false;
                                 Enemies.splice(i, 1);

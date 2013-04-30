@@ -1071,6 +1071,7 @@ function gameLoop() {
           drawFloor();
           drawWalls();
           drawDamage();
+          drawSmoke();
           moveCharacter();
           moveEnemy();
         }

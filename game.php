@@ -1635,8 +1635,8 @@ function drawGUI(){
           else
           {
             ctxGUI.fillText("Overwhelmed? Login with", 740, 290 );
-            ctxGUI.fillText("  Facebook so your", 740, 320 );
-            ctxGUI.fillText("  friends can help you out!", 800, 350 );
+            ctxGUI.fillText("   Facebook so your", 740, 320 );
+            ctxGUI.fillText("friends can help you out!", 740, 350 );
 
           }
         

@@ -778,8 +778,10 @@ function createCharacters(x, y, rot){
                         pic.src = brunetteMale.src;
                         break;
         }
+        var power = 1;
+        if(friendGamesPlayed[characterValue] > 0) power = 1.5;
         Characters.push(new character(pic, rot, x, y, (squareWidth*x) + (squareWidth/2), (squareHeight*y) + (squareHeight/2), 
-        (squareWidth*x) + (squareWidth/2), (squareHeight*y) + (squareHeight/2), [], 1, 0, 0, false, characterValue, 2.0));
+        (squareWidth*x) + (squareWidth/2), (squareHeight*y) + (squareHeight/2), [], power, 0, 0, false, characterValue, 2.0));
         numCharacters = numCharacters - 1;
         characterValue++;
 }
@@ -1381,18 +1383,27 @@ function drawFloor(){
         //Drawing floor with alternating pattern
         for(var i = roomXmin; i < roomXmax; i++){
                 for(var j = roomYmin; j < roomYmax; j++){
-                        if(i%2 == 0 && j%2 == 0 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2)){
+                        if(i%2 == 0 && j%2 == 0 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2 || board[i][j].index == -1)){
                                 ctxFloor.drawImage(insideLight, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
                         }
-                        else if(i%2 == 0 && j%2 == 1 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2)){
+                        else if(i%2 == 0 && j%2 == 1 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2 || board[i][j].index == -1)){
                                 ctxFloor.drawImage(inside, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
                         }
-                        else if(i%2 == 1 && j%2 == 0 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2)){
+                        else if(i%2 == 1 && j%2 == 0 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2 || board[i][j].index == -1)){
                                 ctxFloor.drawImage(inside, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
                         }
-                        else if(i%2 == 1 && j%2 == 1 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2)){
+                        else if(i%2 == 1 && j%2 == 1 && (board[i][j].index == 0 || board[i][j].index == 3 || board[i][j].index == 2 || board[i][j].index == -1)){
                                 ctxFloor.drawImage(insideLight, 0, 0, 25, 25, squareWidth*i, squareHeight*j, squareWidth, squareHeight);
                         }
+                        if(board[i][j].index == -1){
+                          ctx.beginPath();
+                           ctx.fillStyle = "#003EFF";
+                          ctx.globalAlpha = 0.35;
+                          ctx.arc(squareWidth*i + squareWidth/2, squareHeight*j + squareHeight/2, squareWidth/2, 0, 2*Math.PI);
+                          ctx.fill();
+                          ctx.globalAlpha = 1.0;
+                      }
+                        
                 }
         }
         //Draw log points

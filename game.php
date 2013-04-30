@@ -2902,7 +2902,7 @@ function restart()
 ctxEnd.clearRect(0, 0, canvas.width, canvas.height);
 
 
-
+digits = new Array();
 //how many characters to draw
  numCharacters = 5;
  characterValue = 0;

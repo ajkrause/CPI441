@@ -459,6 +459,12 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 					<p class="mainfont">Friends in the cabin who have played Cabin Crashers before get a boost to
 					repair ability, so the more people you get to try the game, the higher chance of getting a "starred" player in your crew!
 					</p>
+					<br>
+						<h2 class="mainfont"> <i>Brought to you by <b>Banjo Bear Studios</b></i>: </h2>
+						<h3 class="mainfont">Programming: </h3>
+						<p class="mainfont"><i>Branden Booth<br>Tyler Fleck<br>Austin Krahse<br>Austin Stapley </i></p>
+						<h3 class="mainfont">Art: </h3>
+						<p class="mainfont"><i>Aldo Cervantes<br>Evan Lake<br>Ian Smith</i></p>
 				<div><iframe src = "https://www.facebook.com/plugins/like.php?href=http://game.courses.asu.edu/"
 					scrolling = "no" frameborder = "0">
 					Sorry your browser doesn't support inline frames
@@ -468,8 +474,10 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 			<script>
 				resize();
 			</script>
+			<!--
 		<a href="example.htm" id="button3" class="buttonText">Tic Tac Toe</a>
 		<a href="http://austin.thautech.com" id="button3" class="buttonText">Austin</a>
 		<a href="collision.htm" id="button3" class="buttonText">collisions</a>
+			-->
 	</body>
 </html>

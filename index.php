@@ -305,7 +305,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
            	redirect_uri: 'http://game.courses.asu.edu',
                 
            	link: 'https://www.facebook.com/appcenter/asu_cpi_game?preview=1&locale=en_US',
-           	picture: 'google.com',
+           	picture: 'http://game.courses.asu.edu/art/GUI/highscoretext.png',
            	caption: 'You helped save a pie!',
            	description: 'Your Avatar helped someone save their pie in Cabin Crashers! Try and beat their score!'
            	

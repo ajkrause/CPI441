@@ -1515,7 +1515,7 @@ function drawGUI(){
         ctxGUI.drawImage(musicState[soundState], 0, 0, 92, 35, 860, 520, 92, 35);
         
         if(play && !introActive && score < 5){
-        ctxGUI.drawImage(directions, 2, 50);
+        ctxGUI.drawImage(directions, 2, 15);
         }
 }
 

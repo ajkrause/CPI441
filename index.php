@@ -462,7 +462,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 					<br>
 						<h2 class="mainfont"> <i>Brought to you by <b>Banjo Bear Studios</b></i>: </h2>
 						<h3 class="mainfont">Programming: </h3>
-						<p class="mainfont"><i>Branden Booth<br>Tyler Fleck<br>Austin Krahse<br>Austin Stapley </i></p>
+						<p class="mainfont"><i>Branden Booth<br>Tyler Fleck<br>Austin Krause<br>Austin Stapley </i></p>
 						<h3 class="mainfont">Art: </h3>
 						<p class="mainfont"><i>Aldo Cervantes<br>Evan Lake<br>Ian Smith</i></p>
 				<div><iframe src = "https://www.facebook.com/plugins/like.php?href=http://game.courses.asu.edu/"

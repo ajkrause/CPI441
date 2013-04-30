@@ -243,8 +243,7 @@ $userId = $facebook->getUser();
 		 
      <script>
 document.getElementById("welcome").innerHTML = "<br>Welcome, <?php echo $userInfo['name']; ?><br>";
-document.getElementById("rightBox").innerHTML += "<span id='fbLogout' onclick='fbLogout()'><a class='fb_button fb_button_medium'><span class='fb_button_text'>Logout</span></a></span>";
-function fbLogout() {
+document.getElementById("rightBox").innerHTML += "<button class='fbbutton confirm' id='fbLogout' onclick='fbLogout()'>Logout</button>";function fbLogout() {
         FB.logout(function (response) {
             //Do what ever you want here when logged out like reloading the page
             window.location.reload();

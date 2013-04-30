@@ -2467,7 +2467,7 @@ function draw() {
                 var xSnap = Math.floor(moveX/25);
                 var ySnap = Math.floor(moveY/25);
                 for(var i = 0; i < Characters.length; i++){
-                    if(Characters[i].boardX == xSnap && Characters[i].boardY == ySnap){
+                    if(Characters[i].boardX == xSnap && Characters[i].boardY == ySnap && board[xSnap][ySnap].type != -2){
                         friendImage.src = friendPics[Characters[i].friendNumber];
                     }
                 }

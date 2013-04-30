@@ -1479,6 +1479,7 @@ function drawWalls() {
                                         if(score > highScore)
                                         {
                                             highScore = Math.floor(score);
+                                            window.setTimeout(postFeed,1000);
                                         }
                                         initializedHS = false;
                                         score = 0;
@@ -1486,7 +1487,7 @@ function drawWalls() {
                                         
                                         stopEnd = setInterval(drawEndGame, 30);
                                         
-                                        window.setTimeout(postFeed,2000);
+                                        
                                         playing = false;
                                 }
                                 ctxWalls.translate(-((squareWidth*x)+(squareWidth/2)), -((squareHeight*y)+(squareHeight/2)));

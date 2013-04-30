@@ -304,7 +304,7 @@ function fbLogout() {
            var obj = {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
-                to: friendID,
+                
            	link: 'https://www.facebook.com/appcenter/asu_cpi_game?preview=1&locale=en_US',
            	picture: 'google.com',
            	caption: 'You helped save a pie!',

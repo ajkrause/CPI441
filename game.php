@@ -1650,7 +1650,11 @@ function drawGUI(){
         ctxGUI.drawImage(musicState[soundState], 0, 0, 92, 35, 860, 520, 92, 35);
         
         if(play && !introActive && score < 5){
-        ctxGUI.drawImage(directions, 2, 15);
+          ctxGUI.fillStyle = "#000000";
+          ctxGUI.globalAlpha = .5;
+          ctxGUI.fillRect(0,15, canvas.width-GUIWidth, 50);
+          ctxGUI.globalAlpha = 1;
+          ctxGUI.drawImage(directions, 2, 15);
         }
 }
 

@@ -141,6 +141,7 @@ var wallDamaged;
 var wallCritical;
 var wallBroken;
 
+var directions;
 var grassLight;
 var grassDark;
 var grass;
@@ -371,7 +372,7 @@ function menu(){
         grass = new Image();
         grassPlay = new Image();
         friendImage = new Image();
-        
+        directions = new Image();
         //GUI image load
         GUIBackground.src = "art/GUI/UI_logs_bckrnd_woodgrains.png";
         GUIScore.src = "art/GUI/score.png";
@@ -406,7 +407,7 @@ function menu(){
         startButtonState.push(playButtonImageMO);
         grass.src = "art/house/Grass_Continuous_Grid2.png";
         grassPlay.src = "art/house/Grass_Continuous_Grid_Play.png";
-        
+        directions.src = "art/GUI/instructions.png";
         
         skipImage.src = "art/GUI/UI_skip.png";
         skipImageMO.src = "art/GUI/UI_skip_mo.png";
@@ -1549,6 +1550,9 @@ function draw() {
         ctx.restore();
         
         ctx.beginPath();
+        
+        
+        ctx.drawImage(directions,5,50);
         
         if(offset == 60){
                 offset = 0;

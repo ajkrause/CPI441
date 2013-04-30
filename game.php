@@ -190,6 +190,7 @@ var squareHeight = canvas.height/boardHeight;
 var board = new Array(boardWidth);
 
 var damagedList = []; //value to draw regarding damaged walls
+var smokeList = [];
 var Characters = []; //set of characters
 var Enemies = [];
 var neighbors = []; //neighbors

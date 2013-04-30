@@ -1513,6 +1513,10 @@ function drawGUI(){
                 ctxGUI.drawImage(gameState[playState], 0, 0, 92, 35, 750, 520, 92, 35);
         }
         ctxGUI.drawImage(musicState[soundState], 0, 0, 92, 35, 860, 520, 92, 35);
+        
+        if(play && !introActive && score < 5){
+        ctxGUI.drawImage(directions, 2, 50);
+        }
 }
 
 function drawDamage(){
@@ -1552,7 +1556,7 @@ function draw() {
         ctx.beginPath();
         
         
-        ctx.drawImage(directions,5,50);
+        
         
         if(offset == 60){
                 offset = 0;

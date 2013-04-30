@@ -2467,11 +2467,13 @@ function draw() {
                 var xSnap = Math.floor(moveX/25);
                 var ySnap = Math.floor(moveY/25);
                 for(var i = 0; i < Characters.length; i++){
-                    if(Characters[i].boardX == xSnap && Characters[i].boardY == ySnap && board[xSnap][ySnap].type != -2){
+                    if(Characters[i].boardX == xSnap && Characters[i].boardY == ySnap){
                         friendImage.src = friendPics[Characters[i].friendNumber];
                     }
                 }
-                ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
+                if(board[xSnap][ySnap].type != -2){
+                    ctx.drawImage(friendImage, xSnap*25-3, ySnap*25-33, 31, 31);
+                }
         }
 }
 

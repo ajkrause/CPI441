@@ -185,7 +185,7 @@ var logPoint2;
 var splinters;
 
 var offset = 0;
-var bearOffset = 0;
+
 
 //how many characters to draw
 var numCharacters = 5;
@@ -881,34 +881,42 @@ function keyDown(e) {
         }
         if(e.keyCode == 49){
                 if(Characters[0].PosX == Characters[0].desiredPosX && Characters[0].PosY == Characters[0].desiredPosY){
+                        if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
                         activePlayer = 0;
                         characterSelected = true;
                         selectionX = Characters[0].PosX;
                         selectionY = Characters[0].PosY;
+                        }
                 }
         }
         else if(e.keyCode == 50){
                 if(Characters[1].PosX == Characters[1].desiredPosX && Characters[1].PosY == Characters[1].desiredPosY){
+                        if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
                         activePlayer = 1;
                         characterSelected = true;
                         selectionX = Characters[1].PosX;
                         selectionY = Characters[1].PosY;
+                        }
                 }
         }
         else if(e.keyCode == 51){
                 if(Characters[2].PosX == Characters[2].desiredPosX && Characters[2].PosY == Characters[2].desiredPosY){
+                    if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height)   {
                         activePlayer = 2;
                         characterSelected = true;
                         selectionX = Characters[2].PosX;
                         selectionY = Characters[2].PosY;
+                        }
                 }
         }
         else if(e.keyCode == 52){
                 if(Characters[3].PosX == Characters[3].desiredPosX && Characters[3].PosY == Characters[3].desiredPosY){
+                if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
                         activePlayer = 3;
                         characterSelected = true;
                         selectionX = Characters[3].PosX;
                         selectionY = Characters[3].PosY;
+                        }
                 }
         }
 }
@@ -1063,10 +1071,12 @@ function gameSelection(){
             for(var i = 0; i < Characters.length; i++){
                     if(mouseX > (Characters[i].PosX - (squareWidth/2)) && mouseX < (Characters[i].PosX + (squareWidth/2)) &&
                     mouseY > (Characters[i].PosY - (squareWidth/2)) && mouseY < (Characters[i].PosY + (squareHeight/2))){
+                            if(Characters[i].PosX == Characters[i].desiredPosX && Characters[i].PosY == Characters[i].desiredPosY){
                             activePlayer = i;
                             characterSelected = true;
                             selectionX = mouseDownX;
                             selectionY = mouseDownY;
+                            }
                     }
             }
             
@@ -1579,12 +1589,13 @@ function drawEndGame(){
         }
         
         if(gradientScale == 2){
-                setInterval(displayEndGraphic, 2500);
+                var clearEndDisplay = setInterval(displayEndGraphic, 2500);
         }
         
         ctxEnd.clearRect(700, 0, 300, 600);
         
         if(endGraphic){
+                clearInterval(clearEndDisplay);
                 var temp = Math.abs(Math.cos(pulsePlayAgain*Math.PI/180))*5;
                 ctxEnd.drawImage(endGameImage, 0, 0, 1000, 700, 0, 0, 1000, 600);
                 if(pulseOverPlayAgain){
@@ -3071,6 +3082,51 @@ var board = new Array(boardWidth);
  Enemies = [];
  neighbors = []; //neighbors
  openList = [];
+ 
+ //reset difficulty vars
+  newBear = 0;
+ bearTime = -1;
+ newFox = -3000;
+ Ftime = -1;
+ newRam = -7000;
+ ramTime = -1;
+ 
+ ramAttacked = false;
+ newBird = 0;
+ Btime = -1;
+ newBird2 = 0;
+ Btime2 = -1;
+ secondBird = true;
+ foxpack = 1;
+ birdcount = 1;
+ bearflag = false;
+ bearMin = 175;
+ bearMax = 300;
+ foxMin = 500;
+ foxMax = 700;
+ ramMin = 400;
+ ramMax = 500;
+ birdMin = 120;
+ birdMax = 240;
+ bearDamage = 50; //must be even
+ foxDamage = 2;
+ woodPeckerDamage = 1;
+ ramDamage = 70;
+ offset = 0;
+ 
+  gradientX = 0;
+ gradientY = 0;
+ gradientScale = 10;
+ 
+ endGraphic = false;
+ endUndim = false;
+ 
+ bearTime = randomInterval(bearMin, bearMax);
+        Ftime = randomInterval(foxMin, foxMax);
+        ramTime = randomInterval(ramMin, ramMax);
+        Btime = randomInterval(birdMin, birdMax);
+        Btime2 = randomInterval(1800, 3600);
+        placeBird();
  
  init();
  clearInterval(stopEnd);

@@ -1517,7 +1517,7 @@ function drawWalls() {
                                         ctxWalls.globalAlpha = board[x][y].pulseHealth;
                                         ctxWalls.fillStyle = "#00FF00";
                                         ctxWalls.fillRect(-12.5, -3, 25, 7);
-                                        if(board[x][y].health < ramDamage && board[x][y].health > 0)){
+                                        if(board[x][y].health < ramDamage && board[x][y].health > 0){
                                                 ctxWalls.fillStyle = "#FF0000";
                                                 ctxWalls.globalAlpha = damagePulse;
                                                 ctxWalls.fillRect(-12.5, -10, 25, 7);

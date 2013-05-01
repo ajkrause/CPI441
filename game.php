@@ -15,6 +15,7 @@ var buttonDown = false;
 var play = false;
 var stopMenu;
 var stopEnd;
+var clearEndDisplay;
 var endGraphic = false;
 var endUndim = false;
 
@@ -1507,7 +1508,7 @@ function drawWalls() {
                         
                                 ctxWalls.translate((squareWidth*x)+(squareWidth/2), (squareHeight*y)+(squareHeight/2));
                                 //Walls
-                                if(board[x][y].index == 0 && board[x][y].health > 0){
+                                if(board[x][y].index == 0 && board[x][y].health >= 0){
                                         ctxWalls.rotate(board[x][y].rotate*Math.PI/180);
                                         ctxWalls.drawImage(board[x][y].image, 0, 0, 25, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
                                         if(board[x][y].amountHealing != 0){
@@ -1550,7 +1551,9 @@ function drawWalls() {
                                         
                                         gradientX = x*squareWidth + squareWidth/2;
 					gradientY = y*squareHeight + squareHeight/2;
+                                        gradientScale = 10;
                                         endUndim = true;
+                                        endGraphic = false;
                                         
                                         drawEndGame();
                                         
@@ -1589,7 +1592,7 @@ function drawEndGame(){
         }
         
         if(gradientScale == 2){
-                var clearEndDisplay = setInterval(displayEndGraphic, 2500);
+                clearEndDisplay = setInterval(displayEndGraphic, 2500);
         }
         
         ctxEnd.clearRect(700, 0, 300, 600);
@@ -2546,8 +2549,10 @@ function draw() {
                 ctx.fillStyle = "#003EFF";
                 ctx.globalAlpha = 0.35;
                 ctx.arc(selectionX, selectionY, squareWidth/2 + (Math.cos(pulseFriend*Math.PI/180)*2), 0, 2*Math.PI);
-                if(board[Math.floor(moveX/squareWidth)][Math.floor(moveY/squareHeight)].index == 3){
-                        ctx.arc(Math.floor(moveX/squareWidth)*squareWidth + squareWidth/2, Math.floor(moveY/squareHeight)*squareHeight + squareHeight/2, squareWidth/2, 0, 2*Math.PI);
+                if(moveX > 0 && moveX < c.width && moveY > 0 && moveY < c.height){
+                    if(board[Math.floor(moveX/squareWidth)][Math.floor(moveY/squareHeight)].index == 3){
+                            ctx.arc(Math.floor(moveX/squareWidth)*squareWidth + squareWidth/2, Math.floor(moveY/squareHeight)*squareHeight + squareHeight/2, squareWidth/2, 0, 2*Math.PI);
+                    }
                 }
                 ctx.fill();
                 ctx.globalAlpha = 1.0;
@@ -2692,7 +2697,7 @@ function updateWalls(type, health, x, y){
         }
         else{
                 switch(true){
-                                case (health < 0):
+                                case (health <= 0):
                                         return wallBroken;
                                         break;
                                 case ((health >= 0) && (health<89)):
@@ -3066,6 +3071,8 @@ function restart()
 
 ctxEnd.clearRect(0, 0, canvas.width, canvas.height);
 
+clearInterval(stopEnd);
+clearInterval(clearEndDisplay);
 
 digits = new Array();
 //how many characters to draw
@@ -3129,7 +3136,6 @@ var board = new Array(boardWidth);
         placeBird();
  
  init();
- clearInterval(stopEnd);
  
 refresh();
  playing = true;

@@ -1525,7 +1525,7 @@ function drawWalls() {
                                         ctxWalls.globalAlpha = 1;
                                         ctxWalls.rotate(-board[x][y].rotate*Math.PI/180);	
                                 }
-                                if(board[x][y].health < 0){
+                                if(board[x][y].health <= 0){
                                         //End of Game
                                         updateHighScore(Math.floor(score));
                                         if(score > highScore)
@@ -1536,10 +1536,13 @@ function drawWalls() {
                                         
                                         initializedHS = false;
                                         score = 0;
+                                        
+                                        gradientX = x*squareWidth + squareWidth/2;
+					gradientY = y*squareHeight + squareHeight/2;
+                                        
                                         drawEndGame();
                                         
                                         stopEnd = setInterval(drawEndGame, 30);
-                                        
                                         
                                         playing = false;
                                 }

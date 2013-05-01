@@ -1481,6 +1481,7 @@ function drawWalls() {
                                             highScore = Math.floor(score);
                                             window.setTimeout(postFeed,1000);
                                         }
+                                        
                                         initializedHS = false;
                                         score = 0;
                                         drawEndGame();
@@ -1496,7 +1497,7 @@ function drawWalls() {
         }
 }
 function postFeed(){
-	postToFeed();
+	postToFeed(highScore);
 }
 
 function drawEndGame(){

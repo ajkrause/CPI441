@@ -299,15 +299,15 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
              ref.parentNode.insertBefore(js, ref);
            }(document));
            
-           function postToFeed(){
+           function postToFeed(scoreToPost){
            var obj = {
            	method: 'feed',
            	redirect_uri: 'http://game.courses.asu.edu',
                 
            	link: 'https://www.facebook.com/appcenter/asu_cpi_game?preview=1&locale=en_US',
            	picture: 'http://game.courses.asu.edu/art/GUI/highscoretext.png',
-           	caption: UserName 'beat his high score in Cabin Crashers!',
-           	description: UserName 'got' + score 'points and beat his high score! Can you top that?'
+           	caption: '' + UserName + ' beat his high score in Cabin Crashers!',
+           	description: '' + UserName + ' got ' + scoreToPost + ' points and beat his high score! Can you top that?'
            	
            };
            
@@ -384,7 +384,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
                            friendGamesPlayed.push("<?php echo $friendgames3 ?>");
                            
                            numfriends = "<?php echo $friendcount ?>";
-                           //UserName = "<?php echo $userName ?>";
+                           UserName = "<?php echo $userName ?>";
                            friendID = "<?php echo $friendId2 ?>";
                            friendNames.push("<?php echo $userName ?>");
                            friendNames.push("<?php echo $randomfriendName ?>");

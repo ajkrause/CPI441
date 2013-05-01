@@ -15,6 +15,7 @@ var buttonDown = false;
 var play = false;
 var stopMenu;
 var stopEnd;
+var endGraphic = false;
 
 var mouseX = 0;
 var mouseY = 0;
@@ -90,10 +91,16 @@ var pulseImage = 90;
 var pulseOver = false;
 var pulsePlayAgain = 90;
 var pulseOverPlayAgain = false;
+var pulseStar = 90;
+var starSprite;
+var starFrame = 0;
 
 var endGameImage;
 var endPlayAgain;
 var endPlayAgainMO;
+var gradientX = 0;
+var gradientY = 0;
+var gradientScale = 10;
 
 var pulseFriend = 0;
 var drawFriend = false;
@@ -103,26 +110,32 @@ var damagePulseSwitch = false;
 
 var newBear = 0;
 var bearTime = -1;
-var newFox = 0;
+var newFox = -3000;
 var Ftime = -1;
-var newRam = 0;
+var newRam = -7000;
 var ramTime = -1;
 var birdPath = [];
 var ramAttacked = false;
 var newBird = 0;
 var Btime = -1;
-var bearMin = 120;
-var bearMax = 240;
-var foxMin = 120;
-var foxMax = 240;
-var ramMin = 120;
-var ramMax = 240;
+var newBird2 = 0;
+var Btime2 = -1;
+var secondBird = true;
+var foxpack = 1;
+var birdcount = 1;
+var bearflag = false;
+var bearMin = 175;
+var bearMax = 300;
+var foxMin = 500;
+var foxMax = 700;
+var ramMin = 400;
+var ramMax = 500;
 var birdMin = 120;
 var birdMax = 240;
 var bearDamage = 50; //must be even
 var foxDamage = 2;
 var woodPeckerDamage = 1;
-var ramDamage = 60;
+var ramDamage = 70;
 
 var score = 0;
 
@@ -398,6 +411,9 @@ function menu(){
         grassPlay = new Image();
         friendImage = new Image();
         directions = new Image();
+        
+        starSprite = new Image();
+        
         //GUI image load
         GUIBackground.src = "art/GUI/UI_logs_bckrnd_woodgrains.png";
         GUIScore.src = "art/GUI/score.png";
@@ -424,6 +440,8 @@ function menu(){
         musicState.push(playMusicImageMO);
         musicState.push(pauseMusicImage);
         musicState.push(pauseMusicImageMO);
+        
+        starSprite.src = "art/GUI/star_sprite_sheet.png";
         
         menuImage.src = "art/GUI/Start_Splash.png";
         playButtonImage.src = "art/GUI/UI_Start.png";
@@ -506,6 +524,7 @@ splinters = new Image();
 endGameImage = new Image();
 endPlayAgain = new Image();
 endPlayAgainMO = new Image();
+endGameGradient = new Image();
 
 //Loading images
 blondeMale.src = "art/characters/blonde_male.png";
@@ -547,6 +566,7 @@ splinters.src = "art/house/splinter_spritesheet2.png";
 endGameImage.src = "art/GUI/corrected_game_over.png";
 endPlayAgain.src = "art/GUI/play_again_button.png";
 endPlayAgainMO.src = "art/GUI/play_again_button_mo.png";
+endGameGradient.src = "art/enemies/EndGameGradient.png";
 
 //Create 2D board
 //(0 == wall, 1 == outerfloor, 2 == character, 3 == innerfloor, 4 == enemy, 5 == logPoint)
@@ -858,6 +878,38 @@ function keyDown(e) {
         if(!e) {
                 e = window.event;
         }
+        if(e.keyCode == 49){
+                if(Characters[0].PosX == Characters[0].desiredPosX && Characters[0].PosY == Characters[0].desiredPosY){
+                        activePlayer = 0;
+                        characterSelected = true;
+                        selectionX = Characters[0].PosX;
+                        selectionY = Characters[0].PosY;
+                }
+        }
+        else if(e.keyCode == 50){
+                if(Characters[1].PosX == Characters[1].desiredPosX && Characters[1].PosY == Characters[1].desiredPosY){
+                        activePlayer = 1;
+                        characterSelected = true;
+                        selectionX = Characters[1].PosX;
+                        selectionY = Characters[1].PosY;
+                }
+        }
+        else if(e.keyCode == 51){
+                if(Characters[2].PosX == Characters[2].desiredPosX && Characters[2].PosY == Characters[2].desiredPosY){
+                        activePlayer = 2;
+                        characterSelected = true;
+                        selectionX = Characters[2].PosX;
+                        selectionY = Characters[2].PosY;
+                }
+        }
+        else if(e.keyCode == 52){
+                if(Characters[3].PosX == Characters[3].desiredPosX && Characters[3].PosY == Characters[3].desiredPosY){
+                        activePlayer = 3;
+                        characterSelected = true;
+                        selectionX = Characters[3].PosX;
+                        selectionY = Characters[3].PosY;
+                }
+        }
 }
 
 function mouseUp(e){
@@ -873,6 +925,7 @@ if(!play && mouseX <= 465 && mouseX >= 235 && mouseY <= 578 && mouseY >= 490){
         Ftime = randomInterval(foxMin, foxMax);
         ramTime = randomInterval(ramMin, ramMax);
         Btime = randomInterval(birdMin, birdMax);
+        Btime2 = randomInterval(1800, 3600);
         placeBird();
         if(soundState == 0){
                 pauseSound();
@@ -1082,7 +1135,6 @@ function gameLoop() {
 
 function placeBird(){
         var i = 1;
-
         Enemies.push(new enemy(birdImage, 2, 0, (birdPath[i].y)*squareHeight, 0, (birdPath[i].y)*squareHeight, (birdPath[i].x)*squareWidth, (birdPath[i].y)*squareHeight, 270, woodPeckerDamage,i+4, 2, 0, -squareWidth/2, squareHeight/2, 0, 0, 0));
 }
 
@@ -1465,7 +1517,7 @@ function drawWalls() {
                                         ctxWalls.globalAlpha = board[x][y].pulseHealth;
                                         ctxWalls.fillStyle = "#00FF00";
                                         ctxWalls.fillRect(-12.5, -3, 25, 7);
-                                        if(board[x][y].health < 180){
+                                        if(board[x][y].health < ramDamage && board[x][y].health > 0)){
                                                 ctxWalls.fillStyle = "#FF0000";
                                                 ctxWalls.globalAlpha = damagePulse;
                                                 ctxWalls.fillRect(-12.5, -10, 25, 7);
@@ -1496,32 +1548,54 @@ function drawWalls() {
                 }
         }
 }
+
+function displayEndGraphic(){
+        endGraphic = true;
+}
+
 function postFeed(){
 	postToFeed(highScore);
 }
 
 function drawEndGame(){
-	
         ctxEnd.clearRect(0, 0, canvas.width, canvas.height);
         ctxEnd.beginPath();
         
-        var temp = Math.abs(Math.cos(pulsePlayAgain*Math.PI/180))*5;
-        ctxEnd.drawImage(endGameImage, 0, 0, 1000, 700, 0, 0, 1000, 600);
-        if(pulseOverPlayAgain){
-                if(pulsePlayAgain >= 360){
-                        pulsePlayAgain = 0;
-                }
-                else{
-                        pulsePlayAgain = pulsePlayAgain + 6;
-                }
-                ctxEnd.drawImage(endPlayAgainMO, 0, 0, 750, 200, 275-temp, 400-temp, 450+(temp*2), 120+(temp*2));
+        if(gradientScale > 1){
+                ctxEnd.translate(gradientX, gradientY);
+                ctxEnd.drawImage(endGameGradient, 0, 0, 1200, 1400, -600*gradientScale, -700*gradientScale, 1200*gradientScale, 1400*gradientScale);
+                ctxEnd.translate(-gradientX, -gradientY);
+                gradientScale -= 0.5;
         }
         else{
-                pulsePlayAgain = 90;
-                ctxEnd.drawImage(endPlayAgain, 0, 0, 750, 200, 275, 400, 450, 120);
+                ctxEnd.translate(gradientX, gradientY);
+                ctxEnd.drawImage(endGameGradient, 0, 0, 1200, 1400, -600*gradientScale, -700*gradientScale, 1200*gradientScale, 1400*gradientScale);
+                ctxEnd.translate(-gradientX, -gradientY);
         }
         
+        if(gradientScale == 2){
+                setInterval(displayEndGraphic, 2500);
+        }
         
+        ctxEnd.clearRect(700, 0, 300, 600);
+        
+        if(endGraphic){
+                var temp = Math.abs(Math.cos(pulsePlayAgain*Math.PI/180))*5;
+                ctxEnd.drawImage(endGameImage, 0, 0, 1000, 700, 0, 0, 1000, 600);
+                if(pulseOverPlayAgain){
+                        if(pulsePlayAgain >= 360){
+                                pulsePlayAgain = 0;
+                        }
+                        else{
+                                pulsePlayAgain = pulsePlayAgain + 6;
+                        }
+                        ctxEnd.drawImage(endPlayAgainMO, 0, 0, 788, 210, 275-temp, 400-temp, 450+(temp*2), 120+(temp*2));
+                }
+                else{
+                        pulsePlayAgain = 90;
+                        ctxEnd.drawImage(endPlayAgain, 0, 0, 788, 210, 275, 400, 450, 120);
+                }
+        }
 }
 
 function drawGUI(){
@@ -1584,6 +1658,23 @@ function drawGUI(){
         }
         
         ctxGUI.drawImage(divider, 0, 0, 196, 5, 725, 185, 250, 5);
+        
+        var temp = Math.abs(Math.cos(pulseStar*Math.PI/180))*2;
+        if(pulseStar >= 360){
+                pulseStar = 0;
+        }
+        else{
+                pulseStar = pulseStar + 4;
+        }
+        
+        var test = Math.floor(starFrame/5);
+        if(starFrame == 63){
+                starFrame = 0;
+        }
+        else{
+                starFrame += 1;
+        }
+        
         if(connectedFacebook && numfriends.toString() > 2)
         {
           var friend0 = new Image();
@@ -1592,7 +1683,7 @@ function drawGUI(){
           ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 210, 50, 50);
           if(friendGamesPlayed[0].toString() > 0)
           {
-          	ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 204, 20, 20);
+          	ctxGUI.drawImage(starSprite, 25*test, 0, 25, 25, 730 - temp, 204 - temp, 20 + (temp*2), 20 + (temp*2));
           }
           else
           {
@@ -1606,7 +1697,7 @@ function drawGUI(){
           ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 290, 50, 50);
            if(friendGamesPlayed[1].toString() > 0)
           {
-          	ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 284, 20, 20);
+          	ctxGUI.drawImage(starSprite, 25*test, 0, 25, 25, 730 - temp, 290 - temp, 20 + (temp*2), 20 + (temp*2));
           }
           else
           {
@@ -1621,7 +1712,7 @@ function drawGUI(){
           ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 370, 50, 50);
            if(friendGamesPlayed[2].toString() > 0)
           {
-          	ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 364, 20, 20);
+          	ctxGUI.drawImage(starSprite, 25*test, 0, 25, 25, 730 - temp, 364 - temp, 20 + (temp*2), 20 + (temp*2));
           }
           else
           {
@@ -1636,7 +1727,7 @@ function drawGUI(){
           ctxGUI.drawImage(profileFrame, 0, 0, 27, 27, 740, 450, 50, 50);
            if(friendGamesPlayed[3].toString() > 0)
           {
-          	ctxGUI.drawImage(starFilled, 0, 0, 25, 25, 730, 444, 20, 20);
+          	ctxGUI.drawImage(starSprite, 25*test, 0, 25, 25, 730 - temp, 444 - temp, 20 + (temp*2), 20 + (temp*2));
           }
           else
           {
@@ -1732,7 +1823,6 @@ function birdAttack(x){
                                 Enemies[x].startPosY = Enemies[x].desiredPosY;
                                 Enemies[x].desiredPosX = i*squareWidth;
                                 Enemies[x].desiredPosY = y1*squareHeight;
-                                Enemies[x].rotation -= 90;
                                 Enemies[x].translateX = -squareWidth/2;
                                 Enemies[x].translateY = squareHeight/2;
                                 board[i][y1].beingAttacked = true;
@@ -1758,7 +1848,6 @@ function birdAttack(x){
                                                                         Enemies[x].startPosY = Enemies[x].desiredPosY;
                                                                         Enemies[x].desiredPosX = x1*squareWidth;
                                                                         Enemies[x].desiredPosY = (i-1)*squareHeight;
-                                                                        Enemies[x].rotation -= 90;
                                                                         Enemies[x].translateX = (squareWidth/2);
                                                                         Enemies[x].translateY = squareHeight/2;
                                                                         Enemies[x].posX -= (squareWidth/2);
@@ -1787,7 +1876,6 @@ function birdAttack(x){
                                                                         Enemies[x].startPosY = Enemies[x].desiredPosY;
                                                                         Enemies[x].desiredPosX = i*squareWidth;
                                                                         Enemies[x].desiredPosY = y1*squareHeight;
-                                                                        Enemies[x].rotation -= 90;
                                                                         Enemies[x].translateX = squareWidth+(squareWidth/2);
                                                                         Enemies[x].translateY = squareHeight/2;
                                                                         Enemies[x].posX -= squareWidth+(squareWidth/2);
@@ -1816,7 +1904,6 @@ function birdAttack(x){
                                                                         Enemies[x].startPosY = Enemies[x].desiredPosY;
                                                                         Enemies[x].desiredPosX = x1*squareWidth;
                                                                         Enemies[x].desiredPosY = (i-1)*squareHeight;
-                                                                        Enemies[x].rotation -= 90;
                                                                         Enemies[x].translateX = squareWidth/2;
                                                                         Enemies[x].translateY = (squareHeight*2)+(squareHeight/2);
                                                                         Enemies[x].posX -= squareWidth/2;
@@ -1839,6 +1926,13 @@ function birdAttack(x){
                                                 newBird = 0;
                                                 Btime = randomInterval(birdMin, birdMax);
                                         }
+                                if(Enemies[x].phase == 2){
+                                        var deltaY, deltaX;
+                                        deltaY = Enemies[x].desiredPosY - Enemies[x].posY;
+                                        deltaX = Enemies[x].desiredPosX - Enemies[x].posX;
+                                        var rotate = (Math.atan2(deltaY, deltaX) * 180/Math.PI)+90;
+                                        Enemies[x].rotation = rotate-180;
+                                }
 }
 
 function draw() {
@@ -1858,14 +1952,45 @@ function draw() {
         if(offset == 60){
                 offset = 0;
         }
-        if(newBear == bearTime){
-                newBear = 0;
-                bearTime = randomInterval(bearMin, bearMax);
+        if (newBear == bearTime) {
+            newBear = 0;
+            bearTime = randomInterval(bearMin, bearMax);
+            if (bearMin < 50) {
+                if (bearMax > 150 && bearflag) {
+                    bearMax--;
+                }
+                bearflag = !bearflag;
                 placeBear();
+            }
+            else if (bearMin <= 100) {
+                if (bearflag) {
+                    bearMin--;
+                    bearMax--;
+                }
+                bearflag = !bearflag;
+                placeBear();
+            }
+            else if (bearMin <= 150) {
+                bearMin--;
+                bearMax--;
+                placeBear();
+            }
+            else {
+                bearMin = bearMin - 2;
+                bearMax = bearMax - 2;
+                placeBear();
+            }
         }
         if(newFox == Ftime){
-                newFox = 0;
+            newFox = 0;
+            if (foxpack > 0) {
+                Ftime = randomInterval(30, 90);
+                foxpack--;
+            }
+            else {
                 Ftime = randomInterval(foxMin, foxMax);
+                foxpack = 3;
+            }
                 placeFox();
         }
         if(newRam == ramTime){
@@ -1878,6 +2003,11 @@ function draw() {
                 //Btime = randomInterval(birdMin, birdMax);
                 attack = true;
                 //placeBird();
+        }
+        if(newBird2 == Btime2){
+                newBird2 = 0;
+                Btime2 = randomInterval(1800, 3600);
+                placeBird();
         }
         
         ctx.save();
@@ -1936,9 +2066,6 @@ function draw() {
                                 }
                         }
                         else if(Enemies[x].type == 2){
-                                /*var x1 = Math.floor(Enemies[x].posX/squareWidth);
-                                var y1 = Math.floor(Enemies[x].posY/squareHeight);*/
-
                                 if(attack){
                                         attack = false;
                                         birdAttack(x);
@@ -2157,8 +2284,6 @@ function draw() {
                                 }
                         }
                         else if(Enemies[x].type == 2){
-                                //Enemies[x].translateX = 0;
-                                //Enemies[x].translateY = 0;
                                 var person = false;
                                 
                                 if(Enemies[x].posX/squareWidth > 1 && Enemies[x].posY/squareHeight > 1 && Enemies[x].posX/squareWidth < roomXmax && Enemies[x].posY/squareHeight < roomYmax){
@@ -2191,7 +2316,7 @@ function draw() {
                                         }
                                 }
                                 }
-
+    
                                 if(!person && (Enemies[x].phase == 0 || Enemies[x].phase == 1)){
                                         var test = Math.floor(Enemies[x].frame/6);
                                         ctx.drawImage(Enemies[x].image, 35.75*test, 0, 35.75, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
@@ -2203,44 +2328,39 @@ function draw() {
                                                 Enemies[x].stage = 4;
                                         }
                                         if(Enemies[x].phase == 0){
-                                                Enemies[x].rotation += 90;
                                                 Enemies[x].phase = 1;
-                                        }
-                                        else{
-                                                if(Enemies[x].stage == 8){
-                                                        Enemies[x].rotation = 270;
-                                                }
-                                                else if(Enemies[x].stage == 7){
-                                                        Enemies[x].rotation = 315;
-                                                }
-                                                else if(Enemies[x].stage == 6){
-                                                        Enemies[x].rotation = 0;
-                                                }
-                                                else if(Enemies[x].stage == 5){
-                                                        Enemies[x].rotation = 45;
-                                                }
-                                                else if(Enemies[x].stage == 4){
-                                                        Enemies[x].rotation = 90;
-                                                }
-                                                else if(Enemies[x].stage == 11){
-                                                        Enemies[x].rotation = 135;
-                                                }
-                                                else if(Enemies[x].stage == 10){
-                                                        Enemies[x].rotation = 180;
-                                                }
-                                                else if(Enemies[x].stage == 9){
-                                                        Enemies[x].rotation = 225;
-                                                }
                                         }
                                         
                                         Enemies[x].desiredPosX = (birdPath[Enemies[x].stage-4].x)*squareWidth;
                                         Enemies[x].desiredPosY = (birdPath[Enemies[x].stage-4].y)*squareHeight;
                                         Enemies[x].frame = 0;
+                                        
+                                        var deltaY, deltaX;
+                                        deltaY = Enemies[x].desiredPosY - Enemies[x].posY;
+                                        deltaX = Enemies[x].desiredPosX - Enemies[x].posX;
+                                        var rotate = (Math.atan2(deltaY, deltaX) * 180/Math.PI)+90;
+                                        Enemies[x].rotation = rotate-180;
                                 }
-                                else if(Enemies[x].phase == 2 && !person){
+                                else if((Enemies[x].phase == 2 || Enemies[x].phase == 4 || Enemies[x].phase == 5) && !person){
                                         var test = Math.floor(Enemies[x].frame/6);
-                                        //var test2 = Math.floor(Enemies[x].frame/4);
-                                        if(Enemies[x].frame == 18){
+                                        
+                                        if(Enemies[x].phase == 2){
+                                                Enemies[x].phase = 4;
+                                                if(Enemies[x].stage == 6){
+                                                        Enemies[x].rotation = 270;
+                                                }
+                                                else if(Enemies[x].stage == 4){
+                                                        Enemies[x].rotation = 0;
+                                                }
+                                                else if(Enemies[x].stage == 10){
+                                                        Enemies[x].rotation = 90;
+                                                }
+                                                else if(Enemies[x].stage == 8){
+                                                        Enemies[x].rotation = 180;
+                                                }
+                                        }
+                                        
+                                        if(Enemies[x].frame == 18 && Enemies[x].phase == 4){
                                                 if(Enemies[x].rotation == 270){
                                                         board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
                                                         damagedList.push(new damagedObject(Enemies[x].posX, Enemies[x].posY, Enemies[x].damage, 1, 50, 0));
@@ -2269,6 +2389,12 @@ function draw() {
                                         ctx.drawImage(Enemies[x].image, 35.75*test, 25, 35.75, 25, -squareWidth/2, -squareHeight/2, squareWidth, squareHeight);
                                         if(Enemies[x].frame == 24){
                                                 Enemies[x].frame = 12;
+                                                if(Enemies[x].phase == 4){
+                                                        Enemies[x].phase = 5;
+                                                }
+                                                else{
+                                                        Enemies[x].phase = 4;
+                                                }
                                         }
                                         else{
                                                 Enemies[x].frame += 1;
@@ -2280,7 +2406,6 @@ function draw() {
                                         Enemies[x].speed = 2;
                                         Enemies[x].desiredPosX = Enemies[x].startPosX;
                                         Enemies[x].desiredPosY = Enemies[x].startPosY;
-                                        Enemies[x].rotation += 90;
                                         Enemies[x].translateX = -squareWidth/2;
                                         Enemies[x].translateY = squareHeight/2;
                                         if(Enemies[x].stage == 8){
@@ -2295,6 +2420,12 @@ function draw() {
                                                 Enemies[x].posX += (squareWidth/2);
                                                 Enemies[x].posY += squareHeight/2;
                                         }
+                                        var deltaY, deltaX;
+                                        deltaY = Enemies[x].desiredPosY - Enemies[x].posY;
+                                        deltaX = Enemies[x].desiredPosX - Enemies[x].posX;
+                                        var rotate = (Math.atan2(deltaY, deltaX) * 180/Math.PI)+90;
+                                        Enemies[x].rotation = rotate-180;	
+                                        
                                         newBird = 0;
                                         Btime = randomInterval(birdMin, birdMax);
                                         board[Enemies[x].attackBoardX][Enemies[x].attackBoardY].beingAttacked = false;
@@ -2399,6 +2530,9 @@ function draw() {
                 ctx.fillStyle = "#003EFF";
                 ctx.globalAlpha = 0.35;
                 ctx.arc(selectionX, selectionY, squareWidth/2 + (Math.cos(pulseFriend*Math.PI/180)*2), 0, 2*Math.PI);
+                if(board[Math.floor(moveX/squareWidth)][Math.floor(moveY/squareHeight)].index == 3){
+                        ctx.arc(Math.floor(moveX/squareWidth)*squareWidth + squareWidth/2, Math.floor(moveY/squareHeight)*squareHeight + squareHeight/2, squareWidth/2, 0, 2*Math.PI);
+                }
                 ctx.fill();
                 ctx.globalAlpha = 1.0;
         }
@@ -2480,6 +2614,8 @@ function draw() {
         newBear += 1;
         newRam += 1;
         newFox += 1;
+        newBird += 1;
+	newBird2 += 1;
         
         if(drawFriend && connectedFacebook){
                 var xSnap = Math.floor(moveX/25);

@@ -44,7 +44,7 @@ $userId = $facebook->getUser();
 	       <meta property="og:url" content="http://game.courses.asu.edu"/>
 	       <meta property="og:site_name" content="Cabin Crashers: An Online Facebook Game"/>
 	       <meta property="og:type" content="facebook game"/>
-	       <meta name="description" content="Save your pie, and your cabin, from the hungry woodland creatures in this unique online facebook game!"
+	       <meta name="description" content="Save your pie and your cabin from the hungry woodland creatures in this unique online facebook game!"
 	       
 	</head>
 	<script>

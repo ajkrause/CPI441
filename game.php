@@ -16,6 +16,7 @@ var play = false;
 var stopMenu;
 var stopEnd;
 var endGraphic = false;
+var endUndim = false;
 
 var mouseX = 0;
 var mouseY = 0;
@@ -564,8 +565,8 @@ logPoint2.src = "art/house/Log_Point2_Test.png";
 splinters.src = "art/house/splinter_spritesheet2.png";
 
 endGameImage.src = "art/GUI/corrected_game_over.png";
-endPlayAgain.src = "art/GUI/play_again_button.png";
-endPlayAgainMO.src = "art/GUI/play_again_button_mo.png";
+endPlayAgain.src = "art/GUI/play_again_button_revised.png";
+endPlayAgainMO.src = "art/GUI/play_again_button_revised_mo.png";
 endGameGradient.src = "art/enemies/EndGameGradient.png";
 
 //Create 2D board
@@ -1539,6 +1540,7 @@ function drawWalls() {
                                         
                                         gradientX = x*squareWidth + squareWidth/2;
 					gradientY = y*squareHeight + squareHeight/2;
+                                        endUndim = true;
                                         
                                         drawEndGame();
                                         
@@ -1605,7 +1607,7 @@ function drawGUI(){
         ctxGUI.clearRect(0, 0, canvas.width, canvas.height);
         ctxGUI.beginPath();
         
-        if(!playing && !introActive)
+        if(!playing && !introActive && !endUndim)
         {
           ctxGUI.fillStyle = "#000000";
           ctxGUI.globalAlpha = .5;

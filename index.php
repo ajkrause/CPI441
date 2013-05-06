@@ -306,8 +306,8 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
                 
            	link: 'https://www.facebook.com/appcenter/asu_cpi_game?preview=1&locale=en_US',
            	picture: 'http://game.courses.asu.edu/art/GUI/highscoretext.png',
-           	caption: '' + UserName + ' beat his high score in Cabin Crashers!',
-           	description: '' + UserName + ' got ' + scoreToPost + ' points and beat his high score! Can you top that?'
+           	caption: '' + UserName + ' beat their high score in Cabin Crashers!',
+           	description: '' + UserName + ' got ' + scoreToPost + ' points and beat their high score! Can you top that?'
            	
            };
            

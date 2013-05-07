@@ -370,7 +370,6 @@ function drawMenu(){
         }
         else{
                 clearInterval(stopMenu);
-                //ctxGUI.clearRect(0,0,canvas.width, canvas.height);
                 playing = false;
                 introActive = true;
                 playGame();
@@ -665,7 +664,6 @@ birdPath.push(new pathPoint(27, 7));
 birdPath.push(new pathPoint(22, 1));
 
 //place walls
-//Possibly think about cleaning up...
 for(var y = roomYmin; y < roomYmax; y++){
         for(var x = roomXmin; x < roomXmax; x++){
                 if(board[x+1][y].index == 3 && (board[x-1][y].index == 1 || board[x-1][y].index == 0) && board[x][y].index == 1){
@@ -685,22 +683,18 @@ for(var y = roomYmin; y < roomYmax; y++){
                         board[x][y].index = 0; //bottom wall
                         board[x][y].health = 180;
                 }
-                //check
                 if(board[x-1][y-1].index == 3 && (board[x+1][y+1].index == 1 || board[x+1][y+1].index == 0) && board[x][y].index == 1){
                         board[x][y].index = 0; //bottom right corner
                         board[x][y].health = 180;
                 }
-                //check
                 if(board[x+1][y-1].index == 3 && (board[x-1][y+1].index == 1 || board[x-1][y+1].index == 0) && board[x][y].index == 1){
                         board[x][y].index = 0; //bottom left corner
                         board[x][y].health = 180;
                 }
-                //check
                 if(board[x-1][y+1].index == 3 && (board[x+1][y-1].index == 1 || board[x+1][y-1].index == 0) && board[x][y].index == 1){
                         board[x][y].index = 0; //top right corner
                         board[x][y].health = 180;
                 }
-                //check		
                 if(board[x+1][y+1].index == 3 && (board[x-1][y-1].index == 1 || board[x-1][y-1].index == 0) && board[x][y].index == 1){
                         board[x][y].index = 0; //top left corner
                         board[x][y].health = 180;
@@ -713,8 +707,6 @@ for(var y = roomYmin; y < roomYmax; y++){
         }
 }
 
-//topleft = 0, 8 = outside, topright = 1, 9 = outside, bottomleft = 2, 10 = outside, bottomright = 3, 11 = outside, left = 4, right = 5, up = 6, bottom = 7
-//Possibly think about cleaning up...
 for(var y = roomYmin; y < roomYmax; y++){
         for(var x = roomXmin; x < roomXmax; x++){
                 //top left corner
@@ -944,8 +936,6 @@ if(!play && mouseX <= 465 && mouseX >= 235 && mouseY <= 578 && mouseY >= 490){
 }
 
 if(!playing && mouseX <= 725 && mouseX >= 275 && mouseY <= 520 && mouseY >= 400){
-
-        //alert("Do restart stuff here");
         restart();
 }
 
@@ -1086,10 +1076,6 @@ function gameSelection(){
             var y2 = (((squareHeight-(mouseY%squareHeight))+mouseY)/squareHeight)-1;
             var x1 = Math.round(x2);
             var y1 = Math.round(y2);
-            
-            if(board[x1][y1].index == 0){
-                    //alert(board[x1][y1].beingAttacked);
-            }
     
             //move active player
             if(board[x1][y1].index == 3 && activePlayer != -1){
@@ -1438,7 +1424,6 @@ function moveCharacter(){
 }
 
 function drawFloor(){
-        console.log("drawFloor called!");
         ctxFloor.clearRect(0, 0, canvasFloor.width, canvasFloor.height);
         ctxFloor.beginPath();
         
@@ -1840,7 +1825,6 @@ function birdAttack(x){
         if(Enemies[x].stage == 6){
                 for(var i = roomXmin; i < roomXmax; i++){
                         if(board[i][y1].type == 4 && !(board[i][y1-1].type == 9 || board[i][y1+1].type == 10)  && !board[i][y1].beingAttacked){
-                                //Enemies.push(new enemy(birdImage, 2, 0, y1*squareHeight, 0, y1*squareHeight, i*squareWidth, y1*squareHeight, 270, 1, 0, 1, 0, -10, squareHeight/2));
                                 Enemies[x].startPosX = Enemies[x].desiredPosX;
                                 Enemies[x].startPosY = Enemies[x].desiredPosY;
                                 Enemies[x].desiredPosX = i*squareWidth;
@@ -1855,7 +1839,6 @@ function birdAttack(x){
                         }
                         else{
                                 birdAttack(x);
-                                //placeBird();
                                 break;
                         }
                 }
@@ -1882,7 +1865,6 @@ function birdAttack(x){
                                                                 }
                                                                 else{
                                                                         birdAttack(x);
-                                                                        //placeBird();
                                                                         break;
                                                                 }
                                                         }
@@ -1893,7 +1875,6 @@ function birdAttack(x){
                                                 for(var i = roomXmax; i > roomXmin; i--){
                                                         if(board[i][y1].index == 0){
                                                                 if(board[i][y1].type == 5 && !(board[i][y1-1].type == 8 || board[i][y1+1].type == 11) && !board[i][y1].beingAttacked){
-                                                                        //Enemies.push(new enemy(birdImage, 2, canvas.width-GUIWidth, y1*squareHeight, canvas.width-GUIWidth, y1*squareHeight, i*squareWidth, y1*squareHeight, 90, 1, 0, 1, 0, squareWidth+10, squareHeight/2));
                                                                         Enemies[x].startPosX = Enemies[x].desiredPosX;
                                                                         Enemies[x].startPosY = Enemies[x].desiredPosY;
                                                                         Enemies[x].desiredPosX = i*squareWidth;
@@ -1910,7 +1891,6 @@ function birdAttack(x){
                                                                 }
                                                                 else{
                                                                         birdAttack(x);
-                                                                        //placeBird();
                                                                         break;
                                                                 }
                                                         }
@@ -1921,7 +1901,6 @@ function birdAttack(x){
                                                 for(var i = roomYmax; i > roomYmin; i--){
                                                         if(board[x1][i].index == 0){
                                                                 if(board[x1][i].type == 7 && !(board[x1-1][i].type == 8 || board[x1+1][i].type == 9) && !board[x1][i].beingAttacked){
-                                                                        //Enemies.push(new enemy(birdImage, 2, x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, canvas.height-(squareHeight*4), x1*squareWidth, (i-1)*squareHeight, 180, 1, 0, 1, 0, squareWidth/2, (squareHeight*2)+10));
                                                                         Enemies[x].startPosX = Enemies[x].desiredPosX;
                                                                         Enemies[x].startPosY = Enemies[x].desiredPosY;
                                                                         Enemies[x].desiredPosX = x1*squareWidth;
@@ -1938,7 +1917,6 @@ function birdAttack(x){
                                                                 }
                                                                 else{
                                                                         birdAttack(x);
-                                                                        //placeBird();
                                                                         break;
                                                                 }
                                                         }
@@ -2021,10 +1999,7 @@ function draw() {
                 placeRam();
         }
         if(newBird == Btime){
-                //newBird = 0;
-                //Btime = randomInterval(birdMin, birdMax);
                 attack = true;
-                //placeBird();
         }
         if(newBird2 == Btime2){
                 newBird2 = 0;
@@ -2254,7 +2229,6 @@ function draw() {
                                 }
                                 else if(Enemies[x].stage == 1 && !person){
                                         var test = Math.floor(Enemies[x].frame/4);
-                                        //var test2 = Math.floor(Enemies[x].frame/4);
                                         if(Enemies[x].frame == 8){
                                                 if(Enemies[x].rotation == 270){
                                                         board[Math.floor(Enemies[x].posX/squareWidth)][Math.floor(Enemies[x].posY/squareHeight)].health -= Enemies[x].damage;
@@ -2290,7 +2264,6 @@ function draw() {
                                         }
                                 }
                                 else if(Enemies[x].stage == 2 || person){
-                                        //alert("hi");
                                         if(person){
                                                 Enemies[x].frame = 0;
                                                 Enemies[x].stage = 2;
@@ -2301,7 +2274,6 @@ function draw() {
                                         }
                                         else{
                                                 Enemies[x].stage = 3;
-                                                //alert("hello");
                                         }
                                 }
                         }
@@ -2810,7 +2782,6 @@ function pauseGameSound()
 
 //find the path from(startX, startY) to (endX, endY)
 function findPath(startX, startY, endX, endY){
-        //var openList = [];
         startNode = [startX, startY];
         endNode = [endX, endY];
 
@@ -2824,20 +2795,17 @@ function findPath(startX, startY, endX, endY){
         while(openList.count != 0){
         //while(openList.length != 0){
                 //pop the position of the node which has the minimum 'f' value
-                //alert(openList);
                 var node = openList.pop();
                 board[node[0]][node[1]].closed = true;
 
                 if(node[0] == endX && node[1] == endY){
                         var path = [[node[0], node[1]]];
-                        //alert(path);
                         var par = board[node[0]][node[1]].parent;
                         while (par.length != 0) {
                                 var node1 = node;
                                 node = board[node[0]][node[1]].parent;
                                 board[node1[0]][node1[1]].parent = [];
                                 path.push([node[0], node[1]]);
-                                //alert(path);
                                 par = board[node[0]][node[1]].parent;
                         }
                         return path.reverse();
@@ -2874,15 +2842,12 @@ function identifySuccessors(x, y){
                                 return;
                         }
 
-                        //include distance, as parent may not be immediately adjacent
-                        //var d = Heuristic.euclidean(Math.abs(jx-x), Math.abs(jy-y));
                         //distance between the two points 
                         var d = Math.sqrt(((jx-x)*(jx-x))+((jy-y)*(jy-y)));
                         var ng = board[x][y].g + d; //next g value
                 
                         if(!board[jx][jy].opened || ng < board[jx][jy].g){
                                 board[jx][jy].g = ng;
-                                //board[jx][jy].h = board[jx][jy].h || Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])));
                                 if(board[jx][jy].h < Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])))){
                                         board[jx][jy].h = Math.sqrt(((jx-endNode[0])*(jx-endNode[0]))+((jy-endNode[1])*(jy-endNode[1])))
                                 }
@@ -3149,13 +3114,10 @@ function playIntro()
     
     ctxMenu.clearRect(0, 0, canvasMenu.width, canvasMenu.height);
     if (count > 12) {
-        //clearInterval(intro);
         introActive = false;
 				playing = true;
-        //playGame();
     }
     else{
-      //console.log(count);
       ctxMenu.drawImage(comicArray[count], 0, 0);
       if(count  < 12)
       {
@@ -3166,8 +3128,6 @@ function playIntro()
       intro = setTimeout(playIntro, 1500);
       }
       count++;
-      
     } 
-    
 }
 	

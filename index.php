@@ -20,9 +20,6 @@ $userId = $facebook->getUser();
 		//connection to the database
 		$dbhandle = mysql_connect($hostname, $username, $password) 
 		  or die("Unable to connect to MySQL");
-	//	echo "Connected to MySQL<br>";
-
-		//printf("MySQL server version: %s\n", mysql_get_server_info());
 
 
 		@mysql_select_db("gameadm_usertest") or die( "Unable to select database");
@@ -30,7 +27,6 @@ $userId = $facebook->getUser();
 		mysql_close($dbhandle);
 		//fetch tha data from the database
 		while ($row = mysql_fetch_array($result)) {
-		   //echo "ID:".$row{'ID'}." Name:".$row{'Name'}." ".$row{'Score'}."<br>";
 		}
 ?>
 <html xmlns:fb="https://www.facebook.com/2008/fbml">
@@ -77,15 +73,12 @@ $userId = $facebook->getUser();
 			    {
 			    if (xmlhttp.readyState==4 && xmlhttp.status==200)
 				    {
-							//document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
 					   //send the new high score to facebook
 						 FB.api("/me/scores?score=" + xmlhttp.responseText, "post", function(response){
 							FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
 							});
 						 //read the scores for your friends and update the leaderboard
-						 
-						 // alert("request complete " + xmlhttp.responseText);
-				    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+				
 				    }
 			    }
 		    xmlhttp.open("GET","updateHighScore.php?scr="+score+"&usr="+ getUserId() +"&games="+gamesplayed,true);
@@ -130,28 +123,18 @@ $userId = $facebook->getUser();
 					$randomfriendnum = $randomnumarray[0];
 					$randomfriendnum1 = $randomnumarray[1];
 					$randomfriendnum2 = $randomnumarray[2];
-					//$randomfriendnum3 = $randomnumarray[3];
-					//$randomfriendnum4 = $randomnumarray[4];
 
 					$randomfriend= $friends[$randomfriendnum];
 
 					$randomfriend2 = $friends[$randomfriendnum1];
 					$randomfriend3 = $friends[$randomfriendnum2];
-					//$randomfriend4 = $friends[$randomfriendnum3];
-					//$randomfriend5 = $friends[$randomfriendnum4];
-					//echo "<img src='http://graph.facebook.com/" . $randomfriend['id']  ."/picture'>";
-					//echo "<img src='http://graph.facebook.com/" . $randomfriend2['id']  ."/picture'>";
-					//echo "<img src='http://graph.facebook.com/" . $randomfriend3['id']  ."/picture'>";
-					//echo "<img src='http://graph.facebook.com/" . $randomfriend4['id']  ."/picture'>";
-					//echo "<img src='http://graph.facebook.com/" . $randomfriend5['id']  ."/picture'>";
                                         
 					$connected = true;
 
 					$randomfriendimage = "http://graph.facebook.com/" . $randomfriend['id']  ."/picture";
 					$randomfriendimage2 = "http://graph.facebook.com/" . $randomfriend2['id']  ."/picture";
 					$randomfriendimage3 = "http://graph.facebook.com/" . $randomfriend3['id']  ."/picture";
-					//$randomfriendimage4 = "http://graph.facebook.com/" . $randomfriend4['id']  ."/picture";
-					//$randomfriendimage5 = "http://graph.facebook.com/" . $randomfriend5['id']  ."/picture";
+
                                         $userImage = "http://graph.facebook.com/" . $userInfo['id'] . "/picture";
                                         
                                         $friendId1 = $randomfriend['id'];
@@ -164,10 +147,6 @@ $userId = $facebook->getUser();
                                         $randomfriendName2 = $friendname2[0];
                                         $friendname3 = explode (" ", $randomfriend3['name']);
                                         $randomfriendName3 = $friendname3[0];
-                                        /*$friendname4 = explode (" ", $randomfriend4['name']);
-                                        $randomfriendName4 = $friendname4[0];
-                                        $friendname5 = explode (" ", $randomfriend5['name']);
-                                        $randomfriendName5 = $friendname5[0];*/
 
                                         $userfirstname = explode (" ", $userInfo['name']);
                                         $userName= $userfirstname[0];
@@ -177,16 +156,11 @@ $userId = $facebook->getUser();
                                         $randomfriendGender = $randomfriend['gender'];
                                         $randomfriendGender2 = $randomfriend2['gender'];
                                         $randomfriendGender3 = $randomfriend3['gender'];
-                                        
-				 foreach($friends['data'] as $key=>$value)
-				 {
-					//echo "<img src='http://graph.facebook.com/" . $value['id'] ."/picture'><br>"  ; 
-				 }
+
 
 				}catch(FacebookApiException $e) {
 					$result = $e->getType();
-					//echo $result;
-					//echo "<script>console.log(". $result .");</script>";
+
 					echo "<script>loggedIn = false;</script>";
 				}
 
@@ -225,7 +199,6 @@ $userId = $facebook->getUser();
 				$friendgames3=$row["GAMES"];
 				
 			}
-      //echo "<b> $tname </b><br>Score: $thscore <br>";
 		}
 			if($newuser == 1)
 			{ 
@@ -338,8 +311,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 			<source src="InGameC.mp3" type="audio/mpeg"/> //Rest of the browsers
 			<source src="InGameC.ogg" type="audio/ogg" /> //Firefox, since MP3 is not supported
 		</audio>
-		<!--<button type="button" onclick="updateHighScore(score)">Update Score</button>
-		<button type="button" onclick="postToFeed()">Post to Feed</button>-->
+
 		<br>
 		<script>
 		
@@ -351,7 +323,6 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 			function resize() {
 				var width = 1400/2 -500;
 				document.getElementById("centerCanvas").style.paddingLeft = width.toString() + "px";
-				//document.getElementById("tables").style.paddingLeft = width.toString() - 12 + "px";
 			}
 			function refresh(){
 				drawFloor();
@@ -375,9 +346,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 			   friendPics.push("<?php echo $randomfriendimage2 ?>");
 
 			   friendPics.push("<?php echo $randomfriendimage3 ?>");
-			   //friendPics.push("<?php echo $randomfriendimage4 ?>");
-			   //friendPics.push("<?php echo $randomfriendimage5 ?>");
-                           //UserImage = "<?php echo $userImage ?>";
+
                            friendGamesPlayed.push("<?php echo $gamesplayed ?>");
                            friendGamesPlayed.push("<?php echo $friendgames1 ?>");
                            friendGamesPlayed.push("<?php echo $friendgames2 ?>");
@@ -390,8 +359,6 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
                            friendNames.push("<?php echo $randomfriendName ?>");
                            friendNames.push("<?php echo $randomfriendName2 ?>");
                            friendNames.push("<?php echo $randomfriendName3 ?>");
-                           //friendNames.push("<?php echo $randomfriendName4 ?>");
-                           //friendNames.push("<?php echo $randomfriendName5 ?>");
                            
                            friendGenders.push("<?php echo $userGender ?>");
                            friendGenders.push("<?php echo $randomfriendGender ?>");
@@ -427,16 +394,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 				Your browser does not support the HTML5 canvas tag
 			</canvas>
 			
-		<!--</span>-->
 		</div>
-		
-		<!--<div  style="height: 630px;">
-				<h2 style="color: #ffff00;"><?php echo $name ?>'s stats: </h2>
-				<table><tr><th>High Score</th></tr><tr><td id="score_cell"><?php echo $hscore ?></td></tr></table>
-				<h2 style="color: #ffff00;">Friends Leaderboard</h2>
-				<table id="leaderboard"></table>
-		</div>-->
-		<!--</span>-->
 
 		<script src="game.php"></script>
 		
@@ -478,10 +436,6 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 			<script>
 				resize();
 			</script>
-			<!--
-		<a href="example.htm" id="button3" class="buttonText">Tic Tac Toe</a>
-		<a href="http://austin.thautech.com" id="button3" class="buttonText">Austin</a>
-		<a href="collision.htm" id="button3" class="buttonText">collisions</a>
-			-->
+
 	</body>
 </html>

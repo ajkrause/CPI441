@@ -97,12 +97,7 @@ $userId = $facebook->getUser();
 	<body class="body2">
 		<div style="margin:auto; width:1000px;">
 		<!-- UPPER UI BAR ----------------------------------- -->
-		<div id="upperBar" >
-			
-			<div style="text-align: center; height: 200px; width:1000px; clear: right;" id="rightBox" class="mainfont">
-				<span style=" font-size: 60px;" id="welcome"><br>Welcome, please log in!</span>
-			</div>
-		</div>
+		
 
   <div id="fb-root"></div>
     <?php
@@ -242,23 +237,13 @@ $userId = $facebook->getUser();
 		?>
 
 		 
-     <script>
-document.getElementById("welcome").innerHTML = "<br>Welcome, <?php echo $userInfo['name']; ?><br>";
-document.getElementById("rightBox").innerHTML += "<button class='fbbutton confirm' id='fbLogout' onclick='fbLogout()'>Logout</button>";function fbLogout() {
-        FB.logout(function (response) {
-            //Do what ever you want here when logged out like reloading the page
-            window.location.reload();
-        });
-    }
-</script>
+
 
 
 
     <?php } else { ?>
       <!-- <p>Not Logged into Facebook</p> -->
-			<script>
-			document.getElementById("rightBox").innerHTML += "<br><fb:login-button scope ='publish_stream, friends_games_activity, user_games_activity'></fb:login-button>";
-			</script>
+			
 	  <?php } ?>
 
 					<div id="colorTitle"></div>
@@ -283,8 +268,10 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 						FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
 					} else if (response.status === 'not_authorized') {
 						// not_authorized;
+						FB.login();
 					}else{
 						// not_logged_in
+						FB.login();
 					}
 				 });
         FB.Event.subscribe('auth.login', function(response) {
@@ -328,7 +315,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
         </script>
 				
 
-		<br/>
+		
 		
 		<audio id="MyAudio" autoplay loop="true">
 			<source src="menu.mp3" type="audio/mpeg"/> //Rest of the browsers

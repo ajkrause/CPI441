@@ -94,11 +94,12 @@ $userId = $facebook->getUser();
 				var loggedIn = true;
 		    
 	    </script>
-	<body>
+	<body class="body2">
+		<div style="margin:auto; width:1000px;">
 		<!-- UPPER UI BAR ----------------------------------- -->
 		<div id="upperBar" >
-			<div style="float:left; width:500px;"><img src="art\GUI\LogoSimple.png" width=486px height=300px></div>
-			<div style="text-align: center; height: 300px; clear: right;" id="rightBox" class="mainfont">
+			
+			<div style="text-align: center; height: 200px; width:1000px; clear: right;" id="rightBox" class="mainfont">
 				<span style=" font-size: 60px;" id="welcome"><br>Welcome, please log in!</span>
 			</div>
 		</div>
@@ -252,7 +253,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 </script>
 
 
- </div></div>
+
     <?php } else { ?>
       <!-- <p>Not Logged into Facebook</p> -->
 			<script>
@@ -350,7 +351,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 			}
 			function resize() {
 				var width = 1400/2 -500;
-				document.getElementById("centerCanvas").style.paddingLeft = width.toString() + "px";
+				document.getElementById("centerCanvas").style.paddingLeft = "15px";
 				//document.getElementById("tables").style.paddingLeft = width.toString() - 12 + "px";
 			}
 			function refresh(){
@@ -440,7 +441,7 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 
 		<script src="game.php"></script>
 		
-		<div id="tables">
+		<div id="tables" style="margin: 0px 20px;">
 			<?php if($userId){ ?>
 				
 				
@@ -483,5 +484,6 @@ document.getElementById("rightBox").innerHTML += "<button class='fbbutton confir
 		<a href="http://austin.thautech.com" id="button3" class="buttonText">Austin</a>
 		<a href="collision.htm" id="button3" class="buttonText">collisions</a>
 			-->
+			</div>
 	</body>
 </html>

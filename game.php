@@ -1652,7 +1652,7 @@ function drawGUI(){
                 ctxGUI.drawImage(GUINumbers, 6, 6, 47.5-6, 50-6, 825, 75, 40, 40);
         }
         
-        ctxGUI.drawImage(divider, 0, 0, 196, 5, 725, 120, 250, 5);
+        ctxGUI.drawImage(divider, 0, 0, 196, 5, 730, 120, 240, 5);
         ctxGUI.drawImage(GUIHighScore, 0, 0, 400, 100, 800, 130, 100, 25);
         
         highScoreTemp = highScore;
@@ -1676,7 +1676,7 @@ function drawGUI(){
                 initializedHS = true;
         }
         
-        ctxGUI.drawImage(divider, 0, 0, 196, 5, 725, 185, 250, 5);
+        ctxGUI.drawImage(divider, 0, 0, 196, 5, 730, 185, 240, 5);
         
         var temp = Math.abs(Math.cos(pulseStar*Math.PI/180))*2;
         if(pulseStar >= 360){

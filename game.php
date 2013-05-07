@@ -1543,6 +1543,9 @@ function drawWalls() {
                                         if(score > highScore)
                                         {
                                             highScore = Math.floor(score);
+                                            FB.api("/me/scores?score=" + score, "post", function(response){
+                                              FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
+                                            });
                                             window.setTimeout(postFeed,1000);
                                         }
                                         

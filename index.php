@@ -79,7 +79,7 @@ $userId = $facebook->getUser();
 				    {
 							//document.getElementById("score_cell").innerHTML = xmlhttp.responseText;
 					   //send the new high score to facebook
-						 FB.api("/me/scores?score=" + xmlhttp.responseText + "&access_token=312229638880822|juBe0WgPA8szu3S3xjtd9D6wzBE", "post", function(response){
+						 FB.api("/me/scores?score=" + xmlhttp.responseText, "post", function(response){
 							FB.api("/" + appID +"/scores", "get", function(response){updateLeaderBoard(response.data);});
 							});
 						 //read the scores for your friends and update the leaderboard
